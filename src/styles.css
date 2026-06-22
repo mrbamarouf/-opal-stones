@@ -244,6 +244,16 @@ body.arabic-mode .text-left,
   }
 }
 
+html[lang="ar"] body.arabic-mode,
+html[lang="ar"] body.arabic-mode *,
+html[lang="ar"] .arabic-mode,
+html[lang="ar"] .arabic-mode *,
+[lang="ar"],
+[lang="ar"] * {
+  letter-spacing: 0px !important;
+  word-spacing: normal !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

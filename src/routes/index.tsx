@@ -27,9 +27,12 @@ import j22 from "@/assets/jewellery/IMG_6846.jpg";
 import j23 from "@/assets/jewellery/IMG_6847.jpg";
 import j24 from "@/assets/jewellery/IMG_6849.jpg";
 import j25 from "@/assets/jewellery/IMG_6850.jpg";
-import heroIntroMp4 from "@/assets/media/opal-hero-intro.mp4";
-import heroIntroWebm from "@/assets/media/opal-hero-intro.webm";
-import heroPoster from "@/assets/media/opal-hero-poster.jpg";
+import introLandscapeMp4 from "@/assets/media/opal-intro-landscape.mp4";
+import introLandscapeWebm from "@/assets/media/opal-intro-landscape.webm";
+import introPortraitMp4 from "@/assets/media/opal-intro-portrait.mp4";
+import introPortraitWebm from "@/assets/media/opal-intro-portrait.webm";
+import introPosterLandscape from "@/assets/media/opal-intro-poster-landscape.jpg";
+import introPosterPortrait from "@/assets/media/opal-intro-poster-portrait.jpg";
 import opalLogo384 from "@/assets/opal-logo-384.png";
 import opalLogo768 from "@/assets/opal-logo-768.png";
 import opalLogo from "@/assets/opal-logo.png";
@@ -281,11 +284,20 @@ function IntroScreen() {
   }, [visible, leaving]);
 
   useEffect(() => {
+    const video = videoRef.current;
     const loadGuard = window.setTimeout(() => {
-      if (!videoRef.current || videoRef.current.readyState === 0) finishIntro();
-    }, 7000);
+      if (!video || video.readyState < 2) finishIntro();
+    }, 3000);
 
-    return () => window.clearTimeout(loadGuard);
+    const playGuard = window.setTimeout(() => {
+      const playAttempt = video?.play();
+      if (playAttempt) playAttempt.catch(finishIntro);
+    }, 0);
+
+    return () => {
+      window.clearTimeout(loadGuard);
+      window.clearTimeout(playGuard);
+    };
   }, [finishIntro]);
 
   if (!visible) return null;
@@ -298,16 +310,25 @@ function IntroScreen() {
       }`}
       aria-hidden={leaving}
     >
+      <picture className="absolute inset-0 block h-full w-full">
+        <source media="(orientation: portrait)" srcSet={u(introPosterPortrait)} />
+        <img
+          src={u(introPosterLandscape)}
+          alt=""
+          className="h-full w-full object-cover"
+          draggable={false}
+        />
+      </picture>
       <video
         ref={videoRef}
         data-intro-video="true"
-        className="h-full w-full object-cover"
+        className="absolute inset-0 h-full w-full object-cover"
         style={{ objectPosition: "center center" }}
         autoPlay
         muted
         playsInline
         preload="auto"
-        poster={u(heroPoster)}
+        poster={u(introPosterLandscape)}
         aria-label="Opal Stones intro film"
         disablePictureInPicture
         disableRemotePlayback
@@ -318,8 +339,10 @@ function IntroScreen() {
           if (playAttempt) playAttempt.catch(finishIntro);
         }}
       >
-        <source src={u(heroIntroWebm)} type="video/webm" />
-        <source src={u(heroIntroMp4)} type="video/mp4" />
+        <source media="(orientation: portrait)" src={u(introPortraitWebm)} type="video/webm" />
+        <source media="(orientation: portrait)" src={u(introPortraitMp4)} type="video/mp4" />
+        <source src={u(introLandscapeWebm)} type="video/webm" />
+        <source src={u(introLandscapeMp4)} type="video/mp4" />
       </video>
       <div className="absolute inset-0 bg-black/10" />
       <button
@@ -408,18 +431,20 @@ function Nav({ onConcierge }: { onConcierge: () => void }) {
 
         <div className="flex items-center gap-5">
           <div
-            className={`flex items-center text-[0.68rem] font-medium tracking-[0.24em] uppercase transition-colors ${scrolled ? "text-[color:var(--charcoal)]" : "text-[color:var(--ivory)]"}`}
+            className={`flex items-center text-[0.68rem] font-medium tracking-[0px] uppercase transition-colors ${scrolled ? "text-[color:var(--charcoal)]" : "text-[color:var(--ivory)]"}`}
           >
             <button
               onClick={() => setLang("en")}
-              className={`px-1.5 transition-opacity ${lang === "en" ? "opacity-100" : "opacity-45 hover:opacity-80"}`}
+              className={`px-1.5 tracking-[0.24em] transition-opacity ${lang === "en" ? "opacity-100" : "opacity-45 hover:opacity-80"}`}
             >
               EN
             </button>
             <span className="opacity-35">/</span>
             <button
+              lang="ar"
+              dir="rtl"
               onClick={() => setLang("ar")}
-              className={`px-1.5 transition-opacity ${lang === "ar" ? "opacity-100" : "opacity-45 hover:opacity-80"}`}
+              className={`px-1.5 font-arabic !tracking-[0px] transition-opacity ${lang === "ar" ? "opacity-100" : "opacity-45 hover:opacity-80"}`}
             >
               ع
             </button>
