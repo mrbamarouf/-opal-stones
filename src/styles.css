@@ -1,0 +1,197 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-display: "Cormorant Garamond", "Times New Roman", serif;
+  --font-sans: "Jost", "Inter", system-ui, sans-serif;
+  --font-arabic: "Noto Sans Arabic", system-ui, sans-serif;
+  --font-arabic-heading: "Noto Naskh Arabic", "Noto Sans Arabic", serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-ivory: var(--ivory);
+  --color-pearl: var(--pearl);
+  --color-taupe: var(--taupe);
+  --color-champagne: var(--champagne);
+  --color-gold: var(--gold);
+  --color-charcoal: var(--charcoal);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+
+  --shadow-soft: 0 30px 60px -30px oklch(0.55 0.04 60 / 0.18);
+  --shadow-card: 0 14px 40px -22px oklch(0.4 0.03 60 / 0.22);
+
+  --radius: 2px;
+}
+
+:root {
+  --background: oklch(0.985 0.008 80); /* warm ivory */
+  --ivory: oklch(0.985 0.008 80);
+  --pearl: oklch(0.965 0.012 78);
+  --foreground: oklch(0.27 0.012 60); /* charcoal */
+  --charcoal: oklch(0.27 0.012 60);
+  --taupe: oklch(0.62 0.018 60);
+  --champagne: oklch(0.82 0.045 78);
+  --gold: oklch(0.7 0.075 75);
+
+  --card: oklch(0.985 0.008 80);
+  --card-foreground: oklch(0.27 0.012 60);
+  --muted: oklch(0.94 0.012 78);
+  --muted-foreground: oklch(0.5 0.015 60);
+  --border: oklch(0.88 0.012 72);
+  --input: oklch(0.88 0.012 72);
+  --ring: oklch(0.7 0.075 75);
+
+  --primary: oklch(0.32 0.015 60);
+  --primary-foreground: oklch(0.985 0.008 80);
+  --accent: oklch(0.7 0.075 75);
+  --accent-foreground: oklch(0.27 0.012 60);
+
+  --popover: oklch(0.985 0.008 80);
+  --popover-foreground: oklch(0.27 0.012 60);
+  --secondary: oklch(0.94 0.012 78);
+  --secondary-foreground: oklch(0.27 0.012 60);
+  --destructive: oklch(0.55 0.18 25);
+  --destructive-foreground: oklch(0.985 0.008 80);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-weight: 300;
+    letter-spacing: 0.01em;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: 0.005em;
+  }
+  .font-display {
+    font-family: var(--font-display);
+  }
+  .font-arabic {
+    font-family: var(--font-arabic);
+  }
+
+  :where(html[lang="ar"] body, body.arabic-mode, .arabic-mode) {
+    font-family: var(--font-arabic);
+    letter-spacing: 0 !important;
+    word-spacing: normal !important;
+    font-feature-settings:
+      "liga" 1,
+      "calt" 1,
+      "kern" 1;
+    text-rendering: optimizeLegibility;
+  }
+
+  :where(html[lang="ar"] body, body.arabic-mode, .arabic-mode) * {
+    letter-spacing: 0 !important;
+    word-spacing: normal !important;
+  }
+
+  html[lang="ar"] body :where(p, a, button, label, input, textarea, select, span, div),
+  body.arabic-mode :where(p, a, button, label, input, textarea, select, span, div),
+  .arabic-mode :where(p, a, button, label, input, textarea, select, span, div) {
+    font-family: var(--font-arabic) !important;
+  }
+
+  html[lang="ar"] body :where(h1, h2, h3, h4, .font-display),
+  body.arabic-mode :where(h1, h2, h3, h4, .font-display),
+  .arabic-mode :where(h1, h2, h3, h4, .font-display) {
+    font-family: var(--font-arabic-heading) !important;
+    font-weight: 500;
+  }
+
+  html[lang="ar"] body :where(h1, h2, h3, h4, .font-display) *,
+  body.arabic-mode :where(h1, h2, h3, h4, .font-display) *,
+  .arabic-mode :where(h1, h2, h3, h4, .font-display) * {
+    font-family: var(--font-arabic-heading) !important;
+  }
+
+  .hairline {
+    display: inline-block;
+    width: 48px;
+    height: 1px;
+    background: var(--color-taupe);
+    vertical-align: middle;
+  }
+
+  .eyebrow {
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--color-taupe);
+    font-weight: 400;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes slow-zoom {
+  from {
+    transform: scale(1.08);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+.animate-fade-up {
+  animation: fade-up 1s ease-out both;
+}
+.animate-fade-in {
+  animation: fade-in 1.4s ease-out both;
+}
+.animate-slow-zoom {
+  animation: slow-zoom 12s ease-out both;
+}
+
+html[lang="ar"] body,
+html[lang="ar"] body *,
+body.arabic-mode,
+body.arabic-mode *,
+.arabic-mode,
+.arabic-mode * {
+  letter-spacing: 0 !important;
+  word-spacing: normal !important;
+}
