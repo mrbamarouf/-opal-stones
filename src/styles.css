@@ -80,6 +80,7 @@
     font-family: var(--font-sans);
     font-weight: 300;
     letter-spacing: 0.01em;
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
   }
   h1,
@@ -89,6 +90,10 @@
     font-family: var(--font-display);
     font-weight: 400;
     letter-spacing: 0.005em;
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
   }
   .font-display {
     font-family: var(--font-display);
@@ -101,6 +106,7 @@
     font-family: var(--font-arabic);
     letter-spacing: 0 !important;
     word-spacing: normal !important;
+    line-height: 1.85;
     font-feature-settings:
       "liga" 1,
       "calt" 1,
@@ -123,7 +129,8 @@
   body.arabic-mode :where(h1, h2, h3, h4, .font-display),
   .arabic-mode :where(h1, h2, h3, h4, .font-display) {
     font-family: var(--font-arabic-heading) !important;
-    font-weight: 500;
+    font-weight: 600;
+    line-height: 1.22 !important;
   }
 
   html[lang="ar"] body :where(h1, h2, h3, h4, .font-display) *,
@@ -194,4 +201,56 @@ body.arabic-mode *,
 .arabic-mode * {
   letter-spacing: 0 !important;
   word-spacing: normal !important;
+}
+
+html[lang="ar"] body h1,
+body.arabic-mode h1,
+.arabic-mode h1 {
+  font-size: clamp(3.35rem, 8vw, 5.8rem) !important;
+  line-height: 1.18 !important;
+}
+
+html[lang="ar"] body h2,
+body.arabic-mode h2,
+.arabic-mode h2 {
+  font-size: clamp(2.75rem, 6vw, 5rem) !important;
+  line-height: 1.2 !important;
+}
+
+html[lang="ar"] body h3,
+body.arabic-mode h3,
+.arabic-mode h3 {
+  line-height: 1.32 !important;
+}
+
+html[lang="ar"] body :where(p, label, input, textarea, button, a),
+body.arabic-mode :where(p, label, input, textarea, button, a),
+.arabic-mode :where(p, label, input, textarea, button, a) {
+  line-height: 1.85;
+}
+
+html[lang="ar"] body .text-left,
+body.arabic-mode .text-left,
+.arabic-mode .text-left {
+  text-align: right !important;
+}
+
+@layer utilities {
+  html[lang="ar"] body [class*="tracking-"],
+  body.arabic-mode [class*="tracking-"],
+  .arabic-mode [class*="tracking-"] {
+    letter-spacing: 0 !important;
+    word-spacing: normal !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
 }

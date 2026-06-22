@@ -80,15 +80,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Opal Stones by Hanan Bugshan — Bespoke Fine Jewellery Atelier" },
+      { title: "Opal Stones by Hanan Bugshan | Private Jewellery Maison" },
       {
         name: "description",
         content:
-          "A bespoke fine jewellery atelier. Custom pieces made to order, heirloom redesign, and jewellery crafted around your story.",
+          "A private jewellery maison for bespoke commissions, bridal suites, and heirlooms redrawn by Hanan Bugshan.",
       },
       { name: "author", content: "Opal Stones" },
       { property: "og:title", content: "Opal Stones by Hanan Bugshan" },
-      { property: "og:description", content: "Bespoke fine jewellery, made to order." },
+      {
+        property: "og:description",
+        content: "Bespoke jewellery shaped through private appointments and quiet atelier craft.",
+      },
       { property: "og:type", content: "website" },
       { property: "og:image", content: opalLogo },
       { property: "og:image:alt", content: "Opal Stones by Hanan Bugshan" },

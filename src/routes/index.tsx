@@ -52,17 +52,17 @@ type TKey = keyof typeof TDICT;
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Opal Stones by Hanan Bugshan — A Private Jewellery Maison" },
+      { title: "Opal Stones by Hanan Bugshan | Private Jewellery Maison" },
       {
         name: "description",
         content:
-          "Private jewellery maison specialising in custom commissions, made-to-order pieces, and heirloom redesign by Hanan Bugshan.",
+          "A private jewellery maison for bespoke commissions, bridal suites, and heirlooms redrawn by Hanan Bugshan.",
       },
-      { property: "og:title", content: "Opal Stones — Private Jewellery Maison" },
+      { property: "og:title", content: "Opal Stones | Private Jewellery Maison" },
       {
         property: "og:description",
         content:
-          "Jewellery created for no one else. Bespoke commissions, redesign, and meaningful one-of-one pieces.",
+          "Bespoke jewellery shaped through private appointments, meaningful stones, and quiet atelier craft.",
       },
       { property: "og:image", content: opalLogo },
       { property: "og:image:alt", content: OFFICIAL_LOGO_ALT },
@@ -199,7 +199,7 @@ function Index() {
     <div
       lang={lang}
       dir={lang === "ar" ? "rtl" : "ltr"}
-      className={lang === "ar" ? "arabic-mode font-arabic" : "english-mode"}
+      className={lang === "ar" ? "arabic-mode font-arabic [&_*]:!tracking-normal" : "english-mode"}
     >
       <Nav onConcierge={() => setConcierge(true)} />
       <Hero />
@@ -252,39 +252,39 @@ function Nav({ onConcierge }: { onConcierge: () => void }) {
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-700 ${
         scrolled
-          ? "bg-[color:var(--ivory)]/85 backdrop-blur-md border-b border-[color:var(--border)]/60"
+          ? "bg-[color:var(--ivory)]/92 backdrop-blur-md border-b border-[color:var(--border)]/70 shadow-[0_8px_30px_-26px_rgba(0,0,0,0.35)]"
           : "bg-transparent"
       }`}
     >
-      <div className="mx-auto flex max-w-[1600px] items-center justify-between px-6 py-5 md:px-12 md:py-7">
+      <div className="mx-auto flex max-w-[1680px] items-center justify-between px-5 py-4 md:px-10 md:py-5 xl:px-12">
         <a href="#top" aria-label={OFFICIAL_LOGO_ALT} className="block shrink-0">
           <OfficialLogo
             loading="eager"
-            sizes="(max-width: 767px) 104px, (max-width: 1023px) 128px, 146px"
-            className={`w-[104px] md:w-[128px] lg:w-[146px] transition-opacity duration-500 ${
-              scrolled ? "opacity-95" : "opacity-90"
+            sizes="(max-width: 767px) 118px, (max-width: 1279px) 150px, 166px"
+            className={`w-[118px] md:w-[150px] xl:w-[166px] transition-opacity duration-500 ${
+              scrolled ? "opacity-100" : "opacity-[0.92]"
             }`}
           />
         </a>
 
-        <nav className="hidden lg:flex items-center gap-10">
+        <nav className="hidden xl:flex items-center gap-7 2xl:gap-9">
           {items.map((i) => (
             <a
               key={i.k}
               href={i.href}
-              className={`group relative text-[0.72rem] tracking-[0.32em] uppercase transition-colors ${
+              className={`group relative py-3 text-[0.68rem] font-medium tracking-[0.24em] uppercase transition-colors ${
                 scrolled
-                  ? "text-[color:var(--charcoal)]/85 hover:text-[color:var(--charcoal)]"
-                  : "text-[color:var(--ivory)]/90 hover:text-[color:var(--ivory)]"
+                  ? "text-[color:var(--charcoal)]/80 hover:text-[color:var(--charcoal)]"
+                  : "text-[color:var(--ivory)]/85 hover:text-[color:var(--ivory)]"
               }`}
             >
               {tr(i.k)}
-              <span className="absolute -bottom-2 left-0 h-px w-0 bg-[color:var(--gold)] transition-all duration-500 group-hover:w-full" />
+              <span className="absolute bottom-1 left-0 h-px w-full origin-left scale-x-0 bg-[color:var(--gold)] transition-transform duration-500 group-hover:scale-x-100" />
             </a>
           ))}
           <a
             href="#consultation"
-            className={`text-[0.72rem] tracking-[0.32em] uppercase border px-5 py-3 transition-all duration-500 ${
+            className={`text-[0.68rem] font-medium tracking-[0.24em] uppercase border px-6 py-3.5 transition-all duration-500 ${
               scrolled
                 ? "border-[color:var(--charcoal)] text-[color:var(--charcoal)] hover:bg-[color:var(--charcoal)] hover:text-[color:var(--ivory)]"
                 : "border-[color:var(--ivory)] text-[color:var(--ivory)] hover:bg-[color:var(--ivory)] hover:text-[color:var(--charcoal)]"
@@ -296,18 +296,18 @@ function Nav({ onConcierge }: { onConcierge: () => void }) {
 
         <div className="flex items-center gap-5">
           <div
-            className={`hidden md:flex items-center text-[0.7rem] tracking-[0.3em] uppercase transition-colors ${scrolled ? "" : "text-[color:var(--ivory)]"}`}
+            className={`flex items-center text-[0.68rem] font-medium tracking-[0.24em] uppercase transition-colors ${scrolled ? "text-[color:var(--charcoal)]" : "text-[color:var(--ivory)]"}`}
           >
             <button
               onClick={() => setLang("en")}
-              className={`px-1 transition-opacity ${lang === "en" ? "opacity-100" : "opacity-50"}`}
+              className={`px-1.5 transition-opacity ${lang === "en" ? "opacity-100" : "opacity-45 hover:opacity-80"}`}
             >
               EN
             </button>
-            <span className="opacity-40">/</span>
+            <span className="opacity-35">/</span>
             <button
               onClick={() => setLang("ar")}
-              className={`px-1 transition-opacity ${lang === "ar" ? "opacity-100" : "opacity-50"}`}
+              className={`px-1.5 transition-opacity ${lang === "ar" ? "opacity-100" : "opacity-45 hover:opacity-80"}`}
             >
               ع
             </button>
@@ -315,7 +315,11 @@ function Nav({ onConcierge }: { onConcierge: () => void }) {
           <button
             onClick={() => setOpen((v) => !v)}
             aria-label="Menu"
-            className="lg:hidden flex flex-col gap-[5px] p-2"
+            className={`xl:hidden flex h-11 w-11 flex-col items-center justify-center gap-[5px] border transition-colors ${
+              scrolled || open
+                ? "border-[color:var(--charcoal)]/20"
+                : "border-[color:var(--ivory)]/30"
+            }`}
           >
             <span
               className={`block h-px w-6 transition-transform ${open ? "translate-y-[6px] rotate-45 bg-[color:var(--charcoal)]" : scrolled ? "bg-[color:var(--charcoal)]" : "bg-[color:var(--ivory)]"}`}
@@ -331,22 +335,19 @@ function Nav({ onConcierge }: { onConcierge: () => void }) {
       </div>
 
       <div
-        className={`lg:hidden overflow-hidden bg-[color:var(--ivory)] transition-[max-height,opacity] duration-700 ${
+        className={`xl:hidden overflow-hidden bg-[color:var(--ivory)] transition-[max-height,opacity] duration-700 ${
           open
             ? "max-h-[700px] opacity-100 border-b border-[color:var(--border)]/60"
             : "max-h-0 opacity-0"
         }`}
       >
-        <div className="flex flex-col gap-6 px-6 py-10">
-          <div className="border-b border-[color:var(--border)]/60 pb-6">
-            <OfficialLogo className="w-[132px]" sizes="132px" />
-          </div>
+        <div className="flex flex-col gap-7 px-6 py-9 md:px-10">
           {items.map((i) => (
             <a
               key={i.k}
               href={i.href}
               onClick={() => setOpen(false)}
-              className="text-sm tracking-[0.3em] uppercase text-[color:var(--charcoal)]"
+              className="font-display text-[1.45rem] leading-none text-[color:var(--charcoal)] transition-colors hover:text-[color:var(--gold)]"
             >
               {tr(i.k)}
             </a>
@@ -354,29 +355,10 @@ function Nav({ onConcierge }: { onConcierge: () => void }) {
           <a
             href="#consultation"
             onClick={() => setOpen(false)}
-            className="text-sm tracking-[0.3em] uppercase text-[color:var(--gold)]"
+            className="mt-1 border-t border-[color:var(--border)]/70 pt-7 font-display text-[1.45rem] leading-none text-[color:var(--gold)]"
           >
             {tr("nav_book")}
           </a>
-          <div className="flex items-center gap-4 pt-4 border-t border-[color:var(--border)]/60 text-xs tracking-[0.3em] uppercase">
-            <button
-              onClick={() => setLang("en")}
-              className={
-                lang === "en" ? "text-[color:var(--charcoal)]" : "text-[color:var(--taupe)]/70"
-              }
-            >
-              English
-            </button>
-            <span>·</span>
-            <button
-              onClick={() => setLang("ar")}
-              className={
-                lang === "ar" ? "text-[color:var(--charcoal)]" : "text-[color:var(--taupe)]/70"
-              }
-            >
-              العربية
-            </button>
-          </div>
         </div>
       </div>
     </header>
@@ -392,50 +374,45 @@ function Hero() {
   return (
     <section
       id="top"
-      className="relative h-[100svh] min-h-[680px] w-full overflow-hidden bg-[color:var(--charcoal)]"
+      className="relative h-[100svh] min-h-[720px] w-full overflow-hidden bg-[color:var(--charcoal)]"
     >
       <div className="absolute inset-0">
         <img
           src={u(HERO)}
           alt=""
           className="h-full w-full object-cover animate-slow-zoom"
-          style={{ objectPosition: "center 35%" }}
+          style={{ objectPosition: "center 34%" }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/15 to-black/65" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/35 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/16 to-black/78" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/10 to-transparent" />
       </div>
 
       <div className="relative z-10 flex h-full flex-col">
         <div className="flex-1" />
-        <div className="mx-auto w-full max-w-[1600px] px-6 pb-24 md:px-12 md:pb-32">
-          <div className="max-w-3xl text-[color:var(--ivory)] animate-fade-up">
-            <OfficialLogo
-              loading="eager"
-              sizes="(max-width: 767px) 150px, 190px"
-              className="mb-8 w-[150px] md:w-[190px]"
-            />
-            <div className="flex items-center gap-4 text-[0.7rem] tracking-[0.42em] uppercase text-[color:var(--ivory)]/85">
-              <span className="h-px w-10 bg-[color:var(--ivory)]/60" />
+        <div className="mx-auto w-full max-w-[1680px] px-6 pb-24 md:px-12 md:pb-32">
+          <div className="max-w-[920px] text-[color:var(--ivory)] animate-fade-up">
+            <div className="flex items-center gap-4 text-[0.72rem] font-medium tracking-[0.28em] uppercase text-[color:var(--ivory)]/82">
+              <span className="h-px w-12 bg-[color:var(--gold)]/80" />
               {tr("hero_eyebrow")}
             </div>
-            <h1 className="mt-8 font-display font-light leading-[0.95] text-[clamp(2.8rem,7.2vw,7rem)] tracking-[-0.01em]">
-              <span className="block">{tr("hero_l1")}</span>
+            <h1 className="mt-8 max-w-[880px] font-display font-light leading-[0.98] text-[clamp(3.1rem,7vw,6rem)] tracking-[-0.005em] [text-wrap:balance]">
+              <span className="block">{tr("hero_l1")}</span>{" "}
               <span className="block italic text-[color:var(--ivory)]/90">{tr("hero_l2")}</span>
             </h1>
-            <p className="mt-10 max-w-xl text-[0.98rem] md:text-[1.05rem] font-light leading-relaxed text-[color:var(--ivory)]/85">
+            <p className="mt-9 max-w-2xl text-[1.02rem] md:text-[1.13rem] font-light leading-[1.9] text-[color:var(--ivory)]/86 [text-wrap:pretty]">
               {tr("hero_sub")}
             </p>
-            <div className="mt-12 flex flex-col sm:flex-row gap-4 sm:gap-6">
+            <div className="mt-12 flex flex-col sm:flex-row gap-4 sm:gap-5">
               <a
                 href="#consultation"
-                className="group inline-flex items-center justify-between gap-6 bg-[color:var(--ivory)] px-8 py-5 text-[0.72rem] tracking-[0.36em] uppercase text-[color:var(--charcoal)] transition-all duration-500 hover:bg-[color:var(--gold)] hover:text-[color:var(--ivory)]"
+                className="group inline-flex min-h-[58px] items-center justify-between gap-6 bg-[color:var(--ivory)] px-8 py-5 text-[0.7rem] font-medium tracking-[0.26em] uppercase text-[color:var(--charcoal)] transition-all duration-500 hover:bg-[color:var(--gold)] hover:text-[color:var(--ivory)]"
               >
                 {tr("hero_cta1")}
                 <span className="block h-px w-8 bg-current transition-all duration-500 group-hover:w-14" />
               </a>
               <a
                 href="#commission"
-                className="group inline-flex items-center justify-between gap-6 border border-[color:var(--ivory)]/60 px-8 py-5 text-[0.72rem] tracking-[0.36em] uppercase text-[color:var(--ivory)] transition-all duration-500 hover:border-[color:var(--ivory)]"
+                className="group inline-flex min-h-[58px] items-center justify-between gap-6 border border-[color:var(--ivory)]/55 px-8 py-5 text-[0.7rem] font-medium tracking-[0.26em] uppercase text-[color:var(--ivory)] transition-all duration-500 hover:border-[color:var(--gold)] hover:text-[color:var(--gold)]"
               >
                 {tr("hero_cta2")}
                 <span className="block h-px w-8 bg-current transition-all duration-500 group-hover:w-14" />
@@ -462,10 +439,10 @@ function Hero() {
 function Eyebrow({ children, light = false }: { children: ReactNode; light?: boolean }) {
   return (
     <div
-      className={`flex items-center gap-4 text-[0.65rem] tracking-[0.45em] uppercase ${light ? "text-[color:var(--ivory)]/70" : "text-[color:var(--taupe)]"}`}
+      className={`flex items-center gap-4 text-[0.72rem] font-medium tracking-[0.24em] uppercase ${light ? "text-[color:var(--ivory)]/72" : "text-[color:var(--taupe)]"}`}
     >
       <span
-        className={`h-px w-10 ${light ? "bg-[color:var(--ivory)]/50" : "bg-[color:var(--taupe)]/60"}`}
+        className={`h-px w-12 ${light ? "bg-[color:var(--gold)]/70" : "bg-[color:var(--gold)]/65"}`}
       />
       {children}
     </div>
@@ -487,6 +464,15 @@ function Commission({ onChoose }: { onChoose: (label: string) => void }) {
     { k: "com_redo", d: "com_redo_d", img: j19, n: "06" },
     { k: "com_unique", d: "com_unique_d", img: j17, n: "07" },
   ];
+  const cardLayout = [
+    "lg:col-span-6 aspect-[5/4]",
+    "lg:col-span-3 aspect-[4/5]",
+    "lg:col-span-3 aspect-[4/5]",
+    "lg:col-span-4 aspect-[4/5]",
+    "lg:col-span-4 aspect-[4/5]",
+    "lg:col-span-4 aspect-[4/5]",
+    "sm:col-span-2 lg:col-span-12 aspect-[16/9] md:aspect-[21/8]",
+  ];
 
   return (
     <section id="commission" className="bg-[color:var(--ivory)] py-32 md:py-48">
@@ -495,7 +481,7 @@ function Commission({ onChoose }: { onChoose: (label: string) => void }) {
           <Reveal className="md:col-span-7">
             <Eyebrow>{tr("com_eyebrow")}</Eyebrow>
             <h2 className="mt-8 font-display font-light text-[clamp(2.4rem,5.4vw,4.8rem)] leading-[1.0] text-[color:var(--charcoal)] tracking-[-0.01em]">
-              <span className="block">{tr("com_title_a")}</span>
+              <span className="block">{tr("com_title_a")}</span>{" "}
               <span className="block italic text-[color:var(--taupe)]">{tr("com_title_b")}</span>
             </h2>
           </Reveal>
@@ -506,14 +492,12 @@ function Commission({ onChoose }: { onChoose: (label: string) => void }) {
           </Reveal>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-7">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4 md:gap-7">
           {cards.map((c, i) => (
-            <Reveal key={c.k} delay={(i % 3) * 100} className={c.n === "07" ? "lg:col-span-3" : ""}>
+            <Reveal key={c.k} delay={(i % 3) * 100} className={cardLayout[i]}>
               <button
                 onClick={() => onChoose(tr(c.k))}
-                className={`group relative block w-full overflow-hidden bg-[color:var(--pearl)] text-left ${
-                  c.n === "07" ? "aspect-[16/7]" : "aspect-[4/5]"
-                }`}
+                className="group relative block h-full w-full overflow-hidden bg-[color:var(--pearl)] text-left"
               >
                 <div className="absolute inset-0">
                   <img
@@ -529,13 +513,13 @@ function Commission({ onChoose }: { onChoose: (label: string) => void }) {
                 </div>
 
                 <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10 text-[color:var(--ivory)]">
-                  <h3 className="font-display font-light text-[1.7rem] md:text-[2.1rem] leading-tight">
+                  <h3 className="font-display font-light text-[1.85rem] md:text-[2.25rem] leading-tight">
                     {tr(c.k)}
                   </h3>
-                  <p className="mt-2 text-[0.85rem] leading-relaxed text-[color:var(--ivory)]/85 font-light max-w-md">
+                  <p className="mt-3 text-[0.92rem] leading-[1.75] text-[color:var(--ivory)]/86 font-light max-w-md">
                     {tr(c.d)}
                   </p>
-                  <div className="mt-6 inline-flex items-center gap-4 text-[0.65rem] tracking-[0.4em] uppercase opacity-90 transition-all duration-500 group-hover:opacity-100">
+                  <div className="mt-7 inline-flex items-center gap-4 text-[0.66rem] font-medium tracking-[0.28em] uppercase opacity-90 transition-all duration-500 group-hover:opacity-100">
                     {tr("com_begin")}
                     <span className="block h-px w-6 bg-[color:var(--gold)] transition-all duration-500 group-hover:w-14" />
                   </div>
@@ -611,11 +595,11 @@ function DesignYourPiece({ onContinue }: { onContinue: (whisper: string) => void
   return (
     <section id="design" className="bg-[color:var(--pearl)] py-32 md:py-48">
       <div className="mx-auto max-w-[1600px] px-6 md:px-12">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-12 items-end mb-20 md:mb-24">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-12 items-end mb-18 md:mb-24">
           <Reveal className="md:col-span-7">
             <Eyebrow>{tr("dyp_eyebrow")}</Eyebrow>
             <h2 className="mt-8 font-display font-light text-[clamp(2.4rem,5.4vw,4.8rem)] leading-[1.0] text-[color:var(--charcoal)]">
-              <span className="block">{tr("dyp_title_a")}</span>
+              <span className="block">{tr("dyp_title_a")}</span>{" "}
               <span className="block italic text-[color:var(--taupe)]">{tr("dyp_title_b")}</span>
             </h2>
           </Reveal>
@@ -628,24 +612,24 @@ function DesignYourPiece({ onContinue }: { onContinue: (whisper: string) => void
 
         {/* Tabs */}
         <Reveal>
-          <div className="flex flex-wrap gap-x-10 gap-y-4 border-b border-[color:var(--border)] pb-4">
+          <div className="flex flex-wrap gap-x-8 gap-y-5 border-b border-[color:var(--border)] pb-5 md:gap-x-12">
             {tabs.map((t) => {
               const active = tab === t.k;
               const chosen = picks[t.k];
               return (
                 <button key={t.k} onClick={() => setTab(t.k)} className="group relative text-left">
                   <div
-                    className={`text-[0.65rem] tracking-[0.45em] uppercase font-display italic transition-colors ${active ? "text-[color:var(--gold)]" : "text-[color:var(--taupe)]/70"}`}
+                    className={`text-[0.66rem] font-medium tracking-[0.24em] uppercase transition-colors ${active ? "text-[color:var(--gold)]" : "text-[color:var(--taupe)]/70"}`}
                   >
                     {tabs.indexOf(t) + 1 < 10 ? `0${tabs.indexOf(t) + 1}` : tabs.indexOf(t) + 1}
                   </div>
                   <div
-                    className={`mt-1 text-[1rem] md:text-[1.15rem] font-display transition-colors ${active ? "text-[color:var(--charcoal)]" : "text-[color:var(--charcoal)]/55 hover:text-[color:var(--charcoal)]"}`}
+                    className={`mt-2 text-[1.12rem] md:text-[1.32rem] font-display transition-colors ${active ? "text-[color:var(--charcoal)]" : "text-[color:var(--charcoal)]/55 hover:text-[color:var(--charcoal)]"}`}
                   >
                     {tr(t.label)}
                     {chosen && (
                       <span className="ml-2 text-[0.75rem] italic text-[color:var(--taupe)]">
-                        — {chosen}
+                        {`: ${chosen}`}
                       </span>
                     )}
                   </div>
@@ -661,7 +645,7 @@ function DesignYourPiece({ onContinue }: { onContinue: (whisper: string) => void
         {/* Options */}
         <div
           key={tab}
-          className="mt-14 md:mt-20 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 animate-fade-in"
+          className="mt-14 md:mt-20 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-7 animate-fade-in"
         >
           {groups[tab].map((opt, i) => {
             const label = labelFor(opt.k);
@@ -694,7 +678,7 @@ function DesignYourPiece({ onContinue }: { onContinue: (whisper: string) => void
                     </div>
                   )}
                 </div>
-                <div className="mt-4 text-[0.95rem] font-display text-[color:var(--charcoal)]">
+                <div className="mt-4 text-[1.05rem] font-display text-[color:var(--charcoal)]">
                   {label}
                 </div>
               </button>
@@ -706,17 +690,17 @@ function DesignYourPiece({ onContinue }: { onContinue: (whisper: string) => void
         <Reveal delay={150}>
           <div className="mt-20 md:mt-28 border-t border-[color:var(--border)] pt-10 grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
             <div className="md:col-span-7">
-              <div className="text-[0.6rem] tracking-[0.45em] uppercase text-[color:var(--taupe)]">
+              <div className="text-[0.68rem] font-medium tracking-[0.24em] uppercase text-[color:var(--taupe)]">
                 {tr("dyp_chosen")}
               </div>
-              <div className="mt-3 font-display italic text-[1.4rem] md:text-[1.8rem] text-[color:var(--charcoal)] min-h-[2.6rem]">
-                {buildWhisper() || "—"}
+              <div className="mt-3 min-h-[2.8rem] font-display italic text-[1.45rem] md:text-[1.9rem] text-[color:var(--charcoal)]">
+                {buildWhisper() || tr("dyp_empty")}
               </div>
             </div>
             <div className="md:col-span-5 md:text-right">
               <button
                 onClick={() => onContinue(buildWhisper())}
-                className="group inline-flex items-center justify-between gap-6 border border-[color:var(--charcoal)] px-8 py-5 text-[0.72rem] tracking-[0.36em] uppercase text-[color:var(--charcoal)] transition-all duration-500 hover:bg-[color:var(--charcoal)] hover:text-[color:var(--ivory)]"
+                className="group inline-flex min-h-[58px] items-center justify-between gap-6 border border-[color:var(--charcoal)] px-8 py-5 text-[0.7rem] font-medium tracking-[0.26em] uppercase text-[color:var(--charcoal)] transition-all duration-500 hover:bg-[color:var(--charcoal)] hover:text-[color:var(--ivory)]"
               >
                 {tr("dyp_cta")}
                 <span className="block h-px w-8 bg-current transition-all duration-500 group-hover:w-14" />
@@ -745,29 +729,29 @@ function Process() {
   return (
     <section
       id="atelier"
-      className="bg-[color:var(--charcoal)] text-[color:var(--ivory)] py-32 md:py-48"
+      className="bg-[color:var(--charcoal)] text-[color:var(--ivory)] py-32 md:py-52"
     >
       <div className="mx-auto max-w-[1500px] px-6 md:px-12">
         <Reveal>
           <Eyebrow light>{tr("pr_eyebrow")}</Eyebrow>
         </Reveal>
         <Reveal delay={120}>
-          <h2 className="mt-10 max-w-3xl font-display font-light text-[clamp(2.2rem,4.6vw,4.2rem)] leading-[1.1]">
+          <h2 className="mt-10 max-w-4xl font-display font-light text-[clamp(2.5rem,5vw,4.8rem)] leading-[1.08] [text-wrap:balance]">
             {tr("pr_title")}
           </h2>
         </Reveal>
 
-        <div className="mt-24 md:mt-32 space-y-16 md:space-y-24">
+        <div className="mt-24 md:mt-36 space-y-14 md:space-y-20">
           {steps.map((s, i) => (
             <Reveal key={s.t} delay={i * 80}>
-              <div className="grid grid-cols-12 gap-6 md:gap-10 items-baseline border-t border-[color:var(--ivory)]/15 pt-8 md:pt-10">
-                <div className="col-span-12 md:col-span-2 font-display italic text-[3rem] md:text-[4.5rem] leading-none text-[color:var(--gold)]/80">
+              <div className="grid grid-cols-12 gap-6 md:gap-10 items-baseline border-t border-[color:var(--ivory)]/14 pt-8 md:pt-10">
+                <div className="col-span-12 md:col-span-2 font-display italic text-[3.2rem] md:text-[5rem] leading-none text-[color:var(--gold)]/78">
                   0{i + 1}
                 </div>
-                <h3 className="col-span-12 md:col-span-4 font-display font-light text-[1.7rem] md:text-[2.1rem] leading-tight">
+                <h3 className="col-span-12 md:col-span-4 font-display font-light text-[1.9rem] md:text-[2.45rem] leading-tight">
                   {tr(s.t)}
                 </h3>
-                <p className="col-span-12 md:col-span-5 md:col-start-8 text-[0.98rem] leading-[1.9] text-[color:var(--ivory)]/75 font-light max-w-md">
+                <p className="col-span-12 md:col-span-5 md:col-start-8 text-[1rem] leading-[1.95] text-[color:var(--ivory)]/78 font-light max-w-lg [text-wrap:pretty]">
                   {tr(s.d)}
                 </p>
               </div>
@@ -786,33 +770,33 @@ function Process() {
 function Signature() {
   const { tr } = useLang();
   return (
-    <section id="creations" className="bg-[color:var(--ivory)] py-32 md:py-48">
+    <section id="creations" className="bg-[color:var(--ivory)] py-32 md:py-52">
       <div className="mx-auto max-w-[1600px] px-6 md:px-12">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-end mb-20 md:mb-28">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-end mb-20 md:mb-32">
           <Reveal className="md:col-span-6">
             <Eyebrow>{tr("sig_eyebrow")}</Eyebrow>
-            <h2 className="mt-8 font-display font-light text-[clamp(2.4rem,5vw,4.6rem)] leading-[1.0] text-[color:var(--charcoal)]">
+            <h2 className="mt-8 font-display font-light text-[clamp(2.6rem,5.3vw,5rem)] leading-[1.02] text-[color:var(--charcoal)] [text-wrap:balance]">
               {tr("sig_title")}
             </h2>
           </Reveal>
           <Reveal className="md:col-span-5 md:col-start-8" delay={150}>
-            <p className="text-[0.98rem] leading-[1.9] text-[color:var(--charcoal)]/75 font-light">
+            <p className="text-[1rem] leading-[1.95] text-[color:var(--charcoal)]/76 font-light [text-wrap:pretty]">
               {tr("sig_sub")}
             </p>
           </Reveal>
         </div>
 
-        <div className="grid grid-cols-12 gap-3 md:gap-6">
+        <div className="grid grid-cols-12 gap-3 md:gap-7">
           {GALLERY.map((img, i) => {
             const pattern = [
-              "col-span-7 md:col-span-5 aspect-[4/5]",
-              "col-span-5 md:col-span-4 md:col-start-7 aspect-[3/4] md:mt-24",
+              "col-span-12 md:col-span-6 aspect-[5/4]",
+              "col-span-6 md:col-span-3 md:col-start-8 aspect-[3/4] md:mt-20",
+              "col-span-6 md:col-span-3 aspect-[4/5] md:mt-44",
               "col-span-12 md:col-span-7 md:col-start-3 aspect-[16/10]",
-              "col-span-6 md:col-span-4 aspect-[3/4]",
-              "col-span-6 md:col-span-5 md:col-start-6 aspect-[4/5] md:mt-16",
+              "col-span-7 md:col-span-4 aspect-[3/4]",
+              "col-span-5 md:col-span-5 md:col-start-7 aspect-[4/5] md:mt-24",
               "col-span-12 md:col-span-6 md:col-start-4 aspect-[5/4]",
-              "col-span-7 md:col-span-5 aspect-[4/5]",
-              "col-span-5 md:col-span-4 md:col-start-7 aspect-[3/4] md:mt-20",
+              "col-span-6 md:col-span-3 aspect-[3/4]",
             ];
             return (
               <Reveal key={i} className={pattern[i % pattern.length]} delay={(i % 4) * 80}>
@@ -821,7 +805,7 @@ function Signature() {
                     src={u(img)}
                     alt=""
                     loading="lazy"
-                    className="h-full w-full object-cover transition-transform duration-[1800ms] ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-[1.06]"
+                    className="h-full w-full object-cover transition-transform duration-[1800ms] ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-[1.055]"
                   />
                 </div>
               </Reveal>
@@ -840,28 +824,28 @@ function Signature() {
 function Redesign({ onBegin }: { onBegin: () => void }) {
   const { tr } = useLang();
   return (
-    <section id="redesign" className="bg-[color:var(--pearl)] py-32 md:py-48 overflow-hidden">
+    <section id="redesign" className="bg-[color:var(--pearl)] py-32 md:py-52 overflow-hidden">
       <div className="mx-auto max-w-[1600px] px-6 md:px-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-center">
           <Reveal className="lg:col-span-6 order-2 lg:order-1">
             <Eyebrow>{tr("rd_eyebrow")}</Eyebrow>
-            <h2 className="mt-8 font-display font-light text-[clamp(2.4rem,5.4vw,4.8rem)] leading-[1.05] text-[color:var(--charcoal)]">
-              <span className="block">{tr("rd_t1")}</span>
+            <h2 className="mt-8 font-display font-light text-[clamp(2.6rem,5.6vw,5.2rem)] leading-[1.04] text-[color:var(--charcoal)] [text-wrap:balance]">
+              <span className="block">{tr("rd_t1")}</span>{" "}
               <span className="block italic text-[color:var(--taupe)]">{tr("rd_t2")}</span>
             </h2>
-            <p className="mt-10 max-w-lg text-[1.02rem] leading-[1.9] text-[color:var(--charcoal)]/80 font-light">
+            <p className="mt-10 max-w-xl text-[1.05rem] leading-[2] text-[color:var(--charcoal)]/80 font-light [text-wrap:pretty]">
               {tr("rd_body")}
             </p>
             <button
               onClick={onBegin}
-              className="group mt-12 inline-flex items-center gap-6 border border-[color:var(--charcoal)] px-9 py-5 text-[0.72rem] tracking-[0.36em] uppercase text-[color:var(--charcoal)] transition-all duration-500 hover:bg-[color:var(--charcoal)] hover:text-[color:var(--ivory)]"
+              className="group mt-12 inline-flex min-h-[58px] items-center gap-6 border border-[color:var(--charcoal)] px-9 py-5 text-[0.7rem] font-medium tracking-[0.26em] uppercase text-[color:var(--charcoal)] transition-all duration-500 hover:bg-[color:var(--charcoal)] hover:text-[color:var(--ivory)]"
             >
               {tr("rd_cta")}
               <span className="block h-px w-8 bg-current transition-all duration-500 group-hover:w-14" />
             </button>
           </Reveal>
           <Reveal className="lg:col-span-6 order-1 lg:order-2" delay={150}>
-            <div className="aspect-[4/5] overflow-hidden">
+            <div className="aspect-[4/5] overflow-hidden md:aspect-[5/6]">
               <Parallax amount={60} className="h-full w-full">
                 <img src={u(REDESIGN_IMG)} alt="" className="h-full w-full object-cover" />
               </Parallax>
@@ -887,18 +871,18 @@ function Stories() {
   ];
 
   return (
-    <section className="bg-[color:var(--ivory)] py-32 md:py-48">
+    <section className="bg-[color:var(--ivory)] py-32 md:py-52">
       <div className="mx-auto max-w-[1600px] px-6 md:px-12">
         <Reveal>
           <Eyebrow>{tr("st_eyebrow")}</Eyebrow>
         </Reveal>
         <Reveal delay={120}>
-          <h2 className="mt-10 font-display font-light text-[clamp(2.4rem,5vw,4.6rem)] leading-[1.0] text-[color:var(--charcoal)]">
+          <h2 className="mt-10 max-w-4xl font-display font-light text-[clamp(2.6rem,5.3vw,5rem)] leading-[1.02] text-[color:var(--charcoal)] [text-wrap:balance]">
             {tr("st_title")}
           </h2>
         </Reveal>
 
-        <div className="mt-20 md:mt-28 space-y-28 md:space-y-40">
+        <div className="mt-20 md:mt-32 space-y-28 md:space-y-44">
           {stories.map((s, i) => {
             const reverse = i % 2 === 1;
             return (
@@ -907,7 +891,7 @@ function Stories() {
                 className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center"
               >
                 <Reveal className={`lg:col-span-6 ${reverse ? "lg:order-2" : ""}`}>
-                  <div className="aspect-[4/5] overflow-hidden">
+                  <div className="aspect-[4/5] overflow-hidden md:aspect-[5/6]">
                     <Parallax amount={50} className="h-full w-full">
                       <img
                         src={u(STORY_IMAGES[i % STORY_IMAGES.length])}
@@ -921,13 +905,13 @@ function Stories() {
                   className={`lg:col-span-5 ${reverse ? "lg:col-start-2 lg:order-1" : "lg:col-start-8"}`}
                   delay={150}
                 >
-                  <div className="font-display italic text-[0.95rem] text-[color:var(--gold)] tracking-[0.25em] uppercase">
+                  <div className="text-[0.72rem] font-medium tracking-[0.24em] uppercase text-[color:var(--gold)]">
                     {tr(s.tag)}
                   </div>
-                  <h3 className="mt-6 font-display font-light text-[1.7rem] md:text-[2.2rem] leading-[1.25] text-[color:var(--charcoal)]">
+                  <h3 className="mt-6 font-display font-light text-[1.95rem] md:text-[2.65rem] leading-[1.18] text-[color:var(--charcoal)] [text-wrap:balance]">
                     "{tr(s.q)}"
                   </h3>
-                  <p className="mt-8 text-[0.98rem] leading-[1.95] text-[color:var(--charcoal)]/75 font-light max-w-lg">
+                  <p className="mt-8 max-w-lg text-[1rem] leading-[2] text-[color:var(--charcoal)]/76 font-light [text-wrap:pretty]">
                     {tr(s.b)}
                   </p>
                 </Reveal>
@@ -947,7 +931,7 @@ function Stories() {
 function Founder() {
   const { tr } = useLang();
   return (
-    <section className="bg-[color:var(--pearl)] py-32 md:py-48">
+    <section className="bg-[color:var(--pearl)] py-32 md:py-52">
       <div className="mx-auto max-w-[1400px] px-6 md:px-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-center">
           <Reveal className="lg:col-span-5">
@@ -961,17 +945,17 @@ function Founder() {
           </Reveal>
           <Reveal className="lg:col-span-6 lg:col-start-7" delay={150}>
             <Eyebrow>{tr("fd_eyebrow")}</Eyebrow>
-            <h2 className="mt-8 font-display font-light text-[clamp(2rem,4vw,3.6rem)] leading-[1.15] text-[color:var(--charcoal)] italic">
+            <h2 className="mt-8 font-display font-light text-[clamp(2.35rem,4.6vw,4.2rem)] leading-[1.12] text-[color:var(--charcoal)] italic [text-wrap:balance]">
               {tr("fd_title")}
             </h2>
-            <p className="mt-10 max-w-xl text-[1.02rem] leading-[2] text-[color:var(--charcoal)]/80 font-light">
+            <p className="mt-10 max-w-xl text-[1.05rem] leading-[2.05] text-[color:var(--charcoal)]/80 font-light [text-wrap:pretty]">
               {tr("fd_body")}
             </p>
-            <div className="mt-12 font-display italic text-[1.4rem] text-[color:var(--taupe)] max-w-md">
+            <div className="mt-12 max-w-xl border-t border-[color:var(--border)] pt-8 font-display italic text-[1.55rem] leading-[1.35] text-[color:var(--taupe)]">
               {tr("fd_quote")}
             </div>
-            <div className="mt-4 text-[0.65rem] tracking-[0.45em] uppercase text-[color:var(--taupe)]">
-              — Hanan Bugshan
+            <div className="mt-5 text-[0.7rem] font-medium tracking-[0.24em] uppercase text-[color:var(--taupe)]">
+              Hanan Bugshan
             </div>
           </Reveal>
         </div>
@@ -1047,7 +1031,7 @@ function Consultation({ prefill }: { prefill: { create?: string; whisper?: strin
             </Reveal>
             <Reveal delay={120}>
               <h2 className="mt-10 font-display font-light text-[clamp(2.4rem,5.2vw,5rem)] leading-[1.0]">
-                <span className="block">{tr("cs_l1")}</span>
+                <span className="block">{tr("cs_l1")}</span>{" "}
                 <span className="block italic text-[color:var(--gold)]">{tr("cs_l2")}</span>
               </h2>
             </Reveal>
@@ -1057,14 +1041,16 @@ function Consultation({ prefill }: { prefill: { create?: string; whisper?: strin
               </p>
             </Reveal>
             <Reveal delay={300}>
-              <div className="mt-14 flex flex-col gap-5">
+              <div className="mt-14 flex flex-col gap-4">
                 <a
                   href={WHATSAPP}
                   target="_blank"
                   rel="noreferrer"
-                  className="group inline-flex items-center justify-between gap-6 border border-[color:var(--ivory)]/30 px-7 py-5 transition-colors hover:border-[color:var(--gold)]"
+                  className="group inline-flex min-h-[58px] items-center justify-between gap-6 border border-[color:var(--ivory)]/30 px-7 py-5 transition-colors hover:border-[color:var(--gold)]"
                 >
-                  <span className="text-[0.72rem] tracking-[0.36em] uppercase">{tr("cc_wa")}</span>
+                  <span className="text-[0.7rem] font-medium tracking-[0.26em] uppercase">
+                    {tr("cc_wa")}
+                  </span>
                   <span className="font-display italic text-[1.1rem] text-[color:var(--gold)] transition-transform group-hover:translate-x-2">
                     →
                   </span>
@@ -1073,9 +1059,11 @@ function Consultation({ prefill }: { prefill: { create?: string; whisper?: strin
                   href={INSTAGRAM}
                   target="_blank"
                   rel="noreferrer"
-                  className="group inline-flex items-center justify-between gap-6 border border-[color:var(--ivory)]/30 px-7 py-5 transition-colors hover:border-[color:var(--gold)]"
+                  className="group inline-flex min-h-[58px] items-center justify-between gap-6 border border-[color:var(--ivory)]/30 px-7 py-5 transition-colors hover:border-[color:var(--gold)]"
                 >
-                  <span className="text-[0.72rem] tracking-[0.36em] uppercase">{tr("cc_ig")}</span>
+                  <span className="text-[0.7rem] font-medium tracking-[0.26em] uppercase">
+                    {tr("cc_ig")}
+                  </span>
                   <span className="font-display italic text-[1.1rem] text-[color:var(--gold)] transition-transform group-hover:translate-x-2">
                     →
                   </span>
@@ -1085,7 +1073,10 @@ function Consultation({ prefill }: { prefill: { create?: string; whisper?: strin
           </div>
 
           <Reveal className="lg:col-span-7" delay={200}>
-            <form onSubmit={onSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-8">
+            <form
+              onSubmit={onSubmit}
+              className="grid grid-cols-1 gap-x-8 gap-y-8 border border-[color:var(--ivory)]/14 bg-[color:var(--ivory)]/[0.045] p-6 md:grid-cols-2 md:p-10"
+            >
               <Field label={tr("f_name")}>
                 <input
                   required
@@ -1104,10 +1095,10 @@ function Consultation({ prefill }: { prefill: { create?: string; whisper?: strin
               </Field>
 
               <div className="md:col-span-2">
-                <div className="text-[0.6rem] tracking-[0.42em] uppercase text-[color:var(--ivory)]/55 mb-4">
+                <div className="mb-4 text-[0.66rem] font-medium tracking-[0.24em] uppercase text-[color:var(--ivory)]/70">
                   {tr("f_create")}
                 </div>
-                <div className="flex flex-wrap gap-2 md:gap-3">
+                <div className="flex flex-wrap gap-2.5 md:gap-3">
                   {createOptions.map((k) => {
                     const label = TDICT[k][lang];
                     const active = form.create === label;
@@ -1116,7 +1107,9 @@ function Consultation({ prefill }: { prefill: { create?: string; whisper?: strin
                         key={k}
                         type="button"
                         onClick={() => setForm({ ...form, create: label })}
-                        className={`px-5 py-2.5 text-[0.72rem] tracking-[0.28em] uppercase border transition-all duration-500 ${
+                        className={`px-5 py-3 text-[0.68rem] font-medium uppercase border transition-all duration-500 ${
+                          lang === "ar" ? "tracking-normal" : "tracking-[0.2em]"
+                        } ${
                           active
                             ? "border-[color:var(--gold)] bg-[color:var(--gold)]/10 text-[color:var(--gold)]"
                             : "border-[color:var(--ivory)]/25 text-[color:var(--ivory)]/80 hover:border-[color:var(--ivory)]/60"
@@ -1144,23 +1137,23 @@ function Consultation({ prefill }: { prefill: { create?: string; whisper?: strin
                 <input
                   value={form.budget}
                   onChange={(e) => setForm({ ...form, budget: e.target.value })}
-                  placeholder="—"
-                  className={inputCls + " placeholder:text-[color:var(--ivory)]/30"}
+                  placeholder={tr("f_budget_ph")}
+                  className={inputCls + " placeholder:text-[color:var(--ivory)]/45"}
                 />
               </Field>
               <Field label={tr("f_when")}>
                 <input
                   value={form.when}
                   onChange={(e) => setForm({ ...form, when: e.target.value })}
-                  placeholder="—"
-                  className={inputCls + " placeholder:text-[color:var(--ivory)]/30"}
+                  placeholder={tr("f_when_ph")}
+                  className={inputCls + " placeholder:text-[color:var(--ivory)]/45"}
                 />
               </Field>
 
-              <div className="md:col-span-2 mt-6">
+              <div className="md:col-span-2 mt-4">
                 <button
                   type="submit"
-                  className="group inline-flex items-center justify-between gap-6 bg-[color:var(--ivory)] text-[color:var(--charcoal)] px-10 py-5 text-[0.72rem] tracking-[0.36em] uppercase transition-all duration-500 hover:bg-[color:var(--gold)] hover:text-[color:var(--ivory)]"
+                  className="group inline-flex min-h-[60px] items-center justify-between gap-6 bg-[color:var(--ivory)] text-[color:var(--charcoal)] px-10 py-5 text-[0.7rem] font-medium tracking-[0.26em] uppercase transition-all duration-500 hover:bg-[color:var(--gold)] hover:text-[color:var(--ivory)]"
                 >
                   {sent ? "✓" : tr("f_send")}
                   <span className="block h-px w-8 bg-current transition-all duration-500 group-hover:w-14" />
@@ -1175,12 +1168,12 @@ function Consultation({ prefill }: { prefill: { create?: string; whisper?: strin
 }
 
 const inputCls =
-  "w-full bg-transparent border-0 border-b border-[color:var(--ivory)]/30 py-3 text-[color:var(--ivory)] focus:border-[color:var(--gold)] focus:outline-none transition-colors";
+  "w-full bg-transparent border-0 border-b border-[color:var(--ivory)]/34 py-4 text-[1rem] leading-relaxed text-[color:var(--ivory)] focus:border-[color:var(--gold)] focus:outline-none transition-colors";
 
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <label className="block">
-      <div className="text-[0.6rem] tracking-[0.42em] uppercase text-[color:var(--ivory)]/55 mb-1">
+      <div className="mb-1 text-[0.66rem] font-medium tracking-[0.24em] uppercase text-[color:var(--ivory)]/70">
         {label}
       </div>
       {children}
@@ -1233,10 +1226,10 @@ function Concierge({
             </svg>
           </div>
           <div className="text-left leading-tight">
-            <div className="text-[0.65rem] tracking-[0.36em] uppercase font-display italic text-[color:var(--gold)] group-hover:text-[color:var(--ivory)] transition-colors">
+            <div className="text-[0.66rem] font-medium tracking-[0.24em] uppercase text-[color:var(--gold)] group-hover:text-[color:var(--ivory)] transition-colors">
               {tr("cc_title")}
             </div>
-            <div className="text-[0.7rem] tracking-[0.05em] text-[color:var(--ivory)]/80 group-hover:text-[color:var(--ivory)] mt-0.5 hidden sm:block">
+            <div className="text-[0.72rem] tracking-[0.02em] text-[color:var(--ivory)]/80 group-hover:text-[color:var(--ivory)] mt-0.5 hidden sm:block">
               {tr("cc_sub")}
             </div>
           </div>
@@ -1257,10 +1250,10 @@ function Concierge({
         >
           <div className="bg-[color:var(--charcoal)] text-[color:var(--ivory)] px-7 py-7 flex items-start justify-between">
             <div>
-              <div className="text-[0.6rem] tracking-[0.42em] uppercase font-display italic text-[color:var(--gold)]">
+              <div className="text-[0.66rem] font-medium tracking-[0.24em] uppercase text-[color:var(--gold)]">
                 {tr("cc_title")}
               </div>
-              <div className="mt-2 font-display text-[1.3rem] font-light leading-tight">
+              <div className="mt-2 font-display text-[1.45rem] font-light leading-tight">
                 {tr("cc_sub")}
               </div>
             </div>
@@ -1277,9 +1270,9 @@ function Concierge({
               href={WHATSAPP}
               target="_blank"
               rel="noreferrer"
-              className="group flex items-center justify-between gap-4 border border-[color:var(--border)] px-5 py-4 transition-colors hover:border-[color:var(--gold)]"
+              className="group flex min-h-[58px] items-center justify-between gap-4 border border-[color:var(--border)] px-5 py-4 transition-colors hover:border-[color:var(--gold)]"
             >
-              <span className="text-[0.72rem] tracking-[0.3em] uppercase text-[color:var(--charcoal)]">
+              <span className="text-[0.68rem] font-medium tracking-[0.2em] uppercase text-[color:var(--charcoal)]">
                 {tr("cc_wa")}
               </span>
               <span className="font-display italic text-[color:var(--gold)] transition-transform group-hover:translate-x-1">
@@ -1290,9 +1283,9 @@ function Concierge({
               href={INSTAGRAM}
               target="_blank"
               rel="noreferrer"
-              className="group flex items-center justify-between gap-4 border border-[color:var(--border)] px-5 py-4 transition-colors hover:border-[color:var(--gold)]"
+              className="group flex min-h-[58px] items-center justify-between gap-4 border border-[color:var(--border)] px-5 py-4 transition-colors hover:border-[color:var(--gold)]"
             >
-              <span className="text-[0.72rem] tracking-[0.3em] uppercase text-[color:var(--charcoal)]">
+              <span className="text-[0.68rem] font-medium tracking-[0.2em] uppercase text-[color:var(--charcoal)]">
                 {tr("cc_ig")}
               </span>
               <span className="font-display italic text-[color:var(--gold)] transition-transform group-hover:translate-x-1">
@@ -1301,9 +1294,11 @@ function Concierge({
             </a>
             <button
               onClick={onInquiry}
-              className="group flex items-center justify-between gap-4 bg-[color:var(--charcoal)] text-[color:var(--ivory)] px-5 py-4 transition-colors hover:bg-[color:var(--gold)]"
+              className="group flex min-h-[58px] items-center justify-between gap-4 bg-[color:var(--charcoal)] text-[color:var(--ivory)] px-5 py-4 transition-colors hover:bg-[color:var(--gold)]"
             >
-              <span className="text-[0.72rem] tracking-[0.3em] uppercase">{tr("cc_form")}</span>
+              <span className="text-[0.68rem] font-medium tracking-[0.2em] uppercase">
+                {tr("cc_form")}
+              </span>
               <span className="font-display italic transition-transform group-hover:translate-x-1">
                 →
               </span>
