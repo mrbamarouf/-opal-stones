@@ -27,6 +27,9 @@ import j22 from "@/assets/jewellery/IMG_6846.jpg";
 import j23 from "@/assets/jewellery/IMG_6847.jpg";
 import j24 from "@/assets/jewellery/IMG_6849.jpg";
 import j25 from "@/assets/jewellery/IMG_6850.jpg";
+import heroIntroMp4 from "@/assets/media/opal-hero-intro.mp4";
+import heroIntroWebm from "@/assets/media/opal-hero-intro.webm";
+import heroPoster from "@/assets/media/opal-hero-poster.jpg";
 import opalLogo384 from "@/assets/opal-logo-384.png";
 import opalLogo768 from "@/assets/opal-logo-768.png";
 import opalLogo from "@/assets/opal-logo.png";
@@ -34,7 +37,6 @@ import opalLogo from "@/assets/opal-logo.png";
 const u = (a: string) => a;
 const OFFICIAL_LOGO_ALT = "Opal Stones by Hanan Bugshan";
 
-const HERO = j11;
 const REDESIGN_IMG = j19;
 const FOUNDER_IMG = j8;
 const CONS_BG = j14;
@@ -377,14 +379,24 @@ function Hero() {
       className="relative h-[100svh] min-h-[720px] w-full overflow-hidden bg-[color:var(--charcoal)]"
     >
       <div className="absolute inset-0">
-        <img
-          src={u(HERO)}
-          alt=""
-          className="h-full w-full object-cover animate-slow-zoom"
-          style={{ objectPosition: "center 34%" }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/16 to-black/78" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/10 to-transparent" />
+        <video
+          className="h-full w-full object-cover"
+          style={{ objectPosition: "center center" }}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          poster={u(heroPoster)}
+          aria-hidden="true"
+          disablePictureInPicture
+          disableRemotePlayback
+        >
+          <source src={u(heroIntroWebm)} type="video/webm" />
+          <source src={u(heroIntroMp4)} type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/48 via-black/18 to-black/72" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/8 to-transparent" />
       </div>
 
       <div className="relative z-10 flex h-full flex-col">
