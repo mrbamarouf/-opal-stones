@@ -349,9 +349,11 @@ function IntroScreen() {
         type="button"
         data-intro-skip="true"
         onClick={finishIntro}
-        className={`absolute bottom-6 end-6 border border-[color:var(--ivory)]/45 bg-black/20 px-5 py-3 text-[0.68rem] font-medium uppercase tracking-[0.22em] text-[color:var(--ivory)] backdrop-blur-sm transition-all duration-500 hover:border-[color:var(--ivory)] hover:bg-[color:var(--ivory)] hover:text-[color:var(--charcoal)] md:bottom-8 md:end-8 ${
-          canSkip ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"
-        }`}
+        className={`absolute bottom-[calc(1rem+env(safe-area-inset-bottom))] end-4 border border-[color:var(--ivory)]/38 bg-black/24 px-3.5 py-2 text-[0.58rem] font-medium text-[color:var(--ivory)] backdrop-blur-sm transition-all duration-500 hover:border-[color:var(--ivory)] hover:bg-[color:var(--ivory)] hover:text-[color:var(--charcoal)] md:bottom-8 md:end-8 md:px-5 md:py-3 md:text-[0.68rem] ${
+          lang === "ar"
+            ? "font-arabic !tracking-[0px]"
+            : "uppercase tracking-[0.16em] md:tracking-[0.22em]"
+        } ${canSkip ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"}`}
       >
         {lang === "ar" ? "تخطي المقدمة" : "Skip intro"}
       </button>
@@ -382,22 +384,23 @@ function Nav({ onConcierge }: { onConcierge: () => void }) {
     { k: "nav_creations", href: "#creations" },
     { k: "nav_redesign", href: "#redesign" },
   ];
+  const lightNav = scrolled || open;
 
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-700 ${
-        scrolled
+        lightNav
           ? "bg-[color:var(--ivory)]/92 backdrop-blur-md border-b border-[color:var(--border)]/70 shadow-[0_8px_30px_-26px_rgba(0,0,0,0.35)]"
-          : "bg-transparent"
+          : "border-b border-[color:var(--ivory)]/10 bg-[color:var(--charcoal)]/42 shadow-[0_10px_34px_-28px_rgba(0,0,0,0.8)] backdrop-blur-md xl:border-transparent xl:bg-transparent xl:shadow-none xl:backdrop-blur-none"
       }`}
     >
-      <div className="mx-auto flex max-w-[1680px] items-center justify-between px-5 py-4 md:px-10 md:py-5 xl:px-12">
+      <div className="mx-auto flex max-w-[1680px] items-center justify-between px-4 py-3 md:px-10 md:py-5 xl:px-12">
         <a href="#top" aria-label={OFFICIAL_LOGO_ALT} className="block shrink-0">
           <OfficialLogo
             loading="eager"
-            sizes="(max-width: 767px) 118px, (max-width: 1279px) 150px, 166px"
-            className={`w-[118px] md:w-[150px] xl:w-[166px] transition-opacity duration-500 ${
-              scrolled ? "opacity-100" : "opacity-[0.92]"
+            sizes="(max-width: 767px) 140px, (max-width: 1279px) 150px, 166px"
+            className={`w-[136px] sm:w-[142px] md:w-[150px] xl:w-[166px] transition-opacity duration-500 ${
+              lightNav ? "opacity-100" : "opacity-[0.96]"
             }`}
           />
         </a>
@@ -408,7 +411,7 @@ function Nav({ onConcierge }: { onConcierge: () => void }) {
               key={i.k}
               href={i.href}
               className={`group relative py-3 text-[0.68rem] font-medium tracking-[0.24em] uppercase transition-colors ${
-                scrolled
+                lightNav
                   ? "text-[color:var(--charcoal)]/80 hover:text-[color:var(--charcoal)]"
                   : "text-[color:var(--ivory)]/85 hover:text-[color:var(--ivory)]"
               }`}
@@ -420,7 +423,7 @@ function Nav({ onConcierge }: { onConcierge: () => void }) {
           <a
             href="#consultation"
             className={`text-[0.68rem] font-medium tracking-[0.24em] uppercase border px-6 py-3.5 transition-all duration-500 ${
-              scrolled
+              lightNav
                 ? "border-[color:var(--charcoal)] text-[color:var(--charcoal)] hover:bg-[color:var(--charcoal)] hover:text-[color:var(--ivory)]"
                 : "border-[color:var(--ivory)] text-[color:var(--ivory)] hover:bg-[color:var(--ivory)] hover:text-[color:var(--charcoal)]"
             }`}
@@ -429,9 +432,9 @@ function Nav({ onConcierge }: { onConcierge: () => void }) {
           </a>
         </nav>
 
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-3 sm:gap-4 md:gap-5">
           <div
-            className={`flex items-center text-[0.68rem] font-medium tracking-[0px] uppercase transition-colors ${scrolled ? "text-[color:var(--charcoal)]" : "text-[color:var(--ivory)]"}`}
+            className={`flex items-center text-[0.64rem] font-medium tracking-[0px] uppercase transition-colors sm:text-[0.68rem] ${lightNav ? "text-[color:var(--charcoal)]" : "text-[color:var(--ivory)]"}`}
           >
             <button
               onClick={() => setLang("en")}
@@ -452,20 +455,18 @@ function Nav({ onConcierge }: { onConcierge: () => void }) {
           <button
             onClick={() => setOpen((v) => !v)}
             aria-label="Menu"
-            className={`xl:hidden flex h-11 w-11 flex-col items-center justify-center gap-[5px] border transition-colors ${
-              scrolled || open
-                ? "border-[color:var(--charcoal)]/20"
-                : "border-[color:var(--ivory)]/30"
+            className={`xl:hidden flex h-10 w-10 flex-col items-center justify-center gap-[5px] border transition-colors sm:h-11 sm:w-11 ${
+              lightNav ? "border-[color:var(--charcoal)]/20" : "border-[color:var(--ivory)]/30"
             }`}
           >
             <span
-              className={`block h-px w-6 transition-transform ${open ? "translate-y-[6px] rotate-45 bg-[color:var(--charcoal)]" : scrolled ? "bg-[color:var(--charcoal)]" : "bg-[color:var(--ivory)]"}`}
+              className={`block h-px w-6 transition-transform ${open ? "translate-y-[6px] rotate-45 bg-[color:var(--charcoal)]" : lightNav ? "bg-[color:var(--charcoal)]" : "bg-[color:var(--ivory)]"}`}
             />
             <span
-              className={`block h-px w-6 transition-opacity ${open ? "opacity-0" : scrolled ? "bg-[color:var(--charcoal)]" : "bg-[color:var(--ivory)]"}`}
+              className={`block h-px w-6 transition-opacity ${open ? "opacity-0" : lightNav ? "bg-[color:var(--charcoal)]" : "bg-[color:var(--ivory)]"}`}
             />
             <span
-              className={`block h-px w-6 transition-transform ${open ? "-translate-y-[6px] -rotate-45 bg-[color:var(--charcoal)]" : scrolled ? "bg-[color:var(--charcoal)]" : "bg-[color:var(--ivory)]"}`}
+              className={`block h-px w-6 transition-transform ${open ? "-translate-y-[6px] -rotate-45 bg-[color:var(--charcoal)]" : lightNav ? "bg-[color:var(--charcoal)]" : "bg-[color:var(--ivory)]"}`}
             />
           </button>
         </div>
@@ -511,7 +512,7 @@ function Hero() {
   return (
     <section
       id="top"
-      className="relative h-[100svh] min-h-[720px] w-full overflow-hidden bg-[color:var(--charcoal)]"
+      className="relative min-h-[100svh] w-full overflow-hidden bg-[color:var(--charcoal)] lg:h-[100svh] lg:min-h-[720px]"
     >
       <div className="absolute inset-0">
         <img
@@ -524,41 +525,42 @@ function Hero() {
         <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/10 to-transparent" />
       </div>
 
-      <div className="relative z-10 flex h-full flex-col">
-        <div className="flex-1" />
-        <div className="mx-auto w-full max-w-[1680px] px-6 pb-24 md:px-12 md:pb-32">
-          <div className="max-w-[920px] text-[color:var(--ivory)] animate-fade-up">
-            <div className="flex items-center gap-4 text-[0.72rem] font-medium tracking-[0.28em] uppercase text-[color:var(--ivory)]/82">
-              <span className="h-px w-12 bg-[color:var(--gold)]/80" />
-              {tr("hero_eyebrow")}
-            </div>
-            <h1 className="mt-8 max-w-[880px] font-display font-light leading-[0.98] text-[clamp(3.1rem,7vw,6rem)] tracking-[-0.005em] [text-wrap:balance]">
-              <span className="block">{tr("hero_l1")}</span>{" "}
-              <span className="block italic text-[color:var(--ivory)]/90">{tr("hero_l2")}</span>
-            </h1>
-            <p className="mt-9 max-w-2xl text-[1.02rem] md:text-[1.13rem] font-light leading-[1.9] text-[color:var(--ivory)]/86 [text-wrap:pretty]">
-              {tr("hero_sub")}
-            </p>
-            <div className="mt-12 flex flex-col sm:flex-row gap-4 sm:gap-5">
-              <a
-                href="#consultation"
-                className="group inline-flex min-h-[58px] items-center justify-between gap-6 bg-[color:var(--ivory)] px-8 py-5 text-[0.7rem] font-medium tracking-[0.26em] uppercase text-[color:var(--charcoal)] transition-all duration-500 hover:bg-[color:var(--gold)] hover:text-[color:var(--ivory)]"
-              >
-                {tr("hero_cta1")}
-                <span className="block h-px w-8 bg-current transition-all duration-500 group-hover:w-14" />
-              </a>
-              <a
-                href="#commission"
-                className="group inline-flex min-h-[58px] items-center justify-between gap-6 border border-[color:var(--ivory)]/55 px-8 py-5 text-[0.7rem] font-medium tracking-[0.26em] uppercase text-[color:var(--ivory)] transition-all duration-500 hover:border-[color:var(--gold)] hover:text-[color:var(--gold)]"
-              >
-                {tr("hero_cta2")}
-                <span className="block h-px w-8 bg-current transition-all duration-500 group-hover:w-14" />
-              </a>
+      <div className="relative z-10 flex min-h-[100svh] flex-col lg:h-full">
+        <div className="flex flex-1 items-center lg:items-end">
+          <div className="mx-auto w-full max-w-[1680px] px-6 pb-[calc(5.75rem+env(safe-area-inset-bottom))] pt-[calc(8.5rem+env(safe-area-inset-top))] md:px-12 lg:pb-32 lg:pt-0">
+            <div className="max-w-[920px] text-[color:var(--ivory)] animate-fade-up">
+              <div className="flex items-center gap-3 text-[0.62rem] font-medium tracking-[0.18em] uppercase leading-relaxed text-[color:var(--ivory)]/84 sm:text-[0.68rem] lg:gap-4 lg:text-[0.72rem] lg:tracking-[0.28em]">
+                <span className="h-px w-9 bg-[color:var(--gold)]/80 lg:w-12" />
+                {tr("hero_eyebrow")}
+              </div>
+              <h1 className="mt-6 max-w-[880px] font-display text-[clamp(2.55rem,12vw,4.3rem)] font-light leading-[1.06] tracking-[-0.005em] [text-wrap:balance] lg:mt-8 lg:text-[clamp(3.1rem,7vw,6rem)] lg:leading-[0.98]">
+                <span className="block">{tr("hero_l1")}</span>{" "}
+                <span className="block italic text-[color:var(--ivory)]/90">{tr("hero_l2")}</span>
+              </h1>
+              <p className="mt-6 max-w-2xl text-[0.95rem] font-light leading-[1.85] text-[color:var(--ivory)]/88 [text-wrap:pretty] sm:text-[1.02rem] lg:mt-9 lg:text-[1.13rem] lg:leading-[1.9]">
+                {tr("hero_sub")}
+              </p>
+              <div className="mt-8 flex flex-col gap-3.5 sm:flex-row sm:gap-5 lg:mt-12">
+                <a
+                  href="#consultation"
+                  className="group inline-flex min-h-[54px] w-full items-center justify-between gap-5 bg-[color:var(--ivory)] px-6 py-4 text-[0.64rem] font-medium tracking-[0.18em] uppercase text-[color:var(--charcoal)] transition-all duration-500 hover:bg-[color:var(--gold)] hover:text-[color:var(--ivory)] sm:w-auto lg:min-h-[58px] lg:gap-6 lg:px-8 lg:py-5 lg:text-[0.7rem] lg:tracking-[0.26em]"
+                >
+                  {tr("hero_cta1")}
+                  <span className="block h-px w-8 bg-current transition-all duration-500 group-hover:w-14" />
+                </a>
+                <a
+                  href="#commission"
+                  className="group inline-flex min-h-[54px] w-full items-center justify-between gap-5 border border-[color:var(--ivory)]/55 px-6 py-4 text-[0.64rem] font-medium tracking-[0.18em] uppercase text-[color:var(--ivory)] transition-all duration-500 hover:border-[color:var(--gold)] hover:text-[color:var(--gold)] sm:w-auto lg:min-h-[58px] lg:gap-6 lg:px-8 lg:py-5 lg:text-[0.7rem] lg:tracking-[0.26em]"
+                >
+                  {tr("hero_cta2")}
+                  <span className="block h-px w-8 bg-current transition-all duration-500 group-hover:w-14" />
+                </a>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="pb-8 md:pb-10 flex justify-center">
+        <div className="hidden pb-8 md:pb-10 lg:flex justify-center">
           <div className="flex flex-col items-center gap-3 text-[0.6rem] tracking-[0.5em] uppercase text-[color:var(--ivory)]/70">
             {tr("hero_scroll")}
             <span className="block h-12 w-px bg-gradient-to-b from-[color:var(--ivory)]/70 to-transparent animate-pulse" />
@@ -1337,10 +1339,10 @@ function Concierge({
       <button
         onClick={() => setOpen(!open)}
         aria-label="Jewellery Concierge"
-        className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-50 group"
+        className="fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-4 z-50 group md:bottom-8 md:right-8"
       >
-        <div className="relative flex items-center gap-4 bg-[color:var(--charcoal)] text-[color:var(--ivory)] pl-5 pr-7 py-4 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.4)] transition-all duration-500 hover:bg-[color:var(--gold)]">
-          <div className="h-9 w-9 rounded-full bg-[color:var(--gold)] group-hover:bg-[color:var(--charcoal)] flex items-center justify-center transition-colors">
+        <div className="relative flex h-12 w-12 items-center justify-center rounded-full bg-[color:var(--charcoal)] text-[color:var(--ivory)] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.4)] transition-all duration-500 hover:bg-[color:var(--gold)] sm:h-auto sm:w-auto sm:justify-start sm:gap-4 sm:rounded-none sm:py-4 sm:pl-5 sm:pr-7">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[color:var(--gold)] transition-colors group-hover:bg-[color:var(--charcoal)] sm:h-9 sm:w-9">
             <svg
               width="14"
               height="14"
@@ -1362,7 +1364,7 @@ function Concierge({
               />
             </svg>
           </div>
-          <div className="text-left leading-tight">
+          <div className="hidden text-left leading-tight sm:block">
             <div className="text-[0.66rem] font-medium tracking-[0.24em] uppercase text-[color:var(--gold)] group-hover:text-[color:var(--ivory)] transition-colors">
               {tr("cc_title")}
             </div>
