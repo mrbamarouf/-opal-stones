@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { useLang, t as TDICT, type Lang } from "@/lib/i18n";
 
 import j1 from "@/assets/jewellery/IMG_6823.jpg";
@@ -37,6 +37,7 @@ import opalLogo from "@/assets/opal-logo.png";
 const u = (a: string) => a;
 const OFFICIAL_LOGO_ALT = "Opal Stones by Hanan Bugshan";
 
+const HERO = j11;
 const REDESIGN_IMG = j19;
 const FOUNDER_IMG = j8;
 const CONS_BG = j14;
@@ -203,6 +204,7 @@ function Index() {
       dir={lang === "ar" ? "rtl" : "ltr"}
       className={lang === "ar" ? "arabic-mode font-arabic [&_*]:!tracking-normal" : "english-mode"}
     >
+      <IntroScreen />
       <Nav onConcierge={() => setConcierge(true)} />
       <Hero />
       <Commission onChoose={(create) => openInquiry({ create })} />
@@ -222,6 +224,114 @@ function Index() {
           openInquiry();
         }}
       />
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Intro                                                               */
+/* ------------------------------------------------------------------ */
+
+function IntroScreen() {
+  const { lang } = useLang();
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const finishedRef = useRef(false);
+  const [visible, setVisible] = useState(true);
+  const [leaving, setLeaving] = useState(false);
+  const [canSkip, setCanSkip] = useState(false);
+
+  const finishIntro = useCallback(() => {
+    if (finishedRef.current) return;
+    finishedRef.current = true;
+    setLeaving(true);
+    window.setTimeout(() => setVisible(false), 760);
+  }, []);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setCanSkip(true), 1500);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!visible || leaving) return;
+
+    const html = document.documentElement;
+    const body = document.body;
+    const previous = {
+      htmlOverflow: html.style.overflow,
+      htmlOverscroll: html.style.overscrollBehavior,
+      bodyOverflow: body.style.overflow,
+      bodyOverscroll: body.style.overscrollBehavior,
+      bodyTouchAction: body.style.touchAction,
+    };
+
+    html.style.overflow = "hidden";
+    html.style.overscrollBehavior = "none";
+    body.style.overflow = "hidden";
+    body.style.overscrollBehavior = "none";
+    body.style.touchAction = "none";
+
+    return () => {
+      html.style.overflow = previous.htmlOverflow;
+      html.style.overscrollBehavior = previous.htmlOverscroll;
+      body.style.overflow = previous.bodyOverflow;
+      body.style.overscrollBehavior = previous.bodyOverscroll;
+      body.style.touchAction = previous.bodyTouchAction;
+    };
+  }, [visible, leaving]);
+
+  useEffect(() => {
+    const loadGuard = window.setTimeout(() => {
+      if (!videoRef.current || videoRef.current.readyState === 0) finishIntro();
+    }, 7000);
+
+    return () => window.clearTimeout(loadGuard);
+  }, [finishIntro]);
+
+  if (!visible) return null;
+
+  return (
+    <div
+      data-intro-screen="true"
+      className={`fixed inset-0 z-[80] h-[100svh] w-full overflow-hidden bg-[color:var(--charcoal)] transition-opacity duration-700 ease-[cubic-bezier(.2,.7,.2,1)] ${
+        leaving ? "pointer-events-none opacity-0" : "opacity-100"
+      }`}
+      aria-hidden={leaving}
+    >
+      <video
+        ref={videoRef}
+        data-intro-video="true"
+        className="h-full w-full object-cover"
+        style={{ objectPosition: "center center" }}
+        autoPlay
+        muted
+        playsInline
+        preload="auto"
+        poster={u(heroPoster)}
+        aria-label="Opal Stones intro film"
+        disablePictureInPicture
+        disableRemotePlayback
+        onEnded={finishIntro}
+        onError={finishIntro}
+        onLoadedData={(event) => {
+          const playAttempt = event.currentTarget.play();
+          if (playAttempt) playAttempt.catch(finishIntro);
+        }}
+      >
+        <source src={u(heroIntroWebm)} type="video/webm" />
+        <source src={u(heroIntroMp4)} type="video/mp4" />
+      </video>
+      <div className="absolute inset-0 bg-black/10" />
+      <button
+        type="button"
+        data-intro-skip="true"
+        onClick={finishIntro}
+        className={`absolute bottom-6 end-6 border border-[color:var(--ivory)]/45 bg-black/20 px-5 py-3 text-[0.68rem] font-medium uppercase tracking-[0.22em] text-[color:var(--ivory)] backdrop-blur-sm transition-all duration-500 hover:border-[color:var(--ivory)] hover:bg-[color:var(--ivory)] hover:text-[color:var(--charcoal)] md:bottom-8 md:end-8 ${
+          canSkip ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"
+        }`}
+      >
+        {lang === "ar" ? "تخطي المقدمة" : "Skip intro"}
+      </button>
     </div>
   );
 }
@@ -379,24 +489,14 @@ function Hero() {
       className="relative h-[100svh] min-h-[720px] w-full overflow-hidden bg-[color:var(--charcoal)]"
     >
       <div className="absolute inset-0">
-        <video
-          className="h-full w-full object-cover"
-          style={{ objectPosition: "center center" }}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          poster={u(heroPoster)}
-          aria-hidden="true"
-          disablePictureInPicture
-          disableRemotePlayback
-        >
-          <source src={u(heroIntroWebm)} type="video/webm" />
-          <source src={u(heroIntroMp4)} type="video/mp4" />
-        </video>
-        <div className="absolute inset-0 bg-gradient-to-b from-black/48 via-black/18 to-black/72" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/8 to-transparent" />
+        <img
+          src={u(HERO)}
+          alt=""
+          className="h-full w-full object-cover animate-slow-zoom"
+          style={{ objectPosition: "center 34%" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/16 to-black/78" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/10 to-transparent" />
       </div>
 
       <div className="relative z-10 flex h-full flex-col">
