@@ -525,42 +525,73 @@ function Hero() {
         <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/10 to-transparent" />
       </div>
 
-      <div className="relative z-10 flex min-h-[100svh] flex-col lg:h-full">
-        <div className="flex flex-1 items-center lg:items-end">
-          <div className="mx-auto w-full max-w-[1680px] px-6 pb-[calc(5.75rem+env(safe-area-inset-bottom))] pt-[calc(8.5rem+env(safe-area-inset-top))] md:px-12 lg:pb-32 lg:pt-0">
-            <div className="max-w-[920px] text-[color:var(--ivory)] animate-fade-up">
-              <div className="flex items-center gap-3 text-[0.62rem] font-medium tracking-[0.18em] uppercase leading-relaxed text-[color:var(--ivory)]/84 sm:text-[0.68rem] lg:gap-4 lg:text-[0.72rem] lg:tracking-[0.28em]">
-                <span className="h-px w-9 bg-[color:var(--gold)]/80 lg:w-12" />
-                {tr("hero_eyebrow")}
-              </div>
-              <h1 className="mt-6 max-w-[880px] font-display text-[clamp(2.55rem,12vw,4.3rem)] font-light leading-[1.06] tracking-[-0.005em] [text-wrap:balance] lg:mt-8 lg:text-[clamp(3.1rem,7vw,6rem)] lg:leading-[0.98]">
-                <span className="block">{tr("hero_l1")}</span>{" "}
-                <span className="block italic text-[color:var(--ivory)]/90">{tr("hero_l2")}</span>
-              </h1>
-              <p className="mt-6 max-w-2xl text-[0.95rem] font-light leading-[1.85] text-[color:var(--ivory)]/88 [text-wrap:pretty] sm:text-[1.02rem] lg:mt-9 lg:text-[1.13rem] lg:leading-[1.9]">
-                {tr("hero_sub")}
-              </p>
-              <div className="mt-8 flex flex-col gap-3.5 sm:flex-row sm:gap-5 lg:mt-12">
-                <a
-                  href="#consultation"
-                  className="group inline-flex min-h-[54px] w-full items-center justify-between gap-5 bg-[color:var(--ivory)] px-6 py-4 text-[0.64rem] font-medium tracking-[0.18em] uppercase text-[color:var(--charcoal)] transition-all duration-500 hover:bg-[color:var(--gold)] hover:text-[color:var(--ivory)] sm:w-auto lg:min-h-[58px] lg:gap-6 lg:px-8 lg:py-5 lg:text-[0.7rem] lg:tracking-[0.26em]"
-                >
-                  {tr("hero_cta1")}
-                  <span className="block h-px w-8 bg-current transition-all duration-500 group-hover:w-14" />
-                </a>
-                <a
-                  href="#commission"
-                  className="group inline-flex min-h-[54px] w-full items-center justify-between gap-5 border border-[color:var(--ivory)]/55 px-6 py-4 text-[0.64rem] font-medium tracking-[0.18em] uppercase text-[color:var(--ivory)] transition-all duration-500 hover:border-[color:var(--gold)] hover:text-[color:var(--gold)] sm:w-auto lg:min-h-[58px] lg:gap-6 lg:px-8 lg:py-5 lg:text-[0.7rem] lg:tracking-[0.26em]"
-                >
-                  {tr("hero_cta2")}
-                  <span className="block h-px w-8 bg-current transition-all duration-500 group-hover:w-14" />
-                </a>
-              </div>
+      <div
+        data-mobile-hero="true"
+        className="relative z-10 flex min-h-[100svh] flex-col justify-center px-6 pb-[calc(env(safe-area-inset-bottom)+40px)] pt-[calc(env(safe-area-inset-top)+96px)] lg:hidden"
+      >
+        <div className="mt-8 max-w-[342px] text-[color:var(--ivory)] animate-fade-up">
+          <h1
+            data-mobile-hero-heading="true"
+            className="font-display text-[clamp(2.15rem,10vw,3.05rem)] font-light leading-[1.12] tracking-[-0.005em]"
+          >
+            <span className="block">{tr("hero_l1")}</span>
+            <span className="block italic text-[color:var(--ivory)]/92">{tr("hero_l2")}</span>
+          </h1>
+          <p className="mt-5 max-w-[32ch] text-[0.92rem] font-light leading-[1.8] text-[color:var(--ivory)]/88 [text-wrap:pretty]">
+            {tr("hero_sub")}
+          </p>
+          <div className="mt-8 flex flex-col gap-3">
+            <a
+              href="#consultation"
+              className="inline-flex min-h-[52px] w-full items-center justify-center bg-[color:var(--ivory)] px-6 py-4 text-center text-[0.64rem] font-medium uppercase tracking-[0.14em] text-[color:var(--charcoal)] transition-colors duration-500 hover:bg-[color:var(--gold)] hover:text-[color:var(--ivory)]"
+            >
+              {tr("hero_cta1")}
+            </a>
+            <a
+              href="#commission"
+              className="inline-flex min-h-[52px] w-full items-center justify-center border border-[color:var(--ivory)]/55 px-6 py-4 text-center text-[0.64rem] font-medium uppercase tracking-[0.14em] text-[color:var(--ivory)] transition-colors duration-500 hover:border-[color:var(--gold)] hover:text-[color:var(--gold)]"
+            >
+              {tr("hero_cta2")}
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div className="relative z-10 hidden h-full flex-col lg:flex">
+        <div className="flex-1" />
+        <div className="mx-auto w-full max-w-[1680px] px-12 pb-32">
+          <div className="max-w-[920px] text-[color:var(--ivory)] animate-fade-up">
+            <div className="flex items-center gap-4 text-[0.72rem] font-medium tracking-[0.28em] uppercase text-[color:var(--ivory)]/82">
+              <span className="h-px w-12 bg-[color:var(--gold)]/80" />
+              {tr("hero_eyebrow")}
+            </div>
+            <h1 className="mt-8 max-w-[880px] font-display text-[clamp(3.1rem,7vw,6rem)] font-light leading-[0.98] tracking-[-0.005em] [text-wrap:balance]">
+              <span className="block">{tr("hero_l1")}</span>{" "}
+              <span className="block italic text-[color:var(--ivory)]/90">{tr("hero_l2")}</span>
+            </h1>
+            <p className="mt-9 max-w-2xl text-[1.13rem] font-light leading-[1.9] text-[color:var(--ivory)]/86 [text-wrap:pretty]">
+              {tr("hero_sub")}
+            </p>
+            <div className="mt-12 flex gap-5">
+              <a
+                href="#consultation"
+                className="group inline-flex min-h-[58px] items-center justify-between gap-6 bg-[color:var(--ivory)] px-8 py-5 text-[0.7rem] font-medium tracking-[0.26em] uppercase text-[color:var(--charcoal)] transition-all duration-500 hover:bg-[color:var(--gold)] hover:text-[color:var(--ivory)]"
+              >
+                {tr("hero_cta1")}
+                <span className="block h-px w-8 bg-current transition-all duration-500 group-hover:w-14" />
+              </a>
+              <a
+                href="#commission"
+                className="group inline-flex min-h-[58px] items-center justify-between gap-6 border border-[color:var(--ivory)]/55 px-8 py-5 text-[0.7rem] font-medium tracking-[0.26em] uppercase text-[color:var(--ivory)] transition-all duration-500 hover:border-[color:var(--gold)] hover:text-[color:var(--gold)]"
+              >
+                {tr("hero_cta2")}
+                <span className="block h-px w-8 bg-current transition-all duration-500 group-hover:w-14" />
+              </a>
             </div>
           </div>
         </div>
 
-        <div className="hidden pb-8 md:pb-10 lg:flex justify-center">
+        <div className="flex justify-center pb-10">
           <div className="flex flex-col items-center gap-3 text-[0.6rem] tracking-[0.5em] uppercase text-[color:var(--ivory)]/70">
             {tr("hero_scroll")}
             <span className="block h-12 w-px bg-gradient-to-b from-[color:var(--ivory)]/70 to-transparent animate-pulse" />
@@ -1334,12 +1365,34 @@ function Concierge({
   onInquiry: () => void;
 }) {
   const { tr } = useLang();
+  const [showMobileDesk, setShowMobileDesk] = useState(false);
+
+  useEffect(() => {
+    const update = () => {
+      const hero = document.getElementById("top");
+      const threshold = (hero?.offsetHeight ?? window.innerHeight) - 80;
+      setShowMobileDesk(window.scrollY > threshold);
+    };
+
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+  }, []);
+
   return (
     <>
       <button
         onClick={() => setOpen(!open)}
         aria-label="Jewellery Concierge"
-        className="fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-4 z-50 group md:bottom-8 md:right-8"
+        className={`fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-4 z-50 group transition-all duration-500 md:bottom-8 md:right-8 md:pointer-events-auto md:translate-y-0 md:opacity-100 ${
+          showMobileDesk || open
+            ? "pointer-events-auto translate-y-0 opacity-100"
+            : "pointer-events-none translate-y-4 opacity-0"
+        }`}
       >
         <div className="relative flex h-12 w-12 items-center justify-center rounded-full bg-[color:var(--charcoal)] text-[color:var(--ivory)] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.4)] transition-all duration-500 hover:bg-[color:var(--gold)] sm:h-auto sm:w-auto sm:justify-start sm:gap-4 sm:rounded-none sm:py-4 sm:pl-5 sm:pr-7">
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[color:var(--gold)] transition-colors group-hover:bg-[color:var(--charcoal)] sm:h-9 sm:w-9">
