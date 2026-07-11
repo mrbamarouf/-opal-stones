@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { useLang } from "@/lib/i18n";
 import opalLogo384 from "@/assets/opal-logo-384.png";
 import opalLogo768 from "@/assets/opal-logo-768.png";
@@ -73,24 +74,24 @@ export function CatalogueHeader({ dark = false }: { dark?: boolean }) {
     >
       <div className="pt-[env(safe-area-inset-top)]">
         <div className="mx-auto flex h-[76px] max-w-[1680px] items-center justify-between px-5 md:h-[84px] md:px-10 xl:px-12">
-          <a href="/" aria-label={OFFICIAL_LOGO_ALT} className="block shrink-0">
+          <Link to="/" aria-label={OFFICIAL_LOGO_ALT} className="block shrink-0">
             <CatalogueLogo className="w-[124px] md:w-[154px]" />
-          </a>
+          </Link>
 
           <nav
             className={`hidden items-center gap-8 text-[0.64rem] font-medium uppercase ${
               lang === "ar" ? "!tracking-[0px]" : "tracking-[0.2em]"
             } md:flex`}
           >
-            <a href="/" className={`transition-colors ${linkClass}`}>
+            <Link to="/" className={`transition-colors ${linkClass}`}>
               {lang === "ar" ? "الرئيسية" : "Home"}
-            </a>
-            <a href="/collections" className={`transition-colors ${linkClass}`}>
+            </Link>
+            <Link to="/collections" className={`transition-colors ${linkClass}`}>
               {lang === "ar" ? "المجموعات" : "Collections"}
-            </a>
-            <a href="/#consultation" className={`transition-colors ${linkClass}`}>
+            </Link>
+            <Link to="/" hash="consultation" className={`transition-colors ${linkClass}`}>
               {lang === "ar" ? "استشارة خاصة" : "Private Appointment"}
-            </a>
+            </Link>
           </nav>
 
           <LanguageToggle light={dark} />
@@ -115,12 +116,16 @@ export function CatalogueFooter() {
         </div>
 
         <div className="flex flex-col gap-4 text-[0.72rem] uppercase tracking-[0.18em] text-[color:var(--ivory)]/68 md:col-span-3 md:col-start-8">
-          <a href="/collections" className="transition-colors hover:text-[color:var(--gold)]">
+          <Link to="/collections" className="transition-colors hover:text-[color:var(--gold)]">
             {lang === "ar" ? "المجموعات" : "Collections"}
-          </a>
-          <a href="/#consultation" className="transition-colors hover:text-[color:var(--gold)]">
+          </Link>
+          <Link
+            to="/"
+            hash="consultation"
+            className="transition-colors hover:text-[color:var(--gold)]"
+          >
             {lang === "ar" ? "استشارة خاصة" : "Private Appointment"}
-          </a>
+          </Link>
           <a
             href="https://www.instagram.com/opal.stones?igsh=MWw0eWFsZG5xZWVybg=="
             target="_blank"

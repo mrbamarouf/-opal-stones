@@ -1652,12 +1652,26 @@ function MaisonPrelude() {
 /* Intro                                                               */
 /* ------------------------------------------------------------------ */
 
+let introPlayedDuringPageLoad = false;
+
+const shouldShowIntroForPageLoad = () => {
+  if (introPlayedDuringPageLoad) return false;
+  if (typeof window === "undefined") return true;
+
+  const navEntry = window.performance
+    ?.getEntriesByType("navigation")
+    .find((entry) => "name" in entry);
+  const initialPath = navEntry?.name ? new URL(navEntry.name).pathname : window.location.pathname;
+
+  return initialPath === "/";
+};
+
 function IntroScreen() {
   const { lang } = useLang();
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const finishedRef = useRef(false);
   const retryRef = useRef(false);
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(shouldShowIntroForPageLoad);
   const [leaving, setLeaving] = useState(false);
   const [canSkip, setCanSkip] = useState(false);
   const [manualEntry, setManualEntry] = useState(false);
@@ -1671,17 +1685,24 @@ function IntroScreen() {
   }, []);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => setCanSkip(true), 1500);
-    return () => window.clearTimeout(timer);
-  }, []);
+    if (!visible) return;
+    introPlayedDuringPageLoad = true;
+  }, [visible]);
 
   useEffect(() => {
+    if (!visible) return;
+    const timer = window.setTimeout(() => setCanSkip(true), 1500);
+    return () => window.clearTimeout(timer);
+  }, [visible]);
+
+  useEffect(() => {
+    if (!visible) return;
     const media = window.matchMedia("(orientation: portrait)");
     const update = () => setPortraitIntro(media.matches);
     update();
     media.addEventListener("change", update);
     return () => media.removeEventListener("change", update);
-  }, []);
+  }, [visible]);
 
   useEffect(() => {
     if (!visible || leaving) return;
@@ -1730,6 +1751,7 @@ function IntroScreen() {
   }, []);
 
   useEffect(() => {
+    if (!visible) return;
     const firstAttempt = window.setTimeout(requestPlayback, 80);
     const playbackGuard = window.setTimeout(() => {
       const video = videoRef.current;
@@ -1748,7 +1770,7 @@ function IntroScreen() {
       window.clearTimeout(firstAttempt);
       window.clearTimeout(playbackGuard);
     };
-  }, [finishIntro, requestPlayback]);
+  }, [finishIntro, requestPlayback, visible]);
 
   if (!visible) return null;
 

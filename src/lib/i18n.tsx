@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 
 export type Lang = "en" | "ar";
 type Entry = { en: string; ar: string };
@@ -275,19 +275,58 @@ export const t = {
 
 type Ctx = { lang: Lang; setLang: (l: Lang) => void; tr: (k: keyof typeof t) => string };
 const LangCtx = createContext<Ctx | null>(null);
+const LANGUAGE_STORAGE_KEY = "opal-stones-language";
+
+const isLang = (value: unknown): value is Lang => value === "en" || value === "ar";
+
+const readStoredLanguage = (): Lang | null => {
+  if (typeof window === "undefined") return null;
+  try {
+    const stored = window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
+    return isLang(stored) ? stored : null;
+  } catch {
+    return null;
+  }
+};
+
+const writeStoredLanguage = (lang: Lang) => {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(LANGUAGE_STORAGE_KEY, lang);
+  } catch {
+    // Language still works for the current page even if storage is unavailable.
+  }
+};
 
 export function LangProvider({ children }: { children: ReactNode }) {
-  const [lang, setLang] = useState<Lang>("en");
+  const [lang, setLangState] = useState<Lang>("en");
+  const [storageReady, setStorageReady] = useState(false);
   const tr = (k: keyof typeof t) => t[k][lang];
+
+  const setLang = useCallback((nextLang: Lang) => {
+    setStorageReady(true);
+    setLangState(nextLang);
+    writeStoredLanguage(nextLang);
+  }, []);
+
+  useEffect(() => {
+    const stored = readStoredLanguage();
+    if (stored) setLangState(stored);
+    setStorageReady(true);
+  }, []);
 
   useEffect(() => {
     document.documentElement.lang = lang;
+    document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+    document.body.dir = lang === "ar" ? "rtl" : "ltr";
     document.body.classList.toggle("arabic-mode", lang === "ar");
     document.body.classList.toggle("english-mode", lang === "en");
+    if (storageReady) writeStoredLanguage(lang);
     return () => {
       document.body.classList.remove("arabic-mode", "english-mode");
+      document.body.removeAttribute("dir");
     };
-  }, [lang]);
+  }, [lang, storageReady]);
 
   return <LangCtx.Provider value={{ lang, setLang, tr }}>{children}</LangCtx.Provider>;
 }
