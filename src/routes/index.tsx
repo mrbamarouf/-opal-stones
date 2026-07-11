@@ -1896,6 +1896,7 @@ function Nav({ onConcierge }: { onConcierge: () => void }) {
     { k: "nav_design", href: "#design" },
     { k: "nav_atelier", href: "#atelier" },
     { k: "nav_creations", href: "#creations" },
+    { k: "nav_collections", href: "/collections" },
     { k: "nav_redesign", href: "#redesign" },
   ];
   const lightNav = scrolled || open;
@@ -4066,6 +4067,9 @@ function Footer() {
             >
               Instagram
             </a>
+            <a href="/collections" className="flex min-h-[44px] items-center">
+              {tr("nav_collections")}
+            </a>
             <a href="#consultation" className="flex min-h-[44px] items-center">
               {tr("nav_book")}
             </a>
@@ -4113,6 +4117,12 @@ function Footer() {
               className="flex min-h-[44px] items-center transition-colors hover:text-[color:var(--gold)] lg:min-h-0"
             >
               Instagram
+            </a>
+            <a
+              href="/collections"
+              className="flex min-h-[44px] items-center transition-colors hover:text-[color:var(--gold)] lg:min-h-0"
+            >
+              {tr("nav_collections")}
             </a>
             <a
               href="#consultation"

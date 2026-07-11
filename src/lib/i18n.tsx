@@ -9,6 +9,7 @@ export const t = {
   nav_design: { en: "Direction", ar: "التمهيد" },
   nav_atelier: { en: "Atelier", ar: "الأتيليه" },
   nav_creations: { en: "Creations", ar: "الإبداعات" },
+  nav_collections: { en: "Collections", ar: "المجموعات" },
   nav_redesign: { en: "Redesign", ar: "إعادة التصميم" },
   nav_book: { en: "Private Appointment", ar: "استشارة خاصة" },
 
