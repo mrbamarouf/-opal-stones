@@ -35,18 +35,25 @@ import introPosterLandscape from "@/assets/media/opal-intro-poster-landscape.jpg
 import introPosterPortrait from "@/assets/media/opal-intro-poster-portrait.jpg";
 import filmAtelierHandsPoster from "@/assets/brand-films/opal-atelier-hands-poster.jpg";
 import filmAtelierHands from "@/assets/brand-films/opal-atelier-hands.mp4";
+import filmAtelierHandsWebm from "@/assets/brand-films/opal-atelier-hands.webm";
 import filmBehindScenesPoster from "@/assets/brand-films/opal-behind-scenes-poster.jpg";
 import filmBehindScenes from "@/assets/brand-films/opal-behind-scenes.mp4";
+import filmBehindScenesWebm from "@/assets/brand-films/opal-behind-scenes.webm";
 import filmClientStoryPoster from "@/assets/brand-films/opal-client-story-poster.jpg";
 import filmClientStory from "@/assets/brand-films/opal-client-story.mp4";
+import filmClientStoryWebm from "@/assets/brand-films/opal-client-story.webm";
 import filmHeirloomPendantPoster from "@/assets/brand-films/opal-heirloom-pendant-poster.jpg";
 import filmHeirloomPendant from "@/assets/brand-films/opal-heirloom-pendant.mp4";
+import filmHeirloomPendantWebm from "@/assets/brand-films/opal-heirloom-pendant.webm";
 import filmMaisonPendantPoster from "@/assets/brand-films/opal-maison-pendant-poster.jpg";
 import filmMaisonPendant from "@/assets/brand-films/opal-maison-pendant.mp4";
+import filmMaisonPendantWebm from "@/assets/brand-films/opal-maison-pendant.webm";
 import filmNecklaceArchivePoster from "@/assets/brand-films/opal-necklace-archive-poster.jpg";
 import filmNecklaceArchive from "@/assets/brand-films/opal-necklace-archive.mp4";
+import filmNecklaceArchiveWebm from "@/assets/brand-films/opal-necklace-archive.webm";
 import filmPortraitRingPoster from "@/assets/brand-films/opal-portrait-ring-poster.jpg";
 import filmPortraitRing from "@/assets/brand-films/opal-portrait-ring.mp4";
+import filmPortraitRingWebm from "@/assets/brand-films/opal-portrait-ring.webm";
 import opalLogo384 from "@/assets/opal-logo-384.png";
 import opalLogo768 from "@/assets/opal-logo-768.png";
 import opalLogo from "@/assets/opal-logo.png";
@@ -67,16 +74,40 @@ const WHATSAPP = `https://wa.me/${WHATSAPP_NUM}`;
 const INSTAGRAM = "https://www.instagram.com/opal.stones?igsh=MWw0eWFsZG5xZWVybg==";
 
 type TKey = keyof typeof TDICT;
-type BrandFilm = { mp4: string; poster: string };
+type BrandFilm = { mp4: string; webm: string; poster: string };
 
 const FILMS = {
-  portraitRing: { mp4: filmPortraitRing, poster: filmPortraitRingPoster },
-  necklaceArchive: { mp4: filmNecklaceArchive, poster: filmNecklaceArchivePoster },
-  atelierHands: { mp4: filmAtelierHands, poster: filmAtelierHandsPoster },
-  clientStory: { mp4: filmClientStory, poster: filmClientStoryPoster },
-  heirloomPendant: { mp4: filmHeirloomPendant, poster: filmHeirloomPendantPoster },
-  maisonPendant: { mp4: filmMaisonPendant, poster: filmMaisonPendantPoster },
-  behindScenes: { mp4: filmBehindScenes, poster: filmBehindScenesPoster },
+  portraitRing: {
+    mp4: filmPortraitRing,
+    webm: filmPortraitRingWebm,
+    poster: filmPortraitRingPoster,
+  },
+  necklaceArchive: {
+    mp4: filmNecklaceArchive,
+    webm: filmNecklaceArchiveWebm,
+    poster: filmNecklaceArchivePoster,
+  },
+  atelierHands: {
+    mp4: filmAtelierHands,
+    webm: filmAtelierHandsWebm,
+    poster: filmAtelierHandsPoster,
+  },
+  clientStory: { mp4: filmClientStory, webm: filmClientStoryWebm, poster: filmClientStoryPoster },
+  heirloomPendant: {
+    mp4: filmHeirloomPendant,
+    webm: filmHeirloomPendantWebm,
+    poster: filmHeirloomPendantPoster,
+  },
+  maisonPendant: {
+    mp4: filmMaisonPendant,
+    webm: filmMaisonPendantWebm,
+    poster: filmMaisonPendantPoster,
+  },
+  behindScenes: {
+    mp4: filmBehindScenes,
+    webm: filmBehindScenesWebm,
+    poster: filmBehindScenesPoster,
+  },
 } satisfies Record<string, BrandFilm>;
 
 export const Route = createFileRoute("/")({
@@ -196,29 +227,52 @@ function AmbientFilm({
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [active, setActive] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setLoaded(true);
+          io.disconnect();
+        }
+      },
+      {
+        threshold: 0,
+        rootMargin: "360px 0px 360px 0px",
+      },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   useEffect(() => {
     const el = wrapRef.current;
     if (!el) return;
     const io = new IntersectionObserver(([entry]) => setActive(entry.isIntersecting), {
-      threshold: 0.28,
-      rootMargin: "160px 0px 160px 0px",
+      threshold: 0.24,
     });
     io.observe(el);
     return () => io.disconnect();
   }, []);
 
   useEffect(() => {
+    if (loaded) videoRef.current?.load();
+  }, [loaded]);
+
+  useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (active && !reduce) {
+    if (active && loaded && !reduce) {
       const playAttempt = video.play();
       if (playAttempt) playAttempt.catch(() => undefined);
     } else {
       video.pause();
     }
-  }, [active]);
+  }, [active, loaded]);
 
   return (
     <div
@@ -243,7 +297,12 @@ function AmbientFilm({
         disablePictureInPicture
         disableRemotePlayback
       >
-        <source src={u(film.mp4)} type="video/mp4" />
+        {loaded && (
+          <>
+            <source src={u(film.webm)} type="video/webm" />
+            <source src={u(film.mp4)} type="video/mp4" />
+          </>
+        )}
       </video>
       <div className={`absolute inset-0 ${overlay}`} />
     </div>
@@ -263,24 +322,27 @@ function MotionFrame({
   mediaClassName?: string;
   captionClassName?: string;
 }) {
-  const frameRef = useRef<HTMLButtonElement | null>(null);
+  const frameRef = useRef<HTMLDivElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [playing, setPlaying] = useState(false);
+  const [active, setActive] = useState(false);
+  const [loaded, setLoaded] = useState(false);
 
   const start = useCallback(() => {
     const video = videoRef.current;
-    setPlaying(true);
+    if (!video || video.readyState < 2) return;
     const playAttempt = video?.play();
-    if (playAttempt) playAttempt.catch(() => setPlaying(false));
+    if (playAttempt) {
+      playAttempt.then(() => setPlaying(true)).catch(() => setPlaying(false));
+    } else {
+      setPlaying(true);
+    }
   }, []);
 
   const stop = useCallback(() => {
     const video = videoRef.current;
     setPlaying(false);
-    if (video) {
-      video.pause();
-      video.currentTime = 0;
-    }
+    if (video) video.pause();
   }, []);
 
   useEffect(() => {
@@ -288,24 +350,45 @@ function MotionFrame({
     if (!frame) return;
     const io = new IntersectionObserver(
       ([entry]) => {
-        if (!entry.isIntersecting) stop();
+        if (entry.isIntersecting) {
+          setLoaded(true);
+          io.disconnect();
+        }
       },
-      { threshold: 0.12 },
+      {
+        threshold: 0,
+        rootMargin: "360px 0px 360px 0px",
+      },
     );
     io.observe(frame);
     return () => io.disconnect();
-  }, [stop]);
+  }, []);
+
+  useEffect(() => {
+    const frame = frameRef.current;
+    if (!frame) return;
+    const io = new IntersectionObserver(([entry]) => setActive(entry.isIntersecting), {
+      threshold: 0.2,
+    });
+    io.observe(frame);
+    return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (loaded) videoRef.current?.load();
+  }, [loaded]);
+
+  useEffect(() => {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (active && loaded && !reduce) start();
+    else stop();
+  }, [active, loaded, start, stop]);
 
   return (
-    <button
+    <div
       ref={frameRef}
-      type="button"
-      onMouseEnter={start}
-      onMouseLeave={stop}
-      onFocus={start}
-      onBlur={stop}
-      onClick={() => (playing ? stop() : start())}
       className={`group relative block overflow-hidden bg-[color:var(--charcoal)] text-left ${className}`}
+      role="img"
       aria-label={label}
     >
       <img
@@ -325,8 +408,16 @@ function MotionFrame({
         aria-hidden="true"
         disablePictureInPicture
         disableRemotePlayback
+        onCanPlay={() => {
+          if (active && loaded) start();
+        }}
       >
-        <source src={u(film.mp4)} type="video/mp4" />
+        {loaded && (
+          <>
+            <source src={u(film.webm)} type="video/webm" />
+            <source src={u(film.mp4)} type="video/mp4" />
+          </>
+        )}
       </video>
       <div className="absolute inset-0 bg-gradient-to-t from-black/62 via-black/8 to-transparent" />
       <div
@@ -334,7 +425,7 @@ function MotionFrame({
       >
         {label}
       </div>
-    </button>
+    </div>
   );
 }
 
