@@ -201,6 +201,9 @@ body.arabic-mode *,
 .arabic-mode * {
   letter-spacing: 0 !important;
   word-spacing: normal !important;
+  transition-property:
+    color, background-color, border-color, text-decoration-color, fill, stroke, opacity, transform,
+    box-shadow, filter, backdrop-filter, width, max-width, max-height !important;
 }
 
 html[lang="ar"] body h1,

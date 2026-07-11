@@ -1,5 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+  type ReactNode,
+} from "react";
 import { useLang, t as TDICT, type Lang } from "@/lib/i18n";
 
 import j1 from "@/assets/jewellery/IMG_6823.jpg";
@@ -75,6 +84,10 @@ const INSTAGRAM = "https://www.instagram.com/opal.stones?igsh=MWw0eWFsZG5xZWVybg
 
 type TKey = keyof typeof TDICT;
 type BrandFilm = { mp4: string; webm: string; poster: string };
+type ViewportMode = "phone" | "tablet" | "desktop";
+
+const ViewportContext = createContext<ViewportMode | null>(null);
+const NON_PHONE: ViewportMode[] = ["tablet", "desktop"];
 
 const FILMS = {
   portraitRing: {
@@ -260,10 +273,10 @@ function AmbientFilm({
   useEffect(() => {
     const el = wrapRef.current;
     if (!el) return;
-    const io = new IntersectionObserver(
-      ([entry]) => setActive(entry.isIntersecting && entry.intersectionRatio > 0.08),
-      { threshold: [0, 0.08], rootMargin: "0px" },
-    );
+    const io = new IntersectionObserver(([entry]) => setActive(entry.isIntersecting), {
+      threshold: 0,
+      rootMargin: "12% 0px 12% 0px",
+    });
     io.observe(el);
     return () => io.disconnect();
   }, []);
@@ -386,10 +399,10 @@ function MotionFrame({
   useEffect(() => {
     const frame = frameRef.current;
     if (!frame) return;
-    const io = new IntersectionObserver(
-      ([entry]) => setActive(entry.isIntersecting && entry.intersectionRatio > 0.08),
-      { threshold: [0, 0.08], rootMargin: "0px" },
-    );
+    const io = new IntersectionObserver(([entry]) => setActive(entry.isIntersecting), {
+      threshold: 0,
+      rootMargin: "12% 0px 12% 0px",
+    });
     io.observe(frame);
     return () => io.disconnect();
   }, []);
@@ -487,7 +500,7 @@ function Index() {
   const { lang } = useLang();
   const [concierge, setConcierge] = useState(false);
   const [prefill, setPrefill] = useState<{ create?: string; whisper?: string }>({});
-  const isPhone = useIsPhone();
+  const viewport = useViewportMode();
 
   const openInquiry = (data?: { create?: string; whisper?: string }) => {
     if (data) setPrefill((p) => ({ ...p, ...data }));
@@ -504,47 +517,71 @@ function Index() {
       dir={lang === "ar" ? "rtl" : "ltr"}
       className={lang === "ar" ? "arabic-mode font-arabic [&_*]:!tracking-normal" : "english-mode"}
     >
-      <IntroScreen />
-      <Nav onConcierge={() => setConcierge(true)} />
-      {isPhone ? (
-        <MobileMaisonJourney
-          prefill={prefill}
-          onChoose={(create) => openInquiry({ create })}
-          onContinue={(whisper) => openInquiry({ whisper })}
-          onBegin={() => openInquiry({ create: TDICT.com_redo[lang] })}
+      <ViewportContext.Provider value={viewport}>
+        <IntroScreen />
+        <Nav onConcierge={() => setConcierge(true)} />
+        {viewport === "phone" ? (
+          <MobileMaisonJourney
+            prefill={prefill}
+            onChoose={(create) => openInquiry({ create })}
+            onContinue={(whisper) => openInquiry({ whisper })}
+            onBegin={() => openInquiry({ create: TDICT.com_redo[lang] })}
+          />
+        ) : viewport ? (
+          <DesktopMaisonExperience
+            prefill={prefill}
+            onChoose={(create) => openInquiry({ create })}
+            onContinue={(whisper) => openInquiry({ whisper })}
+            onBegin={() => openInquiry({ create: TDICT.com_redo[lang] })}
+          />
+        ) : null}
+        <Concierge
+          open={concierge}
+          setOpen={setConcierge}
+          onInquiry={() => {
+            setConcierge(false);
+            openInquiry();
+          }}
         />
-      ) : (
-        <DesktopMaisonExperience
-          prefill={prefill}
-          onChoose={(create) => openInquiry({ create })}
-          onContinue={(whisper) => openInquiry({ whisper })}
-          onBegin={() => openInquiry({ create: TDICT.com_redo[lang] })}
-        />
-      )}
-      <Concierge
-        open={concierge}
-        setOpen={setConcierge}
-        onInquiry={() => {
-          setConcierge(false);
-          openInquiry();
-        }}
-      />
+      </ViewportContext.Provider>
     </div>
   );
 }
 
-function useIsPhone() {
-  const [isPhone, setIsPhone] = useState(false);
+function useViewportMode() {
+  const [viewport, setViewport] = useState<ViewportMode | null>(null);
 
   useEffect(() => {
-    const media = window.matchMedia("(max-width: 767px)");
-    const update = () => setIsPhone(media.matches);
+    const update = () => {
+      const width = window.innerWidth;
+      setViewport(width < 768 ? "phone" : width < 1024 ? "tablet" : "desktop");
+    };
     update();
-    media.addEventListener("change", update);
-    return () => media.removeEventListener("change", update);
+    window.addEventListener("resize", update);
+    window.addEventListener("orientationchange", update);
+    return () => {
+      window.removeEventListener("resize", update);
+      window.removeEventListener("orientationchange", update);
+    };
   }, []);
 
-  return isPhone;
+  return viewport;
+}
+
+function ViewportOnly({
+  match,
+  className = "",
+  children,
+}: {
+  match: ViewportMode | ViewportMode[];
+  className?: string;
+  children: ReactNode;
+}) {
+  const viewport = useContext(ViewportContext);
+  if (!viewport) return null;
+  const matches = Array.isArray(match) ? match.includes(viewport) : viewport === match;
+  if (!matches) return null;
+  return <div className={className}>{children}</div>;
 }
 
 function DesktopMaisonExperience({
@@ -701,7 +738,7 @@ function MobileMaisonJourney({
   const directionSummary = Object.values(direction).filter(Boolean).join(" · ");
 
   return (
-    <main data-mobile-maison="true" className="md:hidden bg-[color:var(--ivory)]">
+    <main data-mobile-maison="true" className="bg-[color:var(--ivory)]">
       <MobileHero copy={copy} />
       <MobilePrelude copy={copy} />
       <MobileCommission copy={copy} tr={tr} onChoose={onChoose} />
@@ -1553,7 +1590,7 @@ function MaisonPrelude() {
   const { tr } = useLang();
   return (
     <section className="relative overflow-hidden bg-[color:var(--charcoal)] text-[color:var(--ivory)]">
-      <div className="md:hidden">
+      <ViewportOnly match="phone">
         <div className="relative overflow-hidden">
           <AmbientFilm
             film={FILMS.maisonPendant}
@@ -1577,9 +1614,9 @@ function MaisonPrelude() {
             </p>
           </div>
         </Reveal>
-      </div>
+      </ViewportOnly>
 
-      <div className="hidden md:block">
+      <ViewportOnly match={NON_PHONE}>
         <AmbientFilm
           film={FILMS.maisonPendant}
           className="h-[78svh] min-h-[540px] md:h-[86vh]"
@@ -1603,7 +1640,7 @@ function MaisonPrelude() {
             </Reveal>
           </div>
         </div>
-      </div>
+      </ViewportOnly>
     </section>
   );
 }
@@ -1686,20 +1723,21 @@ function IntroScreen() {
       }
       setManualEntry(true);
       setCanSkip(true);
-      window.setTimeout(finishIntro, 900);
     });
-  }, [finishIntro]);
+  }, []);
 
   useEffect(() => {
     const firstAttempt = window.setTimeout(requestPlayback, 80);
     const playbackGuard = window.setTimeout(() => {
       const video = videoRef.current;
       if (!video) {
-        finishIntro();
+        setManualEntry(true);
+        setCanSkip(true);
         return;
       }
       if ((video.paused || video.currentTime < 0.15) && video.readyState < 3) {
-        finishIntro();
+        setManualEntry(true);
+        setCanSkip(true);
       }
     }, 4200);
 
@@ -1750,7 +1788,6 @@ function IntroScreen() {
         onError={() => {
           setManualEntry(true);
           setCanSkip(true);
-          window.setTimeout(finishIntro, 500);
         }}
         onLoadedMetadata={requestPlayback}
         onLoadedData={(event) => {
@@ -1865,231 +1902,239 @@ function Nav({ onConcierge }: { onConcierge: () => void }) {
 
   return (
     <>
-      <header
-        className={`fixed inset-x-0 top-0 z-50 md:hidden transition-all duration-500 ${
-          lightNav
-            ? "border-b border-[color:var(--border)]/70 bg-[color:var(--ivory)]/96 text-[color:var(--charcoal)] backdrop-blur-md"
-            : "border-b border-[color:var(--ivory)]/10 bg-[color:var(--charcoal)]/62 text-[color:var(--ivory)] backdrop-blur-md"
-        } ${hideMobileHeader ? "-translate-y-full" : "translate-y-0"}`}
-      >
-        <div className="pt-[env(safe-area-inset-top)]">
-          <div className="flex h-[72px] items-center justify-between px-5">
+      <ViewportOnly match="phone">
+        <header
+          className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
+            lightNav
+              ? "border-b border-[color:var(--border)]/70 bg-[color:var(--ivory)]/96 text-[color:var(--charcoal)] backdrop-blur-md"
+              : "border-b border-[color:var(--ivory)]/10 bg-[color:var(--charcoal)]/62 text-[color:var(--ivory)] backdrop-blur-md"
+          } ${hideMobileHeader ? "-translate-y-full" : "translate-y-0"}`}
+        >
+          <div className="pt-[env(safe-area-inset-top)]">
+            <div className="flex h-[72px] items-center justify-between px-5">
+              <a href="#top" aria-label={OFFICIAL_LOGO_ALT} className="block shrink-0">
+                <OfficialLogo
+                  loading="eager"
+                  sizes="128px"
+                  className={`w-[128px] transition-opacity duration-500 ${
+                    lightNav ? "opacity-100" : "opacity-[0.97]"
+                  }`}
+                />
+              </a>
+
+              <div className="flex items-center gap-2.5">
+                <div
+                  className={`flex h-11 items-center border px-2 text-[0.66rem] font-medium uppercase ${
+                    lightNav
+                      ? "border-[color:var(--charcoal)]/16"
+                      : "border-[color:var(--ivory)]/20"
+                  }`}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setLang("en")}
+                    className={`flex h-11 min-w-11 items-center justify-center px-0 tracking-[0.16em] transition-opacity ${lang === "en" ? "opacity-100" : "opacity-42"}`}
+                  >
+                    EN
+                  </button>
+                  <span className="px-0.5 opacity-28">/</span>
+                  <button
+                    type="button"
+                    lang="ar"
+                    dir="rtl"
+                    onClick={() => setLang("ar")}
+                    className={`flex h-11 min-w-11 items-center justify-center px-0 font-arabic !tracking-[0px] transition-opacity ${lang === "ar" ? "opacity-100" : "opacity-42"}`}
+                  >
+                    ع
+                  </button>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setOpen((v) => !v)}
+                  aria-label="Menu"
+                  className={`flex h-11 w-11 flex-col items-center justify-center gap-[5px] border transition-colors ${
+                    lightNav
+                      ? "border-[color:var(--charcoal)]/18"
+                      : "border-[color:var(--ivory)]/24"
+                  }`}
+                >
+                  <span
+                    className={`block h-px w-5 transition-transform ${open ? "translate-y-[6px] rotate-45 bg-[color:var(--charcoal)]" : lightNav ? "bg-[color:var(--charcoal)]" : "bg-[color:var(--ivory)]"}`}
+                  />
+                  <span
+                    className={`block h-px w-5 transition-opacity ${open ? "opacity-0" : lightNav ? "bg-[color:var(--charcoal)]" : "bg-[color:var(--ivory)]"}`}
+                  />
+                  <span
+                    className={`block h-px w-5 transition-transform ${open ? "-translate-y-[6px] -rotate-45 bg-[color:var(--charcoal)]" : lightNav ? "bg-[color:var(--charcoal)]" : "bg-[color:var(--ivory)]"}`}
+                  />
+                </button>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <div
+          className={`fixed inset-0 z-[70] bg-[color:var(--ivory)] text-[color:var(--charcoal)] transition-all duration-500 ${
+            open
+              ? "pointer-events-auto translate-y-0 opacity-100"
+              : "pointer-events-none -translate-y-3 opacity-0"
+          }`}
+          aria-hidden={!open}
+          aria-label="Mobile menu"
+          aria-modal="true"
+          role="dialog"
+        >
+          <div className="flex h-full flex-col overflow-y-auto px-6 pb-[calc(env(safe-area-inset-bottom)+2rem)] pt-[calc(env(safe-area-inset-top)+1rem)]">
+            <div className="flex min-h-[72px] items-center justify-between">
+              <OfficialLogo loading="eager" sizes="126px" className="w-[126px]" />
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                className="flex h-11 w-11 items-center justify-center border border-[color:var(--charcoal)]/16 text-[1.4rem] leading-none"
+                aria-label="Close menu"
+              >
+                ×
+              </button>
+            </div>
+            <nav className="mt-10 flex flex-1 flex-col justify-center gap-7">
+              {items.map((i) => (
+                <a
+                  key={i.k}
+                  href={i.href}
+                  onClick={() => setOpen(false)}
+                  className="border-b border-[color:var(--border)]/65 pb-5 font-display text-[2.35rem] font-light leading-[1.02] text-[color:var(--charcoal)]"
+                >
+                  {tr(i.k)}
+                </a>
+              ))}
+            </nav>
+            <a
+              href="#consultation"
+              onClick={() => setOpen(false)}
+              className="mt-10 inline-flex min-h-[60px] items-center justify-between bg-[color:var(--charcoal)] px-6 py-4 text-[0.76rem] font-medium uppercase tracking-[0.14em] text-[color:var(--ivory)]"
+            >
+              {tr("nav_book")}
+              <span className="h-px w-10 bg-current" />
+            </a>
+          </div>
+        </div>
+      </ViewportOnly>
+
+      <ViewportOnly match={NON_PHONE}>
+        <header
+          className={`fixed inset-x-0 top-0 z-50 transition-all duration-700 ${
+            lightNav
+              ? "bg-[color:var(--ivory)]/94 backdrop-blur-md border-b border-[color:var(--border)]/60 shadow-[0_8px_24px_-24px_rgba(0,0,0,0.28)]"
+              : "border-b border-[color:var(--ivory)]/8 bg-[color:var(--charcoal)]/34 shadow-[0_10px_28px_-26px_rgba(0,0,0,0.72)] backdrop-blur-md xl:border-transparent xl:bg-transparent xl:shadow-none xl:backdrop-blur-none"
+          }`}
+        >
+          <div className="mx-auto flex max-w-[1680px] items-center justify-between px-4 py-3 md:px-10 md:py-4 xl:px-12">
             <a href="#top" aria-label={OFFICIAL_LOGO_ALT} className="block shrink-0">
               <OfficialLogo
                 loading="eager"
-                sizes="128px"
-                className={`w-[128px] transition-opacity duration-500 ${
-                  lightNav ? "opacity-100" : "opacity-[0.97]"
+                sizes="(max-width: 767px) 132px, (max-width: 1279px) 144px, 158px"
+                className={`w-[130px] sm:w-[138px] md:w-[144px] xl:w-[158px] transition-opacity duration-500 ${
+                  lightNav ? "opacity-100" : "opacity-[0.96]"
                 }`}
               />
             </a>
 
-            <div className="flex items-center gap-2.5">
-              <div
-                className={`flex h-11 items-center border px-2 text-[0.66rem] font-medium uppercase ${
-                  lightNav ? "border-[color:var(--charcoal)]/16" : "border-[color:var(--ivory)]/20"
+            <nav className="hidden xl:flex items-center gap-6 2xl:gap-8">
+              {items.map((i) => (
+                <a
+                  key={i.k}
+                  href={i.href}
+                  className={`group relative py-3 text-[0.64rem] font-medium tracking-[0.2em] uppercase transition-colors ${
+                    lightNav
+                      ? "text-[color:var(--charcoal)]/72 hover:text-[color:var(--charcoal)]"
+                      : "text-[color:var(--ivory)]/78 hover:text-[color:var(--ivory)]"
+                  }`}
+                >
+                  {tr(i.k)}
+                  <span className="absolute bottom-1 left-0 h-px w-full origin-left scale-x-0 bg-[color:var(--gold)]/80 transition-transform duration-700 ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-x-100" />
+                </a>
+              ))}
+              <a
+                href="#consultation"
+                className={`text-[0.64rem] font-medium tracking-[0.2em] uppercase border px-5 py-3 transition-all duration-500 ${
+                  lightNav
+                    ? "border-[color:var(--charcoal)] text-[color:var(--charcoal)] hover:bg-[color:var(--charcoal)] hover:text-[color:var(--ivory)]"
+                    : "border-[color:var(--ivory)] text-[color:var(--ivory)] hover:bg-[color:var(--ivory)] hover:text-[color:var(--charcoal)]"
                 }`}
               >
+                {tr("nav_book")}
+              </a>
+            </nav>
+
+            <div className="flex items-center gap-3 sm:gap-4 md:gap-5">
+              <div
+                className={`flex items-center text-[0.64rem] font-medium !tracking-[0px] [word-spacing:normal] uppercase transition-colors sm:text-[0.68rem] ${lightNav ? "text-[color:var(--charcoal)]" : "text-[color:var(--ivory)]"}`}
+              >
                 <button
-                  type="button"
                   onClick={() => setLang("en")}
-                  className={`flex h-11 min-w-11 items-center justify-center px-0 tracking-[0.16em] transition-opacity ${lang === "en" ? "opacity-100" : "opacity-42"}`}
+                  className={`inline-flex min-h-11 min-w-11 items-center justify-center px-1.5 tracking-[0.24em] transition-opacity xl:min-h-0 xl:min-w-0 ${lang === "en" ? "opacity-100" : "opacity-45 hover:opacity-80"}`}
                 >
                   EN
                 </button>
-                <span className="px-0.5 opacity-28">/</span>
+                <span className="opacity-35">/</span>
                 <button
-                  type="button"
                   lang="ar"
                   dir="rtl"
                   onClick={() => setLang("ar")}
-                  className={`flex h-11 min-w-11 items-center justify-center px-0 font-arabic !tracking-[0px] transition-opacity ${lang === "ar" ? "opacity-100" : "opacity-42"}`}
+                  className={`inline-flex min-h-11 min-w-11 items-center justify-center px-1.5 font-arabic !tracking-[0px] transition-opacity xl:min-h-0 xl:min-w-0 ${lang === "ar" ? "opacity-100" : "opacity-45 hover:opacity-80"}`}
                 >
                   ع
                 </button>
               </div>
               <button
-                type="button"
                 onClick={() => setOpen((v) => !v)}
                 aria-label="Menu"
-                className={`flex h-11 w-11 flex-col items-center justify-center gap-[5px] border transition-colors ${
-                  lightNav ? "border-[color:var(--charcoal)]/18" : "border-[color:var(--ivory)]/24"
+                className={`xl:hidden flex h-10 w-10 flex-col items-center justify-center gap-[5px] border transition-colors sm:h-11 sm:w-11 ${
+                  lightNav ? "border-[color:var(--charcoal)]/20" : "border-[color:var(--ivory)]/30"
                 }`}
               >
                 <span
-                  className={`block h-px w-5 transition-transform ${open ? "translate-y-[6px] rotate-45 bg-[color:var(--charcoal)]" : lightNav ? "bg-[color:var(--charcoal)]" : "bg-[color:var(--ivory)]"}`}
+                  className={`block h-px w-6 transition-transform ${open ? "translate-y-[6px] rotate-45 bg-[color:var(--charcoal)]" : lightNav ? "bg-[color:var(--charcoal)]" : "bg-[color:var(--ivory)]"}`}
                 />
                 <span
-                  className={`block h-px w-5 transition-opacity ${open ? "opacity-0" : lightNav ? "bg-[color:var(--charcoal)]" : "bg-[color:var(--ivory)]"}`}
+                  className={`block h-px w-6 transition-opacity ${open ? "opacity-0" : lightNav ? "bg-[color:var(--charcoal)]" : "bg-[color:var(--ivory)]"}`}
                 />
                 <span
-                  className={`block h-px w-5 transition-transform ${open ? "-translate-y-[6px] -rotate-45 bg-[color:var(--charcoal)]" : lightNav ? "bg-[color:var(--charcoal)]" : "bg-[color:var(--ivory)]"}`}
+                  className={`block h-px w-6 transition-transform ${open ? "-translate-y-[6px] -rotate-45 bg-[color:var(--charcoal)]" : lightNav ? "bg-[color:var(--charcoal)]" : "bg-[color:var(--ivory)]"}`}
                 />
               </button>
             </div>
           </div>
-        </div>
-      </header>
 
-      <div
-        className={`fixed inset-0 z-[70] bg-[color:var(--ivory)] text-[color:var(--charcoal)] transition-all duration-500 md:hidden ${
-          open
-            ? "pointer-events-auto translate-y-0 opacity-100"
-            : "pointer-events-none -translate-y-3 opacity-0"
-        }`}
-        aria-hidden={!open}
-        aria-label="Mobile menu"
-        aria-modal="true"
-        role="dialog"
-      >
-        <div className="flex h-full flex-col overflow-y-auto px-6 pb-[calc(env(safe-area-inset-bottom)+2rem)] pt-[calc(env(safe-area-inset-top)+1rem)]">
-          <div className="flex min-h-[72px] items-center justify-between">
-            <OfficialLogo loading="eager" sizes="126px" className="w-[126px]" />
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              className="flex h-11 w-11 items-center justify-center border border-[color:var(--charcoal)]/16 text-[1.4rem] leading-none"
-              aria-label="Close menu"
-            >
-              ×
-            </button>
-          </div>
-          <nav className="mt-10 flex flex-1 flex-col justify-center gap-7">
-            {items.map((i) => (
-              <a
-                key={i.k}
-                href={i.href}
-                onClick={() => setOpen(false)}
-                className="border-b border-[color:var(--border)]/65 pb-5 font-display text-[2.35rem] font-light leading-[1.02] text-[color:var(--charcoal)]"
-              >
-                {tr(i.k)}
-              </a>
-            ))}
-          </nav>
-          <a
-            href="#consultation"
-            onClick={() => setOpen(false)}
-            className="mt-10 inline-flex min-h-[60px] items-center justify-between bg-[color:var(--charcoal)] px-6 py-4 text-[0.76rem] font-medium uppercase tracking-[0.14em] text-[color:var(--ivory)]"
+          <div
+            className={`xl:hidden overflow-hidden bg-[color:var(--ivory)] transition-[max-height,opacity] duration-700 ${
+              open
+                ? "max-h-[700px] opacity-100 border-b border-[color:var(--border)]/60"
+                : "max-h-0 opacity-0"
+            }`}
           >
-            {tr("nav_book")}
-            <span className="h-px w-10 bg-current" />
-          </a>
-        </div>
-      </div>
-
-      <header
-        className={`fixed inset-x-0 top-0 z-50 hidden transition-all duration-700 md:block ${
-          lightNav
-            ? "bg-[color:var(--ivory)]/94 backdrop-blur-md border-b border-[color:var(--border)]/60 shadow-[0_8px_24px_-24px_rgba(0,0,0,0.28)]"
-            : "border-b border-[color:var(--ivory)]/8 bg-[color:var(--charcoal)]/34 shadow-[0_10px_28px_-26px_rgba(0,0,0,0.72)] backdrop-blur-md xl:border-transparent xl:bg-transparent xl:shadow-none xl:backdrop-blur-none"
-        }`}
-      >
-        <div className="mx-auto flex max-w-[1680px] items-center justify-between px-4 py-3 md:px-10 md:py-4 xl:px-12">
-          <a href="#top" aria-label={OFFICIAL_LOGO_ALT} className="block shrink-0">
-            <OfficialLogo
-              loading="eager"
-              sizes="(max-width: 767px) 132px, (max-width: 1279px) 144px, 158px"
-              className={`w-[130px] sm:w-[138px] md:w-[144px] xl:w-[158px] transition-opacity duration-500 ${
-                lightNav ? "opacity-100" : "opacity-[0.96]"
-              }`}
-            />
-          </a>
-
-          <nav className="hidden xl:flex items-center gap-6 2xl:gap-8">
-            {items.map((i) => (
+            <div className="flex flex-col gap-7 px-6 py-9 md:px-10">
+              {items.map((i) => (
+                <a
+                  key={i.k}
+                  href={i.href}
+                  onClick={() => setOpen(false)}
+                  className="flex min-h-[44px] items-center font-display text-[1.45rem] leading-none text-[color:var(--charcoal)] transition-colors hover:text-[color:var(--gold)]"
+                >
+                  {tr(i.k)}
+                </a>
+              ))}
               <a
-                key={i.k}
-                href={i.href}
-                className={`group relative py-3 text-[0.64rem] font-medium tracking-[0.2em] uppercase transition-colors ${
-                  lightNav
-                    ? "text-[color:var(--charcoal)]/72 hover:text-[color:var(--charcoal)]"
-                    : "text-[color:var(--ivory)]/78 hover:text-[color:var(--ivory)]"
-                }`}
-              >
-                {tr(i.k)}
-                <span className="absolute bottom-1 left-0 h-px w-full origin-left scale-x-0 bg-[color:var(--gold)]/80 transition-transform duration-700 ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-x-100" />
-              </a>
-            ))}
-            <a
-              href="#consultation"
-              className={`text-[0.64rem] font-medium tracking-[0.2em] uppercase border px-5 py-3 transition-all duration-500 ${
-                lightNav
-                  ? "border-[color:var(--charcoal)] text-[color:var(--charcoal)] hover:bg-[color:var(--charcoal)] hover:text-[color:var(--ivory)]"
-                  : "border-[color:var(--ivory)] text-[color:var(--ivory)] hover:bg-[color:var(--ivory)] hover:text-[color:var(--charcoal)]"
-              }`}
-            >
-              {tr("nav_book")}
-            </a>
-          </nav>
-
-          <div className="flex items-center gap-3 sm:gap-4 md:gap-5">
-            <div
-              className={`flex items-center text-[0.64rem] font-medium !tracking-[0px] [word-spacing:normal] uppercase transition-colors sm:text-[0.68rem] ${lightNav ? "text-[color:var(--charcoal)]" : "text-[color:var(--ivory)]"}`}
-            >
-              <button
-                onClick={() => setLang("en")}
-                className={`inline-flex min-h-11 min-w-11 items-center justify-center px-1.5 tracking-[0.24em] transition-opacity xl:min-h-0 xl:min-w-0 ${lang === "en" ? "opacity-100" : "opacity-45 hover:opacity-80"}`}
-              >
-                EN
-              </button>
-              <span className="opacity-35">/</span>
-              <button
-                lang="ar"
-                dir="rtl"
-                onClick={() => setLang("ar")}
-                className={`inline-flex min-h-11 min-w-11 items-center justify-center px-1.5 font-arabic !tracking-[0px] transition-opacity xl:min-h-0 xl:min-w-0 ${lang === "ar" ? "opacity-100" : "opacity-45 hover:opacity-80"}`}
-              >
-                ع
-              </button>
-            </div>
-            <button
-              onClick={() => setOpen((v) => !v)}
-              aria-label="Menu"
-              className={`xl:hidden flex h-10 w-10 flex-col items-center justify-center gap-[5px] border transition-colors sm:h-11 sm:w-11 ${
-                lightNav ? "border-[color:var(--charcoal)]/20" : "border-[color:var(--ivory)]/30"
-              }`}
-            >
-              <span
-                className={`block h-px w-6 transition-transform ${open ? "translate-y-[6px] rotate-45 bg-[color:var(--charcoal)]" : lightNav ? "bg-[color:var(--charcoal)]" : "bg-[color:var(--ivory)]"}`}
-              />
-              <span
-                className={`block h-px w-6 transition-opacity ${open ? "opacity-0" : lightNav ? "bg-[color:var(--charcoal)]" : "bg-[color:var(--ivory)]"}`}
-              />
-              <span
-                className={`block h-px w-6 transition-transform ${open ? "-translate-y-[6px] -rotate-45 bg-[color:var(--charcoal)]" : lightNav ? "bg-[color:var(--charcoal)]" : "bg-[color:var(--ivory)]"}`}
-              />
-            </button>
-          </div>
-        </div>
-
-        <div
-          className={`xl:hidden overflow-hidden bg-[color:var(--ivory)] transition-[max-height,opacity] duration-700 ${
-            open
-              ? "max-h-[700px] opacity-100 border-b border-[color:var(--border)]/60"
-              : "max-h-0 opacity-0"
-          }`}
-        >
-          <div className="flex flex-col gap-7 px-6 py-9 md:px-10">
-            {items.map((i) => (
-              <a
-                key={i.k}
-                href={i.href}
+                href="#consultation"
                 onClick={() => setOpen(false)}
-                className="flex min-h-[44px] items-center font-display text-[1.45rem] leading-none text-[color:var(--charcoal)] transition-colors hover:text-[color:var(--gold)]"
+                className="mt-1 flex min-h-[44px] items-center border-t border-[color:var(--border)]/70 pt-7 font-display text-[1.45rem] leading-none text-[color:var(--gold)]"
               >
-                {tr(i.k)}
+                {tr("nav_book")}
               </a>
-            ))}
-            <a
-              href="#consultation"
-              onClick={() => setOpen(false)}
-              className="mt-1 flex min-h-[44px] items-center border-t border-[color:var(--border)]/70 pt-7 font-display text-[1.45rem] leading-none text-[color:var(--gold)]"
-            >
-              {tr("nav_book")}
-            </a>
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
+      </ViewportOnly>
     </>
   );
 }
@@ -2117,9 +2162,9 @@ function Hero() {
         <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/28 to-transparent" />
       </div>
 
-      <div
-        data-mobile-hero="true"
-        className="relative z-10 flex min-h-[100svh] flex-col justify-end px-6 pb-[calc(env(safe-area-inset-bottom)+34px)] pt-[calc(env(safe-area-inset-top)+120px)] md:hidden"
+      <ViewportOnly
+        match="phone"
+        className="relative z-10 flex min-h-[100svh] flex-col justify-end px-6 pb-[calc(env(safe-area-inset-bottom)+34px)] pt-[calc(env(safe-area-inset-top)+120px)]"
       >
         <div className="max-w-[360px] pb-4 text-[color:var(--ivory)] animate-fade-up">
           <h1
@@ -2147,9 +2192,12 @@ function Hero() {
             </a>
           </div>
         </div>
-      </div>
+      </ViewportOnly>
 
-      <div className="relative z-10 hidden min-h-[100svh] flex-col justify-center px-6 pb-[calc(env(safe-area-inset-bottom)+44px)] pt-[calc(env(safe-area-inset-top)+104px)] md:flex lg:hidden">
+      <ViewportOnly
+        match="tablet"
+        className="relative z-10 flex min-h-[100svh] flex-col justify-center px-6 pb-[calc(env(safe-area-inset-bottom)+44px)] pt-[calc(env(safe-area-inset-top)+104px)]"
+      >
         <div className="mt-10 max-w-[342px] text-[color:var(--ivory)] animate-fade-up">
           <h1
             data-mobile-hero-heading="true"
@@ -2176,9 +2224,9 @@ function Hero() {
             </a>
           </div>
         </div>
-      </div>
+      </ViewportOnly>
 
-      <div className="relative z-10 hidden h-full flex-col lg:flex">
+      <ViewportOnly match="desktop" className="relative z-10 flex h-full flex-col">
         <div className="flex-1" />
         <div className="mx-auto w-full max-w-[1680px] px-12 pb-[clamp(7rem,13vh,10rem)]">
           <div className="max-w-[860px] text-[color:var(--ivory)] animate-fade-up">
@@ -2218,7 +2266,7 @@ function Hero() {
             <span className="block h-12 w-px bg-gradient-to-b from-[color:var(--ivory)]/70 to-transparent animate-pulse" />
           </div>
         </div>
-      </div>
+      </ViewportOnly>
     </section>
   );
 }
@@ -2311,7 +2359,7 @@ function Commission({ onChoose }: { onChoose: (label: string) => void }) {
 
   return (
     <section id="commission" className="overflow-hidden bg-[color:var(--ivory)] py-0 md:py-44">
-      <div className="md:hidden">
+      <ViewportOnly match="phone">
         <div className="px-6 py-24">
           <Reveal>
             <MobileLabel>{tr("com_eyebrow")}</MobileLabel>
@@ -2376,9 +2424,9 @@ function Commission({ onChoose }: { onChoose: (label: string) => void }) {
             </div>
           </Reveal>
         </div>
-      </div>
+      </ViewportOnly>
 
-      <div className="mx-auto hidden max-w-[1700px] px-6 md:block md:px-12">
+      <ViewportOnly match={NON_PHONE} className="mx-auto max-w-[1700px] px-6 md:px-12">
         <div className="grid grid-cols-1 items-end gap-10 md:grid-cols-12 md:gap-12">
           <Reveal className="md:col-span-6">
             <Eyebrow>{tr("com_eyebrow")}</Eyebrow>
@@ -2491,7 +2539,7 @@ function Commission({ onChoose }: { onChoose: (label: string) => void }) {
             </div>
           </div>
         </Reveal>
-      </div>
+      </ViewportOnly>
     </section>
   );
 }
@@ -2557,7 +2605,7 @@ function DesignYourPiece({ onContinue }: { onContinue: (whisper: string) => void
 
   return (
     <section id="design" className="bg-[color:var(--pearl)] py-0 md:py-44">
-      <div className="md:hidden">
+      <ViewportOnly match="phone">
         <div className="px-6 py-24">
           <Reveal>
             <MobileLabel>{tr("dyp_eyebrow")}</MobileLabel>
@@ -2660,9 +2708,9 @@ function DesignYourPiece({ onContinue }: { onContinue: (whisper: string) => void
             </div>
           </Reveal>
         </div>
-      </div>
+      </ViewportOnly>
 
-      <div className="mx-auto hidden max-w-[1600px] px-6 md:block md:px-12">
+      <ViewportOnly match={NON_PHONE} className="mx-auto max-w-[1600px] px-6 md:px-12">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-12 items-end mb-18 md:mb-24">
           <Reveal className="md:col-span-7">
             <Eyebrow>{tr("dyp_eyebrow")}</Eyebrow>
@@ -2780,7 +2828,7 @@ function DesignYourPiece({ onContinue }: { onContinue: (whisper: string) => void
             </div>
           </div>
         </Reveal>
-      </div>
+      </ViewportOnly>
     </section>
   );
 }
@@ -2803,7 +2851,7 @@ function Process() {
       id="atelier"
       className="relative overflow-hidden bg-[color:var(--charcoal)] py-0 text-[color:var(--ivory)] md:py-56"
     >
-      <div className="md:hidden">
+      <ViewportOnly match="phone">
         <div className="px-6 py-24">
           <Reveal>
             <MobileLabel light>{tr("pr_eyebrow")}</MobileLabel>
@@ -2847,9 +2895,9 @@ function Process() {
             ))}
           </div>
         </div>
-      </div>
+      </ViewportOnly>
 
-      <div className="hidden md:block">
+      <ViewportOnly match={NON_PHONE}>
         <div className="absolute inset-y-0 right-0 hidden w-[42%] bg-[radial-gradient(circle_at_center,rgba(206,174,109,.13),transparent_58%)] lg:block" />
         <div className="relative mx-auto max-w-[1600px] px-6 md:px-12">
           <div className="grid grid-cols-1 items-end gap-10 lg:grid-cols-12 lg:gap-16">
@@ -2905,7 +2953,7 @@ function Process() {
             </div>
           </div>
         </div>
-      </div>
+      </ViewportOnly>
     </section>
   );
 }
@@ -2928,7 +2976,7 @@ function Signature() {
   ];
   return (
     <section id="creations" className="overflow-hidden bg-[color:var(--ivory)] py-0 md:py-56">
-      <div className="md:hidden">
+      <ViewportOnly match="phone">
         <div className="px-6 py-24">
           <Reveal>
             <MobileLabel>{tr("sig_eyebrow")}</MobileLabel>
@@ -2982,9 +3030,9 @@ function Signature() {
             })}
           </div>
         </div>
-      </div>
+      </ViewportOnly>
 
-      <div className="mx-auto hidden max-w-[1700px] px-6 md:block md:px-12">
+      <ViewportOnly match={NON_PHONE} className="mx-auto max-w-[1700px] px-6 md:px-12">
         <div className="grid grid-cols-1 items-end gap-8 md:grid-cols-12 md:gap-12">
           <Reveal className="md:col-span-6">
             <Eyebrow>{tr("sig_eyebrow")}</Eyebrow>
@@ -3067,7 +3115,7 @@ function Signature() {
             );
           })}
         </div>
-      </div>
+      </ViewportOnly>
     </section>
   );
 }
@@ -3092,7 +3140,7 @@ function Redesign({ onBegin }: { onBegin: () => void }) {
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,.9),rgba(0,0,0,.62)_42%,rgba(0,0,0,.28))]" />
       </div>
 
-      <div className="relative md:hidden">
+      <ViewportOnly match="phone" className="relative">
         <div className="px-6 py-24">
           <Reveal>
             <MobileLabel light>{tr("rd_eyebrow")}</MobileLabel>
@@ -3150,9 +3198,9 @@ function Redesign({ onBegin }: { onBegin: () => void }) {
             ))}
           </div>
         </div>
-      </div>
+      </ViewportOnly>
 
-      <div className="relative mx-auto hidden max-w-[1650px] px-6 md:block md:px-12">
+      <ViewportOnly match={NON_PHONE} className="relative mx-auto max-w-[1650px] px-6 md:px-12">
         <div className="grid grid-cols-1 items-center gap-16 lg:grid-cols-12 lg:gap-20">
           <Reveal className="lg:col-span-5">
             <Eyebrow light>{tr("rd_eyebrow")}</Eyebrow>
@@ -3218,7 +3266,7 @@ function Redesign({ onBegin }: { onBegin: () => void }) {
             ))}
           </div>
         </Reveal>
-      </div>
+      </ViewportOnly>
     </section>
   );
 }
@@ -3245,7 +3293,7 @@ function Stories() {
 
   return (
     <section className="overflow-hidden bg-[color:var(--ivory)] py-0 md:py-56">
-      <div className="md:hidden">
+      <ViewportOnly match="phone">
         <div className="px-6 py-24">
           <Reveal>
             <MobileLabel>{tr("st_eyebrow")}</MobileLabel>
@@ -3296,9 +3344,9 @@ function Stories() {
             ))}
           </div>
         </div>
-      </div>
+      </ViewportOnly>
 
-      <div className="mx-auto hidden max-w-[1700px] px-6 md:block md:px-12">
+      <ViewportOnly match={NON_PHONE} className="mx-auto max-w-[1700px] px-6 md:px-12">
         <div className="grid grid-cols-1 items-end gap-10 lg:grid-cols-12 lg:gap-14">
           <Reveal className="lg:col-span-6">
             <Eyebrow>{tr("st_eyebrow")}</Eyebrow>
@@ -3365,7 +3413,7 @@ function Stories() {
             </Reveal>
           ))}
         </div>
-      </div>
+      </ViewportOnly>
     </section>
   );
 }
@@ -3378,7 +3426,7 @@ function Founder() {
   const { tr } = useLang();
   return (
     <section className="overflow-hidden bg-[color:var(--pearl)] py-0 md:py-52">
-      <div className="md:hidden">
+      <ViewportOnly match="phone">
         <div className="px-6 py-24">
           <Reveal>
             <div className="-mx-6">
@@ -3408,9 +3456,9 @@ function Founder() {
             </div>
           </Reveal>
         </div>
-      </div>
+      </ViewportOnly>
 
-      <div className="mx-auto hidden max-w-[1650px] px-6 md:block md:px-12">
+      <ViewportOnly match={NON_PHONE} className="mx-auto max-w-[1650px] px-6 md:px-12">
         <div className="grid grid-cols-1 items-center gap-16 lg:grid-cols-12 lg:gap-20">
           <Reveal className="lg:col-span-7">
             <div className="relative">
@@ -3438,7 +3486,7 @@ function Founder() {
             </div>
           </Reveal>
         </div>
-      </div>
+      </ViewportOnly>
     </section>
   );
 }
@@ -3502,7 +3550,7 @@ function Consultation({ prefill }: { prefill: { create?: string; whisper?: strin
         <div className="absolute inset-0 bg-gradient-to-b from-[color:var(--charcoal)]/85 via-[color:var(--charcoal)]/90 to-[color:var(--charcoal)]" />
       </div>
 
-      <div className="relative md:hidden">
+      <ViewportOnly match="phone" className="relative">
         <div className="px-6 py-24">
           <Reveal>
             <MobileLabel light>{tr("cs_eyebrow")}</MobileLabel>
@@ -3638,9 +3686,12 @@ function Consultation({ prefill }: { prefill: { create?: string; whisper?: strin
             </form>
           </Reveal>
         </div>
-      </div>
+      </ViewportOnly>
 
-      <div className="relative mx-auto hidden max-w-[1500px] px-6 py-32 md:block md:px-12 md:py-48">
+      <ViewportOnly
+        match={NON_PHONE}
+        className="relative mx-auto max-w-[1500px] px-6 py-32 md:px-12 md:py-48"
+      >
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24">
           <div className="lg:col-span-5">
             <Reveal>
@@ -3779,7 +3830,7 @@ function Consultation({ prefill }: { prefill: { create?: string; whisper?: strin
             </form>
           </Reveal>
         </div>
-      </div>
+      </ViewportOnly>
     </section>
   );
 }
@@ -3974,7 +4025,7 @@ function Footer() {
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,.55),rgba(0,0,0,.94))]" />
       </div>
 
-      <div className="relative md:hidden">
+      <ViewportOnly match="phone" className="relative">
         <div className="px-6 py-20 pb-[calc(env(safe-area-inset-bottom)+7rem)]">
           <OfficialLogo sizes="156px" className="w-[156px]" />
           <p className="mt-10 font-display text-[2.55rem] font-light italic leading-[1.08] text-[color:var(--ivory)]/88">
@@ -4011,9 +4062,12 @@ function Footer() {
             </div>
           </div>
         </div>
-      </div>
+      </ViewportOnly>
 
-      <div className="relative mx-auto hidden max-w-[1650px] px-6 py-20 md:block md:px-12 md:py-32">
+      <ViewportOnly
+        match={NON_PHONE}
+        className="relative mx-auto max-w-[1650px] px-6 py-20 md:px-12 md:py-32"
+      >
         <div className="grid grid-cols-1 gap-14 lg:grid-cols-12 lg:items-end">
           <div className="lg:col-span-6">
             <OfficialLogo
@@ -4070,7 +4124,7 @@ function Footer() {
           </span>
           <span className="h-px w-12 bg-current transition-all duration-500 group-hover:w-28" />
         </a>
-      </div>
+      </ViewportOnly>
     </footer>
   );
 }
