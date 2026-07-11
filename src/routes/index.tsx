@@ -229,6 +229,15 @@ function AmbientFilm({
   const [active, setActive] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
+  const start = useCallback(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.muted = true;
+    video.playsInline = true;
+    const playAttempt = video.play();
+    if (playAttempt) playAttempt.catch(() => undefined);
+  }, []);
+
   useEffect(() => {
     const el = wrapRef.current;
     if (!el) return;
@@ -241,7 +250,7 @@ function AmbientFilm({
       },
       {
         threshold: 0,
-        rootMargin: "360px 0px 360px 0px",
+        rootMargin: "700px 0px 700px 0px",
       },
     );
     io.observe(el);
@@ -251,9 +260,10 @@ function AmbientFilm({
   useEffect(() => {
     const el = wrapRef.current;
     if (!el) return;
-    const io = new IntersectionObserver(([entry]) => setActive(entry.isIntersecting), {
-      threshold: 0.24,
-    });
+    const io = new IntersectionObserver(
+      ([entry]) => setActive(entry.isIntersecting && entry.intersectionRatio > 0.02),
+      { threshold: [0, 0.02], rootMargin: "18% 0px 18% 0px" },
+    );
     io.observe(el);
     return () => io.disconnect();
   }, []);
@@ -267,12 +277,11 @@ function AmbientFilm({
     if (!video) return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (active && loaded && !reduce) {
-      const playAttempt = video.play();
-      if (playAttempt) playAttempt.catch(() => undefined);
+      start();
     } else {
       video.pause();
     }
-  }, [active, loaded]);
+  }, [active, loaded, start]);
 
   return (
     <div
@@ -288,19 +297,27 @@ function AmbientFilm({
       <video
         ref={videoRef}
         className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${mediaClassName} ${active ? "opacity-100" : "opacity-0"}`}
+        autoPlay
         muted
         loop
         playsInline
+        controls={false}
         preload="metadata"
         poster={u(film.poster)}
         aria-hidden="true"
         disablePictureInPicture
         disableRemotePlayback
+        onLoadedMetadata={() => {
+          if (active && loaded) start();
+        }}
+        onCanPlay={() => {
+          if (active && loaded) start();
+        }}
       >
         {loaded && (
           <>
-            <source src={u(film.webm)} type="video/webm" />
             <source src={u(film.mp4)} type="video/mp4" />
+            <source src={u(film.webm)} type="video/webm" />
           </>
         )}
       </video>
@@ -330,7 +347,9 @@ function MotionFrame({
 
   const start = useCallback(() => {
     const video = videoRef.current;
-    if (!video || video.readyState < 2) return;
+    if (!video) return;
+    video.muted = true;
+    video.playsInline = true;
     const playAttempt = video?.play();
     if (playAttempt) {
       playAttempt.then(() => setPlaying(true)).catch(() => setPlaying(false));
@@ -357,7 +376,7 @@ function MotionFrame({
       },
       {
         threshold: 0,
-        rootMargin: "360px 0px 360px 0px",
+        rootMargin: "700px 0px 700px 0px",
       },
     );
     io.observe(frame);
@@ -367,9 +386,10 @@ function MotionFrame({
   useEffect(() => {
     const frame = frameRef.current;
     if (!frame) return;
-    const io = new IntersectionObserver(([entry]) => setActive(entry.isIntersecting), {
-      threshold: 0.2,
-    });
+    const io = new IntersectionObserver(
+      ([entry]) => setActive(entry.isIntersecting && entry.intersectionRatio > 0.02),
+      { threshold: [0, 0.02], rootMargin: "18% 0px 18% 0px" },
+    );
     io.observe(frame);
     return () => io.disconnect();
   }, []);
@@ -399,23 +419,28 @@ function MotionFrame({
       />
       <video
         ref={videoRef}
+        autoPlay
         muted
         loop
         playsInline
+        controls={false}
         preload="metadata"
         poster={u(film.poster)}
         className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 ${mediaClassName} ${playing ? "opacity-100" : "opacity-0"}`}
         aria-hidden="true"
         disablePictureInPicture
         disableRemotePlayback
+        onLoadedMetadata={() => {
+          if (active && loaded) start();
+        }}
         onCanPlay={() => {
           if (active && loaded) start();
         }}
       >
         {loaded && (
           <>
-            <source src={u(film.webm)} type="video/webm" />
             <source src={u(film.mp4)} type="video/mp4" />
+            <source src={u(film.webm)} type="video/webm" />
           </>
         )}
       </video>
@@ -570,9 +595,12 @@ function IntroScreen() {
   const { lang } = useLang();
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const finishedRef = useRef(false);
+  const retryRef = useRef(false);
   const [visible, setVisible] = useState(true);
   const [leaving, setLeaving] = useState(false);
   const [canSkip, setCanSkip] = useState(false);
+  const [manualEntry, setManualEntry] = useState(false);
+  const [portraitIntro, setPortraitIntro] = useState(false);
 
   const finishIntro = useCallback(() => {
     if (finishedRef.current) return;
@@ -584,6 +612,14 @@ function IntroScreen() {
   useEffect(() => {
     const timer = window.setTimeout(() => setCanSkip(true), 1500);
     return () => window.clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const media = window.matchMedia("(orientation: portrait)");
+    const update = () => setPortraitIntro(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
   }, []);
 
   useEffect(() => {
@@ -614,22 +650,39 @@ function IntroScreen() {
     };
   }, [visible, leaving]);
 
-  useEffect(() => {
+  const requestPlayback = useCallback(() => {
     const video = videoRef.current;
-    const loadGuard = window.setTimeout(() => {
-      if (!video || video.readyState < 2) finishIntro();
-    }, 3000);
+    if (!video || finishedRef.current) return;
+    video.muted = true;
+    video.playsInline = true;
+    const playAttempt = video.play();
+    if (!playAttempt) return;
+    playAttempt.catch(() => {
+      if (!retryRef.current) {
+        retryRef.current = true;
+        window.setTimeout(() => requestPlayback(), 350);
+        return;
+      }
+      setManualEntry(true);
+      setCanSkip(true);
+    });
+  }, []);
 
-    const playGuard = window.setTimeout(() => {
-      const playAttempt = video?.play();
-      if (playAttempt) playAttempt.catch(finishIntro);
-    }, 0);
+  useEffect(() => {
+    const firstAttempt = window.setTimeout(requestPlayback, 80);
+    const patienceGuard = window.setTimeout(() => {
+      const video = videoRef.current;
+      if (!video || (video.paused && video.readyState < 2)) {
+        setManualEntry(true);
+        setCanSkip(true);
+      }
+    }, 6200);
 
     return () => {
-      window.clearTimeout(loadGuard);
-      window.clearTimeout(playGuard);
+      window.clearTimeout(firstAttempt);
+      window.clearTimeout(patienceGuard);
     };
-  }, [finishIntro]);
+  }, [requestPlayback]);
 
   if (!visible) return null;
 
@@ -658,24 +711,43 @@ function IntroScreen() {
         autoPlay
         muted
         playsInline
+        controls={false}
         preload="auto"
-        poster={u(introPosterLandscape)}
+        poster={u(portraitIntro ? introPosterPortrait : introPosterLandscape)}
         aria-label="Opal Stones intro film"
         disablePictureInPicture
         disableRemotePlayback
         onEnded={finishIntro}
-        onError={finishIntro}
+        onError={() => {
+          setManualEntry(true);
+          setCanSkip(true);
+        }}
+        onLoadedMetadata={requestPlayback}
         onLoadedData={(event) => {
           const playAttempt = event.currentTarget.play();
-          if (playAttempt) playAttempt.catch(finishIntro);
+          if (playAttempt) playAttempt.catch(requestPlayback);
         }}
+        onCanPlay={requestPlayback}
       >
-        <source media="(orientation: portrait)" src={u(introPortraitWebm)} type="video/webm" />
         <source media="(orientation: portrait)" src={u(introPortraitMp4)} type="video/mp4" />
-        <source src={u(introLandscapeWebm)} type="video/webm" />
+        <source media="(orientation: portrait)" src={u(introPortraitWebm)} type="video/webm" />
         <source src={u(introLandscapeMp4)} type="video/mp4" />
+        <source src={u(introLandscapeWebm)} type="video/webm" />
       </video>
       <div className="absolute inset-0 bg-black/10" />
+      {manualEntry && (
+        <div className="absolute inset-x-6 bottom-[calc(4.8rem+env(safe-area-inset-bottom))] mx-auto max-w-[25rem] text-center text-[color:var(--ivory)]">
+          <div
+            className={`text-[0.72rem] font-medium ${
+              lang === "ar"
+                ? "font-arabic !tracking-[0px]"
+                : "uppercase tracking-[0.16em] md:tracking-[0.22em]"
+            }`}
+          >
+            {lang === "ar" ? "الفيلم جاهز للعرض" : "The maison is ready"}
+          </div>
+        </div>
+      )}
       <button
         type="button"
         data-intro-skip="true"
@@ -686,7 +758,13 @@ function IntroScreen() {
             : "uppercase tracking-[0.16em] md:tracking-[0.22em]"
         } ${canSkip ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"}`}
       >
-        {lang === "ar" ? "تخطي المقدمة" : "Skip intro"}
+        {manualEntry
+          ? lang === "ar"
+            ? "دخول"
+            : "Enter"
+          : lang === "ar"
+            ? "تخطي المقدمة"
+            : "Skip intro"}
       </button>
     </div>
   );
@@ -698,15 +776,53 @@ function IntroScreen() {
 
 function Nav({ onConcierge }: { onConcierge: () => void }) {
   const { lang, setLang, tr } = useLang();
+  const lastY = useRef(0);
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [hideMobileHeader, setHideMobileHeader] = useState(false);
 
   useEffect(() => {
-    const f = () => setScrolled(window.scrollY > 40);
+    const f = () => {
+      const y = window.scrollY;
+      const isPhone = window.matchMedia("(max-width: 767px)").matches;
+      setScrolled(y > 40);
+      if (isPhone && !open) {
+        const goingDown = y > lastY.current + 8;
+        const goingUp = y < lastY.current - 8;
+        if (goingDown && y > 140) setHideMobileHeader(true);
+        if (goingUp || y < 80) setHideMobileHeader(false);
+      } else {
+        setHideMobileHeader(false);
+      }
+      lastY.current = y;
+    };
     f();
     window.addEventListener("scroll", f, { passive: true });
-    return () => window.removeEventListener("scroll", f);
-  }, []);
+    window.addEventListener("resize", f);
+    return () => {
+      window.removeEventListener("scroll", f);
+      window.removeEventListener("resize", f);
+    };
+  }, [open]);
+
+  useEffect(() => {
+    if (!open || !window.matchMedia("(max-width: 767px)").matches) return;
+    const html = document.documentElement;
+    const body = document.body;
+    const previous = {
+      htmlOverflow: html.style.overflow,
+      bodyOverflow: body.style.overflow,
+      bodyTouchAction: body.style.touchAction,
+    };
+    html.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+    body.style.touchAction = "none";
+    return () => {
+      html.style.overflow = previous.htmlOverflow;
+      body.style.overflow = previous.bodyOverflow;
+      body.style.touchAction = previous.bodyTouchAction;
+    };
+  }, [open]);
 
   const items: { k: TKey; href: string }[] = [
     { k: "nav_commission", href: "#commission" },
@@ -724,7 +840,7 @@ function Nav({ onConcierge }: { onConcierge: () => void }) {
           lightNav
             ? "border-b border-[color:var(--border)]/70 bg-[color:var(--ivory)]/96 text-[color:var(--charcoal)] backdrop-blur-md"
             : "border-b border-[color:var(--ivory)]/10 bg-[color:var(--charcoal)]/62 text-[color:var(--ivory)] backdrop-blur-md"
-        }`}
+        } ${hideMobileHeader ? "-translate-y-full" : "translate-y-0"}`}
       >
         <div className="pt-[env(safe-area-inset-top)]">
           <div className="flex h-[72px] items-center justify-between px-5">
@@ -783,36 +899,53 @@ function Nav({ onConcierge }: { onConcierge: () => void }) {
             </div>
           </div>
         </div>
+      </header>
 
-        <div
-          className={`overflow-hidden bg-[color:var(--ivory)] text-[color:var(--charcoal)] transition-[max-height,opacity] duration-500 ${
-            open
-              ? "max-h-[calc(100svh-72px)] opacity-100 border-t border-[color:var(--border)]/60"
-              : "max-h-0 opacity-0"
-          }`}
-        >
-          <div className="flex max-h-[calc(100svh-92px)] flex-col gap-6 overflow-y-auto px-6 py-8">
+      <div
+        className={`fixed inset-0 z-[70] bg-[color:var(--ivory)] text-[color:var(--charcoal)] transition-all duration-500 md:hidden ${
+          open
+            ? "pointer-events-auto translate-y-0 opacity-100"
+            : "pointer-events-none -translate-y-3 opacity-0"
+        }`}
+        aria-hidden={!open}
+        aria-label="Mobile menu"
+        aria-modal="true"
+        role="dialog"
+      >
+        <div className="flex h-full flex-col overflow-y-auto px-6 pb-[calc(env(safe-area-inset-bottom)+2rem)] pt-[calc(env(safe-area-inset-top)+1rem)]">
+          <div className="flex min-h-[72px] items-center justify-between">
+            <OfficialLogo loading="eager" sizes="126px" className="w-[126px]" />
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              className="flex h-11 w-11 items-center justify-center border border-[color:var(--charcoal)]/16 text-[1.4rem] leading-none"
+              aria-label="Close menu"
+            >
+              ×
+            </button>
+          </div>
+          <nav className="mt-10 flex flex-1 flex-col justify-center gap-7">
             {items.map((i) => (
               <a
                 key={i.k}
                 href={i.href}
                 onClick={() => setOpen(false)}
-                className="border-b border-[color:var(--border)]/65 pb-5 font-display text-[2rem] font-light leading-[1.05] text-[color:var(--charcoal)]"
+                className="border-b border-[color:var(--border)]/65 pb-5 font-display text-[2.35rem] font-light leading-[1.02] text-[color:var(--charcoal)]"
               >
                 {tr(i.k)}
               </a>
             ))}
-            <a
-              href="#consultation"
-              onClick={() => setOpen(false)}
-              className="mt-2 inline-flex min-h-[58px] items-center justify-between bg-[color:var(--charcoal)] px-6 py-4 text-[0.76rem] font-medium uppercase tracking-[0.14em] text-[color:var(--ivory)]"
-            >
-              {tr("nav_book")}
-              <span className="h-px w-10 bg-current" />
-            </a>
-          </div>
+          </nav>
+          <a
+            href="#consultation"
+            onClick={() => setOpen(false)}
+            className="mt-10 inline-flex min-h-[60px] items-center justify-between bg-[color:var(--charcoal)] px-6 py-4 text-[0.76rem] font-medium uppercase tracking-[0.14em] text-[color:var(--ivory)]"
+          >
+            {tr("nav_book")}
+            <span className="h-px w-10 bg-current" />
+          </a>
         </div>
-      </header>
+      </div>
 
       <header
         className={`fixed inset-x-0 top-0 z-50 hidden transition-all duration-700 md:block ${
@@ -865,7 +998,7 @@ function Nav({ onConcierge }: { onConcierge: () => void }) {
             >
               <button
                 onClick={() => setLang("en")}
-                className={`px-1.5 tracking-[0.24em] transition-opacity ${lang === "en" ? "opacity-100" : "opacity-45 hover:opacity-80"}`}
+                className={`inline-flex min-h-11 min-w-11 items-center justify-center px-1.5 tracking-[0.24em] transition-opacity xl:min-h-0 xl:min-w-0 ${lang === "en" ? "opacity-100" : "opacity-45 hover:opacity-80"}`}
               >
                 EN
               </button>
@@ -874,7 +1007,7 @@ function Nav({ onConcierge }: { onConcierge: () => void }) {
                 lang="ar"
                 dir="rtl"
                 onClick={() => setLang("ar")}
-                className={`px-1.5 font-arabic !tracking-[0px] transition-opacity ${lang === "ar" ? "opacity-100" : "opacity-45 hover:opacity-80"}`}
+                className={`inline-flex min-h-11 min-w-11 items-center justify-center px-1.5 font-arabic !tracking-[0px] transition-opacity xl:min-h-0 xl:min-w-0 ${lang === "ar" ? "opacity-100" : "opacity-45 hover:opacity-80"}`}
               >
                 ع
               </button>
@@ -912,7 +1045,7 @@ function Nav({ onConcierge }: { onConcierge: () => void }) {
                 key={i.k}
                 href={i.href}
                 onClick={() => setOpen(false)}
-                className="font-display text-[1.45rem] leading-none text-[color:var(--charcoal)] transition-colors hover:text-[color:var(--gold)]"
+                className="flex min-h-[44px] items-center font-display text-[1.45rem] leading-none text-[color:var(--charcoal)] transition-colors hover:text-[color:var(--gold)]"
               >
                 {tr(i.k)}
               </a>
@@ -920,7 +1053,7 @@ function Nav({ onConcierge }: { onConcierge: () => void }) {
             <a
               href="#consultation"
               onClick={() => setOpen(false)}
-              className="mt-1 border-t border-[color:var(--border)]/70 pt-7 font-display text-[1.45rem] leading-none text-[color:var(--gold)]"
+              className="mt-1 flex min-h-[44px] items-center border-t border-[color:var(--border)]/70 pt-7 font-display text-[1.45rem] leading-none text-[color:var(--gold)]"
             >
               {tr("nav_book")}
             </a>
@@ -1175,13 +1308,14 @@ function Commission({ onChoose }: { onChoose: (label: string) => void }) {
             </p>
           </Reveal>
 
-          <div className="mt-18 flex flex-col gap-9">
-            {cards.map((c, i) => (
-              <Reveal key={c.k} delay={(i % 3) * 80}>
+          <Reveal delay={180}>
+            <div className="-mx-6 mt-16 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-7 [scrollbar-width:none]">
+              {cards.map((c, i) => (
                 <button
+                  key={c.k}
                   type="button"
                   onClick={() => onChoose(tr(c.k))}
-                  className="group block w-full text-left"
+                  className="group block min-w-[82vw] max-w-[342px] snap-center text-left"
                 >
                   <div className="relative aspect-[4/5] overflow-hidden bg-[color:var(--charcoal)]">
                     <img
@@ -1190,15 +1324,15 @@ function Commission({ onChoose }: { onChoose: (label: string) => void }) {
                       loading={i < 2 ? "eager" : "lazy"}
                       className={`h-full w-full object-cover brightness-[0.88] transition-transform duration-[1600ms] group-active:scale-[1.025] ${c.pos}`}
                     />
-                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.2)_46%,rgba(0,0,0,.72))]" />
+                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.2)_44%,rgba(0,0,0,.76))]" />
                     <div className="absolute inset-x-0 bottom-0 p-6 text-[color:var(--ivory)]">
                       <div className="font-display text-[4.2rem] font-light italic leading-none text-[color:var(--ivory)]/46">
                         {c.n}
                       </div>
-                      <h3 className="mt-5 font-display text-[2.65rem] font-light leading-[1.02]">
+                      <h3 className="mt-5 font-display text-[2.55rem] font-light leading-[1.02]">
                         {tr(c.k)}
                       </h3>
-                      <p className="mt-4 max-w-[28ch] text-[1rem] font-light leading-[1.82] text-[color:var(--ivory)]/82">
+                      <p className="mt-4 max-w-[27ch] text-[1rem] font-light leading-[1.82] text-[color:var(--ivory)]/82">
                         {tr(c.d)}
                       </p>
                     </div>
@@ -1208,9 +1342,9 @@ function Commission({ onChoose }: { onChoose: (label: string) => void }) {
                     <span className="h-px w-12 bg-[color:var(--gold)]" />
                   </div>
                 </button>
-              </Reveal>
-            ))}
-          </div>
+              ))}
+            </div>
+          </Reveal>
         </div>
       </div>
 
@@ -1433,7 +1567,10 @@ function DesignYourPiece({ onContinue }: { onContinue: (whisper: string) => void
             </div>
           </Reveal>
 
-          <div key={tab} className="mt-10 flex flex-col gap-5 animate-fade-in">
+          <div
+            key={tab}
+            className="-mx-6 mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-6 animate-fade-in [scrollbar-width:none]"
+          >
             {groups[tab].map((opt, i) => {
               const label = labelFor(opt.k);
               const selected = picks[tab] === label;
@@ -1442,13 +1579,13 @@ function DesignYourPiece({ onContinue }: { onContinue: (whisper: string) => void
                   key={opt.k}
                   type="button"
                   onClick={() => setPicks((p) => ({ ...p, [tab]: label }))}
-                  className={`group relative block overflow-hidden text-left transition-all ${
+                  className={`group relative block min-w-[78vw] max-w-[330px] snap-center overflow-hidden text-left transition-all ${
                     selected
                       ? "bg-[color:var(--charcoal)] text-[color:var(--ivory)]"
                       : "bg-[color:var(--ivory)] text-[color:var(--charcoal)]"
                   }`}
                 >
-                  <div className="aspect-[16/11] overflow-hidden">
+                  <div className="aspect-[4/5] overflow-hidden">
                     <img
                       src={u(opt.img)}
                       alt=""
@@ -1518,7 +1655,11 @@ function DesignYourPiece({ onContinue }: { onContinue: (whisper: string) => void
               const active = tab === t.k;
               const chosen = picks[t.k];
               return (
-                <button key={t.k} onClick={() => setTab(t.k)} className="group relative text-left">
+                <button
+                  key={t.k}
+                  onClick={() => setTab(t.k)}
+                  className="group relative min-w-11 text-left"
+                >
                   <div
                     className={`text-[0.66rem] font-medium tracking-[0.24em] uppercase transition-colors ${active ? "text-[color:var(--gold)]" : "text-[color:var(--taupe)]/70"}`}
                   >
@@ -2553,7 +2694,7 @@ function Consultation({ prefill }: { prefill: { create?: string; whisper?: strin
                         key={k}
                         type="button"
                         onClick={() => setForm({ ...form, create: label })}
-                        className={`px-5 py-3 text-[0.68rem] font-medium uppercase border transition-all duration-500 ${
+                        className={`min-h-11 px-5 py-3 text-[0.68rem] font-medium uppercase border transition-all duration-500 ${
                           lang === "ar" ? "tracking-normal" : "tracking-[0.2em]"
                         } ${
                           active
@@ -2673,14 +2814,22 @@ function Concierge({
       <button
         onClick={() => setOpen(!open)}
         aria-label="Jewellery Concierge"
-        className={`fixed bottom-[calc(0.9rem+env(safe-area-inset-bottom))] left-6 right-6 z-50 group transition-all duration-500 md:bottom-6 md:left-auto md:right-6 md:pointer-events-auto md:translate-y-0 md:opacity-100 ${
+        className={`fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-4 z-50 group transition-all duration-500 md:bottom-6 md:right-6 lg:pointer-events-auto lg:translate-y-0 lg:opacity-100 ${
           showMobileDesk || open
             ? "pointer-events-auto translate-y-0 opacity-100"
             : "pointer-events-none translate-y-4 opacity-0"
         }`}
       >
-        <div className="relative flex h-[52px] w-full items-center justify-between border border-[color:var(--gold)]/36 bg-[color:var(--charcoal)] px-5 text-[color:var(--ivory)] shadow-[0_14px_34px_-24px_rgba(0,0,0,0.55)] transition-all duration-500 hover:bg-[color:var(--gold)] md:h-12 md:w-12 md:justify-center md:rounded-full md:border-0 md:p-0">
-          <span className="text-[0.72rem] font-medium uppercase tracking-[0.14em] md:hidden">
+        <div
+          className={`relative flex h-12 items-center justify-center rounded-full border border-[color:var(--gold)]/36 bg-[color:var(--charcoal)] text-[color:var(--ivory)] shadow-[0_14px_34px_-24px_rgba(0,0,0,0.55)] transition-all duration-500 hover:bg-[color:var(--gold)] md:h-12 md:w-12 md:border-0 ${
+            open ? "w-[164px] gap-3 px-4" : "w-12 px-0"
+          }`}
+        >
+          <span
+            className={`text-[0.68rem] font-medium uppercase tracking-[0.13em] transition-opacity md:hidden ${
+              open ? "max-w-[9rem] opacity-100" : "sr-only max-w-0 opacity-0"
+            }`}
+          >
             {tr("cc_title")}
           </span>
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[color:var(--gold)] transition-colors group-hover:bg-[color:var(--charcoal)]">
@@ -2851,7 +3000,7 @@ function Footer() {
               href={WHATSAPP}
               target="_blank"
               rel="noreferrer"
-              className="hover:text-[color:var(--gold)] transition-colors"
+              className="flex min-h-[44px] items-center transition-colors hover:text-[color:var(--gold)] lg:min-h-0"
             >
               WhatsApp
             </a>
@@ -2859,11 +3008,14 @@ function Footer() {
               href={INSTAGRAM}
               target="_blank"
               rel="noreferrer"
-              className="hover:text-[color:var(--gold)] transition-colors"
+              className="flex min-h-[44px] items-center transition-colors hover:text-[color:var(--gold)] lg:min-h-0"
             >
               Instagram
             </a>
-            <a href="#consultation" className="hover:text-[color:var(--gold)] transition-colors">
+            <a
+              href="#consultation"
+              className="flex min-h-[44px] items-center transition-colors hover:text-[color:var(--gold)] lg:min-h-0"
+            >
               {tr("nav_book")}
             </a>
           </div>
