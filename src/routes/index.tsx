@@ -264,33 +264,48 @@ function MotionFrame({
   mediaClassName?: string;
   captionClassName?: string;
 }) {
+  const frameRef = useRef<HTMLButtonElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [playing, setPlaying] = useState(false);
 
-  const start = () => {
+  const start = useCallback(() => {
     const video = videoRef.current;
     setPlaying(true);
     const playAttempt = video?.play();
     if (playAttempt) playAttempt.catch(() => setPlaying(false));
-  };
+  }, []);
 
-  const stop = () => {
+  const stop = useCallback(() => {
     const video = videoRef.current;
     setPlaying(false);
     if (video) {
       video.pause();
       video.currentTime = 0;
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    const frame = frameRef.current;
+    if (!frame) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) stop();
+      },
+      { threshold: 0.12 },
+    );
+    io.observe(frame);
+    return () => io.disconnect();
+  }, [stop]);
 
   return (
     <button
+      ref={frameRef}
       type="button"
       onMouseEnter={start}
       onMouseLeave={stop}
       onFocus={start}
       onBlur={stop}
-      onClick={start}
+      onClick={() => (playing ? stop() : start())}
       className={`group relative block overflow-hidden bg-[color:var(--charcoal)] text-left ${className}`}
       aria-label={label}
     >
@@ -316,7 +331,7 @@ function MotionFrame({
       </video>
       <div className="absolute inset-0 bg-gradient-to-t from-black/62 via-black/8 to-transparent" />
       <div
-        className={`absolute bottom-0 left-0 right-0 p-5 text-[0.62rem] font-medium uppercase tracking-[0.24em] text-[color:var(--ivory)]/88 md:p-7 ${captionClassName}`}
+        className={`absolute bottom-0 left-0 right-0 p-5 text-[0.58rem] font-medium uppercase tracking-[0.2em] text-[color:var(--ivory)]/86 md:p-7 md:text-[0.62rem] ${captionClassName}`}
       >
         {label}
       </div>
@@ -588,39 +603,39 @@ function Nav({ onConcierge }: { onConcierge: () => void }) {
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-700 ${
         lightNav
-          ? "bg-[color:var(--ivory)]/92 backdrop-blur-md border-b border-[color:var(--border)]/70 shadow-[0_8px_30px_-26px_rgba(0,0,0,0.35)]"
-          : "border-b border-[color:var(--ivory)]/10 bg-[color:var(--charcoal)]/42 shadow-[0_10px_34px_-28px_rgba(0,0,0,0.8)] backdrop-blur-md xl:border-transparent xl:bg-transparent xl:shadow-none xl:backdrop-blur-none"
+          ? "bg-[color:var(--ivory)]/94 backdrop-blur-md border-b border-[color:var(--border)]/60 shadow-[0_8px_24px_-24px_rgba(0,0,0,0.28)]"
+          : "border-b border-[color:var(--ivory)]/8 bg-[color:var(--charcoal)]/34 shadow-[0_10px_28px_-26px_rgba(0,0,0,0.72)] backdrop-blur-md xl:border-transparent xl:bg-transparent xl:shadow-none xl:backdrop-blur-none"
       }`}
     >
-      <div className="mx-auto flex max-w-[1680px] items-center justify-between px-4 py-3 md:px-10 md:py-5 xl:px-12">
+      <div className="mx-auto flex max-w-[1680px] items-center justify-between px-4 py-3 md:px-10 md:py-4 xl:px-12">
         <a href="#top" aria-label={OFFICIAL_LOGO_ALT} className="block shrink-0">
           <OfficialLogo
             loading="eager"
-            sizes="(max-width: 767px) 140px, (max-width: 1279px) 150px, 166px"
-            className={`w-[136px] sm:w-[142px] md:w-[150px] xl:w-[166px] transition-opacity duration-500 ${
+            sizes="(max-width: 767px) 132px, (max-width: 1279px) 144px, 158px"
+            className={`w-[130px] sm:w-[138px] md:w-[144px] xl:w-[158px] transition-opacity duration-500 ${
               lightNav ? "opacity-100" : "opacity-[0.96]"
             }`}
           />
         </a>
 
-        <nav className="hidden xl:flex items-center gap-7 2xl:gap-9">
+        <nav className="hidden xl:flex items-center gap-6 2xl:gap-8">
           {items.map((i) => (
             <a
               key={i.k}
               href={i.href}
-              className={`group relative py-3 text-[0.68rem] font-medium tracking-[0.24em] uppercase transition-colors ${
+              className={`group relative py-3 text-[0.64rem] font-medium tracking-[0.2em] uppercase transition-colors ${
                 lightNav
-                  ? "text-[color:var(--charcoal)]/80 hover:text-[color:var(--charcoal)]"
-                  : "text-[color:var(--ivory)]/85 hover:text-[color:var(--ivory)]"
+                  ? "text-[color:var(--charcoal)]/72 hover:text-[color:var(--charcoal)]"
+                  : "text-[color:var(--ivory)]/78 hover:text-[color:var(--ivory)]"
               }`}
             >
               {tr(i.k)}
-              <span className="absolute bottom-1 left-0 h-px w-full origin-left scale-x-0 bg-[color:var(--gold)] transition-transform duration-500 group-hover:scale-x-100" />
+              <span className="absolute bottom-1 left-0 h-px w-full origin-left scale-x-0 bg-[color:var(--gold)]/80 transition-transform duration-700 ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-x-100" />
             </a>
           ))}
           <a
             href="#consultation"
-            className={`text-[0.68rem] font-medium tracking-[0.24em] uppercase border px-6 py-3.5 transition-all duration-500 ${
+            className={`text-[0.64rem] font-medium tracking-[0.2em] uppercase border px-5 py-3 transition-all duration-500 ${
               lightNav
                 ? "border-[color:var(--charcoal)] text-[color:var(--charcoal)] hover:bg-[color:var(--charcoal)] hover:text-[color:var(--ivory)]"
                 : "border-[color:var(--ivory)] text-[color:var(--ivory)] hover:bg-[color:var(--ivory)] hover:text-[color:var(--charcoal)]"
@@ -719,15 +734,16 @@ function Hero() {
           className="h-full w-full object-cover animate-slow-zoom"
           style={{ objectPosition: "center 34%" }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/16 to-black/78" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/10 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/58 via-black/18 to-black/76" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/12 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/28 to-transparent" />
       </div>
 
       <div
         data-mobile-hero="true"
-        className="relative z-10 flex min-h-[100svh] flex-col justify-center px-6 pb-[calc(env(safe-area-inset-bottom)+40px)] pt-[calc(env(safe-area-inset-top)+96px)] lg:hidden"
+        className="relative z-10 flex min-h-[100svh] flex-col justify-center px-6 pb-[calc(env(safe-area-inset-bottom)+44px)] pt-[calc(env(safe-area-inset-top)+104px)] lg:hidden"
       >
-        <div className="mt-8 max-w-[342px] text-[color:var(--ivory)] animate-fade-up">
+        <div className="mt-10 max-w-[342px] text-[color:var(--ivory)] animate-fade-up">
           <h1
             data-mobile-hero-heading="true"
             className="font-display text-[clamp(2.15rem,10vw,3.05rem)] font-light leading-[1.12] tracking-[-0.005em]"
@@ -735,19 +751,19 @@ function Hero() {
             <span className="block">{tr("hero_l1")}</span>
             <span className="block italic text-[color:var(--ivory)]/92">{tr("hero_l2")}</span>
           </h1>
-          <p className="mt-5 max-w-[32ch] text-[0.92rem] font-light leading-[1.8] text-[color:var(--ivory)]/88 [text-wrap:pretty]">
+          <p className="mt-5 max-w-[31ch] text-[0.9rem] font-light leading-[1.85] text-[color:var(--ivory)]/86 [text-wrap:pretty]">
             {tr("hero_sub")}
           </p>
           <div className="mt-8 flex flex-col gap-3">
             <a
               href="#consultation"
-              className="inline-flex min-h-[52px] w-full items-center justify-center bg-[color:var(--ivory)] px-6 py-4 text-center text-[0.64rem] font-medium uppercase tracking-[0.14em] text-[color:var(--charcoal)] transition-colors duration-500 hover:bg-[color:var(--gold)] hover:text-[color:var(--ivory)]"
+              className="inline-flex min-h-[50px] w-full items-center justify-center bg-[color:var(--ivory)] px-6 py-4 text-center text-[0.62rem] font-medium uppercase tracking-[0.12em] text-[color:var(--charcoal)] transition-colors duration-500 hover:bg-[color:var(--gold)] hover:text-[color:var(--ivory)]"
             >
               {tr("hero_cta1")}
             </a>
             <a
               href="#commission"
-              className="inline-flex min-h-[52px] w-full items-center justify-center border border-[color:var(--ivory)]/55 px-6 py-4 text-center text-[0.64rem] font-medium uppercase tracking-[0.14em] text-[color:var(--ivory)] transition-colors duration-500 hover:border-[color:var(--gold)] hover:text-[color:var(--gold)]"
+              className="inline-flex min-h-[50px] w-full items-center justify-center border border-[color:var(--ivory)]/48 px-6 py-4 text-center text-[0.62rem] font-medium uppercase tracking-[0.12em] text-[color:var(--ivory)] transition-colors duration-500 hover:border-[color:var(--gold)] hover:text-[color:var(--gold)]"
             >
               {tr("hero_cta2")}
             </a>
@@ -757,30 +773,30 @@ function Hero() {
 
       <div className="relative z-10 hidden h-full flex-col lg:flex">
         <div className="flex-1" />
-        <div className="mx-auto w-full max-w-[1680px] px-12 pb-32">
-          <div className="max-w-[920px] text-[color:var(--ivory)] animate-fade-up">
-            <div className="flex items-center gap-4 text-[0.72rem] font-medium tracking-[0.28em] uppercase text-[color:var(--ivory)]/82">
+        <div className="mx-auto w-full max-w-[1680px] px-12 pb-[clamp(7rem,13vh,10rem)]">
+          <div className="max-w-[860px] text-[color:var(--ivory)] animate-fade-up">
+            <div className="flex items-center gap-4 text-[0.66rem] font-medium tracking-[0.22em] uppercase text-[color:var(--ivory)]/76">
               <span className="h-px w-12 bg-[color:var(--gold)]/80" />
               {tr("hero_eyebrow")}
             </div>
-            <h1 className="mt-8 max-w-[880px] font-display text-[clamp(3.1rem,7vw,6rem)] font-light leading-[0.98] tracking-[-0.005em] [text-wrap:balance]">
+            <h1 className="mt-7 max-w-[850px] font-display text-[clamp(3rem,6.6vw,5.7rem)] font-light leading-[1.0] tracking-[-0.004em] [text-wrap:balance]">
               <span className="block">{tr("hero_l1")}</span>{" "}
               <span className="block italic text-[color:var(--ivory)]/90">{tr("hero_l2")}</span>
             </h1>
-            <p className="mt-9 max-w-2xl text-[1.13rem] font-light leading-[1.9] text-[color:var(--ivory)]/86 [text-wrap:pretty]">
+            <p className="mt-8 max-w-[58ch] text-[1.05rem] font-light leading-[1.92] text-[color:var(--ivory)]/84 [text-wrap:pretty]">
               {tr("hero_sub")}
             </p>
-            <div className="mt-12 flex gap-5">
+            <div className="mt-11 flex gap-4">
               <a
                 href="#consultation"
-                className="group inline-flex min-h-[58px] items-center justify-between gap-6 bg-[color:var(--ivory)] px-8 py-5 text-[0.7rem] font-medium tracking-[0.26em] uppercase text-[color:var(--charcoal)] transition-all duration-500 hover:bg-[color:var(--gold)] hover:text-[color:var(--ivory)]"
+                className="group inline-flex min-h-[56px] items-center justify-between gap-6 bg-[color:var(--ivory)] px-7 py-5 text-[0.66rem] font-medium tracking-[0.22em] uppercase text-[color:var(--charcoal)] transition-all duration-500 hover:bg-[color:var(--gold)] hover:text-[color:var(--ivory)]"
               >
                 {tr("hero_cta1")}
                 <span className="block h-px w-8 bg-current transition-all duration-500 group-hover:w-14" />
               </a>
               <a
                 href="#commission"
-                className="group inline-flex min-h-[58px] items-center justify-between gap-6 border border-[color:var(--ivory)]/55 px-8 py-5 text-[0.7rem] font-medium tracking-[0.26em] uppercase text-[color:var(--ivory)] transition-all duration-500 hover:border-[color:var(--gold)] hover:text-[color:var(--gold)]"
+                className="group inline-flex min-h-[56px] items-center justify-between gap-6 border border-[color:var(--ivory)]/48 px-7 py-5 text-[0.66rem] font-medium tracking-[0.22em] uppercase text-[color:var(--ivory)] transition-all duration-500 hover:border-[color:var(--gold)] hover:text-[color:var(--gold)]"
               >
                 {tr("hero_cta2")}
                 <span className="block h-px w-8 bg-current transition-all duration-500 group-hover:w-14" />
@@ -823,14 +839,14 @@ function Eyebrow({ children, light = false }: { children: ReactNode; light?: boo
 
 function Commission({ onChoose }: { onChoose: (label: string) => void }) {
   const { tr } = useLang();
-  const cards: { k: TKey; d: TKey; img: string; n: string }[] = [
-    { k: "com_ring", d: "com_ring_d", img: j1, n: "01" },
-    { k: "com_neck", d: "com_neck_d", img: j11, n: "02" },
-    { k: "com_ear", d: "com_ear_d", img: j7, n: "03" },
-    { k: "com_brace", d: "com_brace_d", img: j15, n: "04" },
-    { k: "com_bridal", d: "com_bridal_d", img: j23, n: "05" },
-    { k: "com_redo", d: "com_redo_d", img: j19, n: "06" },
-    { k: "com_unique", d: "com_unique_d", img: j17, n: "07" },
+  const cards: { k: TKey; d: TKey; img: string; n: string; pos: string }[] = [
+    { k: "com_ring", d: "com_ring_d", img: j1, n: "01", pos: "object-[center_42%]" },
+    { k: "com_neck", d: "com_neck_d", img: j11, n: "02", pos: "object-[center_35%]" },
+    { k: "com_ear", d: "com_ear_d", img: j7, n: "03", pos: "object-[center_38%]" },
+    { k: "com_brace", d: "com_brace_d", img: j15, n: "04", pos: "object-[center_48%]" },
+    { k: "com_bridal", d: "com_bridal_d", img: j23, n: "05", pos: "object-[center_40%]" },
+    { k: "com_redo", d: "com_redo_d", img: j19, n: "06", pos: "object-[center_52%]" },
+    { k: "com_unique", d: "com_unique_d", img: j17, n: "07", pos: "object-[center_44%]" },
   ];
   const cardLayout = [
     "lg:col-span-6 aspect-[5/4]",
@@ -843,7 +859,7 @@ function Commission({ onChoose }: { onChoose: (label: string) => void }) {
   ];
 
   return (
-    <section id="commission" className="bg-[color:var(--ivory)] py-32 md:py-48">
+    <section id="commission" className="bg-[color:var(--ivory)] py-28 md:py-44">
       <div className="mx-auto max-w-[1600px] px-6 md:px-12">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-12 items-end mb-20 md:mb-28">
           <Reveal className="md:col-span-7">
@@ -871,7 +887,7 @@ function Commission({ onChoose }: { onChoose: (label: string) => void }) {
                   <img
                     src={u(c.img)}
                     alt=""
-                    className="h-full w-full object-cover transition-all duration-[1800ms] ease-[cubic-bezier(.2,.7,.2,1)] scale-105 group-hover:scale-110 brightness-95 group-hover:brightness-100"
+                    className={`h-full w-full object-cover transition-all duration-[1800ms] ease-[cubic-bezier(.2,.7,.2,1)] scale-105 brightness-95 group-hover:scale-110 group-hover:brightness-100 ${c.pos}`}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent transition-opacity duration-700 group-hover:from-black/85" />
                 </div>
@@ -982,7 +998,7 @@ function DesignYourPiece({ onContinue }: { onContinue: (whisper: string) => void
   const labelFor = (k: TKey) => TDICT[k][lang];
 
   return (
-    <section id="design" className="bg-[color:var(--pearl)] py-32 md:py-48">
+    <section id="design" className="bg-[color:var(--pearl)] py-28 md:py-44">
       <div className="mx-auto max-w-[1600px] px-6 md:px-12">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-12 items-end mb-18 md:mb-24">
           <Reveal className="md:col-span-7">
@@ -1118,7 +1134,7 @@ function Process() {
   return (
     <section
       id="atelier"
-      className="bg-[color:var(--charcoal)] text-[color:var(--ivory)] py-32 md:py-52"
+      className="bg-[color:var(--charcoal)] text-[color:var(--ivory)] py-32 md:py-56"
     >
       <div className="mx-auto max-w-[1500px] px-6 md:px-12">
         <Reveal>
@@ -1177,8 +1193,18 @@ function Process() {
 
 function Signature() {
   const { tr } = useLang();
+  const galleryPositions = [
+    "object-[center_42%]",
+    "object-[center_36%]",
+    "object-[center_48%]",
+    "object-[center_40%]",
+    "object-[center_52%]",
+    "object-[center_35%]",
+    "object-[center_44%]",
+    "object-[center_46%]",
+  ];
   return (
-    <section id="creations" className="bg-[color:var(--ivory)] py-32 md:py-52">
+    <section id="creations" className="bg-[color:var(--ivory)] py-32 md:py-56">
       <div className="mx-auto max-w-[1600px] px-6 md:px-12">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-end mb-20 md:mb-32">
           <Reveal className="md:col-span-6">
@@ -1224,7 +1250,7 @@ function Signature() {
                     src={u(img)}
                     alt=""
                     loading="lazy"
-                    className="h-full w-full object-cover transition-transform duration-[1800ms] ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-[1.055]"
+                    className={`h-full w-full object-cover transition-transform duration-[1800ms] ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-[1.055] ${galleryPositions[i % galleryPositions.length]}`}
                   />
                 </div>
               </Reveal>
@@ -1243,7 +1269,7 @@ function Signature() {
 function Redesign({ onBegin }: { onBegin: () => void }) {
   const { tr } = useLang();
   return (
-    <section id="redesign" className="bg-[color:var(--pearl)] py-32 md:py-52 overflow-hidden">
+    <section id="redesign" className="bg-[color:var(--pearl)] py-28 md:py-48 overflow-hidden">
       <div className="mx-auto max-w-[1600px] px-6 md:px-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-center">
           <Reveal className="lg:col-span-6 order-2 lg:order-1">
@@ -1274,7 +1300,11 @@ function Redesign({ onBegin }: { onBegin: () => void }) {
           <Reveal className="lg:col-span-6 order-1 lg:order-2" delay={150}>
             <div className="aspect-[4/5] overflow-hidden md:aspect-[5/6]">
               <Parallax amount={60} className="h-full w-full">
-                <img src={u(REDESIGN_IMG)} alt="" className="h-full w-full object-cover" />
+                <img
+                  src={u(REDESIGN_IMG)}
+                  alt=""
+                  className="h-full w-full object-cover object-[center_46%]"
+                />
               </Parallax>
             </div>
           </Reveal>
@@ -1290,6 +1320,12 @@ function Redesign({ onBegin }: { onBegin: () => void }) {
 
 function Stories() {
   const { tr } = useLang();
+  const storyPositions = [
+    "object-[center_42%]",
+    "object-[center_36%]",
+    "object-[center_48%]",
+    "object-[center_40%]",
+  ];
   const stories: { tag: TKey; q: TKey; b: TKey }[] = [
     { tag: "story1_tag", q: "story1_q", b: "story1_b" },
     { tag: "story2_tag", q: "story2_q", b: "story2_b" },
@@ -1298,7 +1334,7 @@ function Stories() {
   ];
 
   return (
-    <section className="bg-[color:var(--ivory)] py-32 md:py-52">
+    <section className="bg-[color:var(--ivory)] py-32 md:py-56">
       <div className="mx-auto max-w-[1600px] px-6 md:px-12">
         <Reveal>
           <Eyebrow>{tr("st_eyebrow")}</Eyebrow>
@@ -1331,7 +1367,7 @@ function Stories() {
                         <img
                           src={u(STORY_IMAGES[i % STORY_IMAGES.length])}
                           alt=""
-                          className="h-full w-full object-cover"
+                          className={`h-full w-full object-cover ${storyPositions[i % storyPositions.length]}`}
                         />
                       </Parallax>
                     )}
@@ -1367,14 +1403,18 @@ function Stories() {
 function Founder() {
   const { tr } = useLang();
   return (
-    <section className="bg-[color:var(--pearl)] py-32 md:py-52">
+    <section className="bg-[color:var(--pearl)] py-28 md:py-48">
       <div className="mx-auto max-w-[1400px] px-6 md:px-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-center">
           <Reveal className="lg:col-span-5">
             <div className="relative">
               <div className="aspect-[3/4] overflow-hidden">
                 <Parallax amount={40} className="h-full w-full">
-                  <img src={u(FOUNDER_IMG)} alt="" className="h-full w-full object-cover" />
+                  <img
+                    src={u(FOUNDER_IMG)}
+                    alt=""
+                    className="h-full w-full object-cover object-[center_36%]"
+                  />
                 </Parallax>
               </div>
             </div>
@@ -1463,7 +1503,7 @@ function Consultation({ prefill }: { prefill: { create?: string; whisper?: strin
       className="relative bg-[color:var(--charcoal)] text-[color:var(--ivory)] overflow-hidden"
     >
       <div className="absolute inset-0 opacity-25">
-        <img src={u(CONS_BG)} alt="" className="h-full w-full object-cover" />
+        <img src={u(CONS_BG)} alt="" className="h-full w-full object-cover object-[center_44%]" />
         <div className="absolute inset-0 bg-gradient-to-b from-[color:var(--charcoal)]/85 via-[color:var(--charcoal)]/90 to-[color:var(--charcoal)]" />
       </div>
 
@@ -1662,17 +1702,17 @@ function Concierge({
       <button
         onClick={() => setOpen(!open)}
         aria-label="Jewellery Concierge"
-        className={`fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-4 z-50 group transition-all duration-500 md:bottom-8 md:right-8 md:pointer-events-auto md:translate-y-0 md:opacity-100 ${
+        className={`fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-4 z-50 group transition-all duration-500 md:bottom-6 md:right-6 md:pointer-events-auto md:translate-y-0 md:opacity-100 ${
           showMobileDesk || open
             ? "pointer-events-auto translate-y-0 opacity-100"
             : "pointer-events-none translate-y-4 opacity-0"
         }`}
       >
-        <div className="relative flex h-12 w-12 items-center justify-center rounded-full bg-[color:var(--charcoal)] text-[color:var(--ivory)] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.4)] transition-all duration-500 hover:bg-[color:var(--gold)] sm:h-auto sm:w-auto sm:justify-start sm:gap-4 sm:rounded-none sm:py-4 sm:pl-5 sm:pr-7">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[color:var(--gold)] transition-colors group-hover:bg-[color:var(--charcoal)] sm:h-9 sm:w-9">
+        <div className="relative flex h-11 w-11 items-center justify-center rounded-full bg-[color:var(--charcoal)] text-[color:var(--ivory)] shadow-[0_14px_34px_-24px_rgba(0,0,0,0.55)] transition-all duration-500 hover:bg-[color:var(--gold)] sm:h-auto sm:w-auto sm:justify-start sm:gap-3 sm:rounded-none sm:py-3 sm:pl-4 sm:pr-5">
+          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[color:var(--gold)] transition-colors group-hover:bg-[color:var(--charcoal)] sm:h-8 sm:w-8">
             <svg
-              width="14"
-              height="14"
+              width="13"
+              height="13"
               viewBox="0 0 24 24"
               fill="none"
               className="text-[color:var(--ivory)]"
@@ -1692,10 +1732,10 @@ function Concierge({
             </svg>
           </div>
           <div className="hidden text-left leading-tight sm:block">
-            <div className="text-[0.66rem] font-medium tracking-[0.24em] uppercase text-[color:var(--gold)] group-hover:text-[color:var(--ivory)] transition-colors">
+            <div className="text-[0.58rem] font-medium tracking-[0.2em] uppercase text-[color:var(--gold)] group-hover:text-[color:var(--ivory)] transition-colors">
               {tr("cc_title")}
             </div>
-            <div className="text-[0.72rem] tracking-[0.02em] text-[color:var(--ivory)]/80 group-hover:text-[color:var(--ivory)] mt-0.5 hidden sm:block">
+            <div className="mt-0.5 hidden text-[0.68rem] tracking-[0.01em] text-[color:var(--ivory)]/74 transition-colors group-hover:text-[color:var(--ivory)] sm:block">
               {tr("cc_sub")}
             </div>
           </div>
@@ -1710,16 +1750,16 @@ function Concierge({
         <div className="absolute inset-0 bg-[color:var(--charcoal)]/40 backdrop-blur-sm" />
         <div
           onClick={(e) => e.stopPropagation()}
-          className={`absolute bottom-0 right-0 sm:bottom-6 sm:right-6 w-full sm:w-[420px] bg-[color:var(--ivory)] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.45)] transition-all duration-500 ${
+          className={`absolute bottom-0 right-0 sm:bottom-6 sm:right-6 w-full sm:w-[390px] bg-[color:var(--ivory)] shadow-[0_22px_58px_-28px_rgba(0,0,0,0.5)] transition-all duration-500 ${
             open ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
           }`}
         >
-          <div className="bg-[color:var(--charcoal)] text-[color:var(--ivory)] px-7 py-7 flex items-start justify-between">
+          <div className="bg-[color:var(--charcoal)] text-[color:var(--ivory)] px-7 py-6 flex items-start justify-between">
             <div>
-              <div className="text-[0.66rem] font-medium tracking-[0.24em] uppercase text-[color:var(--gold)]">
+              <div className="text-[0.6rem] font-medium tracking-[0.2em] uppercase text-[color:var(--gold)]">
                 {tr("cc_title")}
               </div>
-              <div className="mt-2 font-display text-[1.45rem] font-light leading-tight">
+              <div className="mt-2 font-display text-[1.32rem] font-light leading-tight">
                 {tr("cc_sub")}
               </div>
             </div>
@@ -1731,14 +1771,14 @@ function Concierge({
             </button>
           </div>
 
-          <div className="p-7 flex flex-col gap-4">
+          <div className="p-6 flex flex-col gap-3.5">
             <a
               href={WHATSAPP}
               target="_blank"
               rel="noreferrer"
-              className="group flex min-h-[58px] items-center justify-between gap-4 border border-[color:var(--border)] px-5 py-4 transition-colors hover:border-[color:var(--gold)]"
+              className="group flex min-h-[54px] items-center justify-between gap-4 border border-[color:var(--border)] px-5 py-4 transition-colors hover:border-[color:var(--gold)]"
             >
-              <span className="text-[0.68rem] font-medium tracking-[0.2em] uppercase text-[color:var(--charcoal)]">
+              <span className="text-[0.64rem] font-medium tracking-[0.18em] uppercase text-[color:var(--charcoal)]">
                 {tr("cc_wa")}
               </span>
               <span className="font-display italic text-[color:var(--gold)] transition-transform group-hover:translate-x-1">
@@ -1749,9 +1789,9 @@ function Concierge({
               href={INSTAGRAM}
               target="_blank"
               rel="noreferrer"
-              className="group flex min-h-[58px] items-center justify-between gap-4 border border-[color:var(--border)] px-5 py-4 transition-colors hover:border-[color:var(--gold)]"
+              className="group flex min-h-[54px] items-center justify-between gap-4 border border-[color:var(--border)] px-5 py-4 transition-colors hover:border-[color:var(--gold)]"
             >
-              <span className="text-[0.68rem] font-medium tracking-[0.2em] uppercase text-[color:var(--charcoal)]">
+              <span className="text-[0.64rem] font-medium tracking-[0.18em] uppercase text-[color:var(--charcoal)]">
                 {tr("cc_ig")}
               </span>
               <span className="font-display italic text-[color:var(--gold)] transition-transform group-hover:translate-x-1">
@@ -1760,9 +1800,9 @@ function Concierge({
             </a>
             <button
               onClick={onInquiry}
-              className="group flex min-h-[58px] items-center justify-between gap-4 bg-[color:var(--charcoal)] text-[color:var(--ivory)] px-5 py-4 transition-colors hover:bg-[color:var(--gold)]"
+              className="group flex min-h-[54px] items-center justify-between gap-4 bg-[color:var(--charcoal)] text-[color:var(--ivory)] px-5 py-4 transition-colors hover:bg-[color:var(--gold)]"
             >
-              <span className="text-[0.68rem] font-medium tracking-[0.2em] uppercase">
+              <span className="text-[0.64rem] font-medium tracking-[0.18em] uppercase">
                 {tr("cc_form")}
               </span>
               <span className="font-display italic transition-transform group-hover:translate-x-1">
@@ -1784,18 +1824,18 @@ function Footer() {
   const { tr } = useLang();
   return (
     <footer className="bg-[color:var(--ivory)] border-t border-[color:var(--border)]">
-      <div className="mx-auto max-w-[1600px] px-6 md:px-12 py-16 md:py-20">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 items-end">
-          <div className="md:col-span-6">
+      <div className="mx-auto max-w-[1600px] px-6 py-20 md:px-12 md:py-28">
+        <div className="grid grid-cols-1 gap-14 md:grid-cols-12 md:items-end">
+          <div className="md:col-span-5">
             <OfficialLogo
-              sizes="(max-width: 767px) 170px, 220px"
-              className="w-[170px] md:w-[220px]"
+              sizes="(max-width: 767px) 160px, 210px"
+              className="w-[160px] md:w-[210px]"
             />
-            <p className="mt-6 max-w-md text-[0.95rem] leading-relaxed text-[color:var(--charcoal)]/70 font-light italic font-display">
+            <p className="mt-8 max-w-md font-display text-[1.08rem] font-light italic leading-[1.75] text-[color:var(--charcoal)]/68 md:text-[1.18rem]">
               {tr("foot_tag")}
             </p>
           </div>
-          <div className="md:col-span-3 flex flex-col gap-3 text-[0.72rem] tracking-[0.3em] uppercase text-[color:var(--charcoal)]/75">
+          <div className="flex flex-col gap-3 text-[0.66rem] uppercase tracking-[0.22em] text-[color:var(--charcoal)]/68 md:col-span-3 md:col-start-7">
             <a
               href={WHATSAPP}
               target="_blank"
@@ -1816,10 +1856,14 @@ function Footer() {
               {tr("nav_book")}
             </a>
           </div>
-          <div className="md:col-span-3 text-[0.65rem] tracking-[0.32em] uppercase text-[color:var(--taupe)] md:text-right">
-            © {new Date().getFullYear()} Opal Stones
-            <br />
-            {tr("foot_rights")}
+          <div className="text-[0.62rem] uppercase tracking-[0.22em] leading-[2] text-[color:var(--taupe)] md:col-span-3 md:text-right">
+            <div>{tr("foot_place")}</div>
+            <div className="mt-5 h-px w-16 bg-[color:var(--border)] md:ml-auto" />
+            <div className="mt-5">
+              © {new Date().getFullYear()} Opal Stones
+              <br />
+              {tr("foot_rights")}
+            </div>
           </div>
         </div>
       </div>

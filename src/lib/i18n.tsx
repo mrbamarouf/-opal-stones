@@ -5,48 +5,48 @@ type Entry = { en: string; ar: string };
 
 export const t = {
   // nav
-  nav_commission: { en: "Private Commission", ar: "اطلبي قطعة" },
-  nav_design: { en: "First Direction", ar: "التمهيد" },
+  nav_commission: { en: "Commission", ar: "اطلبي قطعة" },
+  nav_design: { en: "Direction", ar: "التمهيد" },
   nav_atelier: { en: "Atelier", ar: "الأتيليه" },
   nav_creations: { en: "Creations", ar: "الإبداعات" },
-  nav_redesign: { en: "Heirloom Redesign", ar: "إعادة التصميم" },
-  nav_book: { en: "Book Privately", ar: "استشارة خاصة" },
+  nav_redesign: { en: "Redesign", ar: "إعادة التصميم" },
+  nav_book: { en: "Private Appointment", ar: "استشارة خاصة" },
 
   // hero
   hero_eyebrow: {
-    en: "By private appointment with Hanan Bugshan",
+    en: "Private appointments with Hanan Bugshan",
     ar: "بموعد خاص مع حنان بقشان",
   },
   hero_l1: { en: "A jewel for", ar: "جوهرة لما" },
   hero_l2: { en: "what only you carry.", ar: "تحملينه وحدكِ." },
   hero_sub: {
-    en: "A private jewellery maison for bespoke pieces, bridal suites, and heirlooms redrawn with exacting calm.",
-    ar: "ميزون مجوهرات خاص لقطع تُصاغ لكِ، وأطقم زفاف، وإرث يُعاد رسمه بهدوء ودقّة.",
+    en: "Bespoke jewels, bridal suites, and heirlooms redrawn inside a private atelier.",
+    ar: "مجوهرات تُصاغ لكِ، وأطقم زفاف، وإرث يُعاد رسمه داخل أتيليه خاص.",
   },
-  hero_cta1: { en: "Request an Appointment", ar: "اطلبي موعداً خاصاً" },
-  hero_cta2: { en: "Enter the Atelier", ar: "ادخلي الأتيليه" },
+  hero_cta1: { en: "Request a Private Appointment", ar: "اطلبي موعداً خاصاً" },
+  hero_cta2: { en: "View Commissions", ar: "شاهدي الطلبات الخاصة" },
   hero_scroll: { en: "Continue", ar: "تابعي" },
 
   // editorial films
   film_prelude_eyebrow: { en: "A private arrival", ar: "حضور خاص" },
   film_prelude_title: {
-    en: "Before the drawing, the jewel is imagined on the body.",
-    ar: "قبل الرسم، تُتخيّل الجوهرة على الجسد.",
+    en: "Before a jewel is drawn, it is studied in motion.",
+    ar: "قبل أن تُرسم الجوهرة، تُدرَس في الحركة.",
   },
   film_prelude_body: {
-    en: "Movement lets proportion show itself: where a pendant rests, how a ring catches light, what should remain quiet.",
-    ar: "تكشف الحركة النِسب: أين يستقر العقد، كيف يلتقط الخاتم الضوء، وما الذي يجب أن يبقى هادئاً.",
+    en: "Where a pendant rests. How a ring catches light. What should stay almost unseen.",
+    ar: "أين يستقر العقد. كيف يلتقط الخاتم الضوء. وما الذي يليق به أن يبقى شبه خفي.",
   },
   film_commission_label: { en: "Proportion on the hand", ar: "النِسب على اليد" },
   film_commission_eyebrow: { en: "Private fitting", ar: "تجربة خاصة" },
   film_commission_body: {
-    en: "A commission is never only a drawing. It is tested against gesture, skin, and the small rituals of wearing.",
-    ar: "الطلب الخاص ليس رسماً فقط. يُختبر على الإيماءة، وعلى البشرة، وعلى طقوس الارتداء الصغيرة.",
+    en: "Each commission is tested against gesture, skin, and the private rituals of wearing.",
+    ar: "كل طلب خاص يُختبر على الإيماءة، وعلى البشرة، وعلى طقوس الارتداء الخاصة.",
   },
   film_process_eyebrow: { en: "At the bench", ar: "على طاولة الصياغة" },
   film_process_body: {
-    en: "The making stays close to the hand, where pressure, patience, and finish decide the final line.",
-    ar: "تبقى الصياغة قريبة من اليد، حيث يقرّر الضغط والصبر والتشطيب الخط الأخير.",
+    en: "Pressure, patience, and finish decide the final line before the jewel leaves the bench.",
+    ar: "الضغط والصبر والتشطيب ترسم الخط الأخير قبل أن تغادر الجوهرة طاولة الصياغة.",
   },
   film_signature_label: { en: "Archive in motion", ar: "الأرشيف في حركة" },
   film_redesign_label: { en: "Memory held in gold", ar: "ذاكرة يحملها الذهب" },
@@ -58,18 +58,18 @@ export const t = {
   com_title_a: { en: "Begin with", ar: "ابدئي من" },
   com_title_b: { en: "the piece.", ar: "القطعة." },
   com_sub: {
-    en: "Choose the form closest to your intention. From there, proportion, stone, and setting are edited around the woman who will wear it.",
+    en: "Choose the form nearest to your intention. Proportion, stone, and setting are then edited around the woman who will wear it.",
     ar: "اختاري الشكل الأقرب إلى نيّتكِ. بعدها تُحرّر النِسب والحجر والترصيع حول المرأة التي سترتديه.",
   },
   com_ring: { en: "A Ring", ar: "خاتم خاص" },
   com_ring_d: {
-    en: "For a promise, a signature, or the ritual of every day.",
-    ar: "لوعد، لتوقيع شخصي، أو لطقس يومي لا يشبه غيره.",
+    en: "For a promise, a signature, or a daily ritual.",
+    ar: "لوعد، أو توقيع شخصي، أو طقس يومي هادئ.",
   },
   com_neck: { en: "A Necklace", ar: "عقد" },
   com_neck_d: {
-    en: "A pendant, a line of gold, or a sculptural centrepiece.",
-    ar: "تعليقة، خط من الذهب، أو قطعة منحوتة تتوسّط الحضور.",
+    en: "A pendant, a line of gold, or a sculptural centre.",
+    ar: "تعليقة، أو خط من الذهب، أو قطعة منحوتة تتوسّط الحضور.",
   },
   com_ear: { en: "Earrings", ar: "أقراط" },
   com_ear_d: {
@@ -78,33 +78,33 @@ export const t = {
   },
   com_brace: { en: "A Bracelet", ar: "سوار" },
   com_brace_d: {
-    en: "A tennis line, a cuff, or a chain with private restraint.",
-    ar: "خط تنس، كفّ، أو سلسلة تحفظ أناقتها بهدوء.",
+    en: "A tennis line, a cuff, or a chain with quiet restraint.",
+    ar: "خط تنس، أو كفّ، أو سلسلة تحفظ أناقتها بهدوء.",
   },
   com_bridal: { en: "A Bridal Suite", ar: "طقم عروس" },
   com_bridal_d: {
-    en: "A suite composed for the ceremony, then kept for life.",
-    ar: "طقم يُنسّق للحفل، ثم يبقى لما بعده بسنوات.",
+    en: "A suite composed for the ceremony and kept beyond it.",
+    ar: "طقم يُنسّق للحفل، ويبقى لما بعده بسنوات.",
   },
   com_redo: { en: "Rework an Heirloom", ar: "إعادة صياغة إرث" },
   com_redo_d: {
-    en: "Preserve the memory, change the way it lives on you.",
+    en: "Keep the memory. Change how it lives on you.",
     ar: "احفظي الذاكرة، وغيّري الطريقة التي تسكن بها عليكِ.",
   },
   com_unique: { en: "A Singular Piece", ar: "قطعة لا تتكرر" },
   com_unique_d: {
-    en: "Outside every category, held only by your story.",
+    en: "Outside every category, held by your story alone.",
     ar: "خارج كل تصنيف، تحملها حكايتكِ وحدها.",
   },
   com_begin: { en: "Begin privately", ar: "ابدئي بهدوء" },
 
   // design your piece
-  dyp_eyebrow: { en: "The First Direction", ar: "الاتجاه الأول" },
-  dyp_title_a: { en: "A few choices", ar: "اختيارات قليلة" },
-  dyp_title_b: { en: "before the first sketch.", ar: "قبل الرسم الأول." },
+  dyp_eyebrow: { en: "First Direction", ar: "الاتجاه الأول" },
+  dyp_title_a: { en: "A quiet beginning", ar: "بداية هادئة" },
+  dyp_title_b: { en: "before the sketch.", ar: "قبل الرسم." },
   dyp_sub: {
-    en: "A few quiet decisions give the first appointment a sharper beginning, without fixing the final jewel too soon.",
-    ar: "اختيارات هادئة تمنح الموعد الأول بداية أوضح، من دون أن تُقيّد الجوهرة قبل أوانها.",
+    en: "A few decisions give the first conversation shape without deciding the jewel too soon.",
+    ar: "اختيارات قليلة تمنح الحوار الأول شكله، من دون أن تُقيّد الجوهرة قبل أوانها.",
   },
   tab_occasion: { en: "Occasion", ar: "اللحظة" },
   tab_metal: { en: "Metal", ar: "المعدن" },
@@ -135,40 +135,40 @@ export const t = {
   // process
   pr_eyebrow: { en: "Inside the Atelier", ar: "داخل الأتيليه" },
   pr_title: {
-    en: "A slower process, held close to the hand.",
-    ar: "مسار هادئ يبقى قريباً من اليد.",
+    en: "Made slowly, held close to the hand.",
+    ar: "صناعة هادئة تبقى قريبة من اليد.",
   },
   pr_1_t: { en: "Private Appointment", ar: "موعد خاص" },
   pr_1_d: {
-    en: "The first conversation is about the woman, the occasion, and what should remain unsaid.",
-    ar: "الحوار الأول عنكِ، وعن اللحظة، وعن المعنى الذي لا يحتاج إلى شرح طويل.",
+    en: "The first conversation is about the woman, the occasion, and what should remain private.",
+    ar: "الحوار الأول عنكِ، وعن اللحظة، وعن المعنى الذي يجب أن يبقى خاصاً.",
   },
   pr_2_t: { en: "Direction", ar: "الاتجاه" },
   pr_2_d: {
-    en: "Stones, references, and proportion are edited into one clear line.",
-    ar: "تُحرّر الأحجار والمراجع والنِسب حتى يظهر خط واحد واضح.",
+    en: "Stones, references, and proportion are edited into one clear direction.",
+    ar: "تُحرّر الأحجار والمراجع والنِسب حتى يظهر اتجاه واحد واضح.",
   },
   pr_3_t: { en: "Sketch", ar: "الرسم" },
   pr_3_d: {
-    en: "The drawing is refined with restraint before the atelier touches the metal.",
-    ar: "يُصقل الرسم بتأنّ قبل أن يلمس الأتيليه المعدن.",
+    en: "The drawing is reduced until only the necessary line remains.",
+    ar: "يُختصر الرسم حتى يبقى الخط الضروري وحده.",
   },
   pr_4_t: { en: "Making", ar: "الصياغة" },
   pr_4_d: {
-    en: "Gold, setting, and finish are handled by hand, with attention kept close.",
-    ar: "يُعامل الذهب والترصيع والتشطيب يدوياً، بتفاصيل قريبة لا تُستعجل.",
+    en: "Gold, setting, and finish are handled by hand, without hurry.",
+    ar: "يُعامل الذهب والترصيع والتشطيب يدوياً، من دون استعجال.",
   },
   pr_5_t: { en: "Private Presentation", ar: "التقديم الخاص" },
   pr_5_d: {
-    en: "The piece is presented quietly, ready to be worn, kept, and carried forward.",
-    ar: "تُقدَّم القطعة بهدوء، جاهزة لأن تُرتدى وتُحفظ وتنتقل معكِ.",
+    en: "The piece is presented quietly, ready to be worn and carried forward.",
+    ar: "تُقدَّم القطعة بهدوء، جاهزة لأن تُرتدى وتنتقل معكِ.",
   },
 
   // signature
   sig_eyebrow: { en: "Private Archive", ar: "أرشيف خاص" },
-  sig_title: { en: "Created once, remembered often.", ar: "تُصاغ مرة، وتبقى طويلاً." },
+  sig_title: { en: "Made once, remembered often.", ar: "تُصاغ مرة، وتبقى طويلاً." },
   sig_sub: {
-    en: "Selected atelier pieces, shown as traces rather than inventory. Each one begins again when it is made for another woman.",
+    en: "Selected atelier pieces, shown as traces rather than inventory. Each begins again when it is made for another woman.",
     ar: "قطع مختارة من الأتيليه، تُعرض كأثر لا كمخزون. كل قطعة تبدأ من جديد حين تُصاغ لامرأة أخرى.",
   },
 
@@ -185,7 +185,7 @@ export const t = {
   // stories
   st_eyebrow: { en: "Private Client Stories", ar: "حكايات خاصة" },
   st_title: {
-    en: "Pieces that begin with a private memory.",
+    en: "Pieces that begin in private memory.",
     ar: "قطع تبدأ من ذاكرة خاصة.",
   },
   story1_tag: { en: "Wedding Suite", ar: "طقم زفاف" },
@@ -194,7 +194,7 @@ export const t = {
     ar: "طقم عروس صيغ لحفل هادئ في جدة.",
   },
   story1_b: {
-    en: "Three pieces, one calm presence. Diamonds were set by hand along a clean line, then refined across six conversations.",
+    en: "Three pieces, one calm presence. Diamonds were set by hand along a clean line and refined across six conversations.",
     ar: "ثلاث قطع وحضور واحد هادئ. رُصّع الألماس يدوياً على خط نقي، ثم صُقل عبر ست محادثات.",
   },
   story2_tag: { en: "Anniversary", ar: "ذكرى زواج" },
@@ -212,8 +212,8 @@ export const t = {
     ar: "خاتم جدّتها، مرسوماً للحاضر.",
   },
   story3_b: {
-    en: "Two old rings were opened with care. Their stones returned as one sculptural band made close enough for daily wear.",
-    ar: "فُتح خاتمان قديمان بعناية. عادت أحجارهما كخاتم منحوت، قريب بما يكفي للارتداء اليومي.",
+    en: "Two old rings were opened with care. Their stones returned as one sculptural band for daily wear.",
+    ar: "فُتح خاتمان قديمان بعناية. عادت أحجارهما كخاتم منحوت للارتداء اليومي.",
   },
   story4_tag: { en: "Private Gift", ar: "هدية خاصة" },
   story4_q: {
@@ -229,8 +229,8 @@ export const t = {
   fd_eyebrow: { en: "The Founder", ar: "المؤسِّسة" },
   fd_title: { en: "Hanan Bugshan.", ar: "حنان بقشان." },
   fd_body: {
-    en: "Hanan founded Opal Stones as a private atelier for women who want jewellery to carry memory, instinct, and proportion. Her work begins with listening and ends closer to portraiture than product.",
-    ar: "أسّست حنان أوبال ستونز كأتيليه خاص للنساء اللواتي يردن مجوهرات تحمل الذاكرة والحدس والنِسب. يبدأ عملها بالإنصات وينتهي أقرب إلى البورتريه منه إلى المنتج.",
+    en: "Hanan founded Opal Stones for women who want jewellery to carry memory, instinct, and proportion. Her work begins with listening and ends closer to portraiture than product.",
+    ar: "أسّست حنان أوبال ستونز للنساء اللواتي يردن مجوهرات تحمل الذاكرة والحدس والنِسب. يبدأ عملها بالإنصات وينتهي أقرب إلى البورتريه منه إلى المنتج.",
   },
   fd_quote: {
     en: "“The piece matters when it feels like it has always belonged to her.”",
@@ -242,8 +242,8 @@ export const t = {
   cs_l1: { en: "Request a", ar: "اطلبي" },
   cs_l2: { en: "private appointment.", ar: "موعدكِ الخاص." },
   cs_sub: {
-    en: "Share the occasion, the stone, or the feeling the piece should hold. Hanan reviews every inquiry personally before the first conversation is arranged.",
-    ar: "شاركينا المناسبة، الحجر، أو الإحساس الذي تودّين أن تحمله القطعة. تراجع حنان كل طلب بنفسها قبل ترتيب الحوار الأول.",
+    en: "Share the occasion, the stone, or the feeling the piece should hold. Hanan reads each inquiry before the first conversation is arranged.",
+    ar: "شاركينا المناسبة، الحجر، أو الإحساس الذي تودّين أن تحمله القطعة. تقرأ حنان كل طلب قبل ترتيب الحوار الأول.",
   },
   f_name: { en: "Name", ar: "الاسم" },
   f_wa: { en: "WhatsApp number", ar: "رقم واتساب" },
@@ -268,6 +268,7 @@ export const t = {
     en: "A private jewellery maison for pieces made with memory, proportion, and intent.",
     ar: "ميزون مجوهرات خاص لقطع تُصاغ بذاكرة ونِسب ونيّة واضحة.",
   },
+  foot_place: { en: "Jeddah / private appointments", ar: "جدة / مواعيد خاصة" },
   foot_rights: { en: "All rights reserved.", ar: "جميع الحقوق محفوظة." },
 } satisfies Record<string, Entry>;
 
