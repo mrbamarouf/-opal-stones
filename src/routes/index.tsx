@@ -56,7 +56,6 @@ const OFFICIAL_LOGO_ALT = "Opal Stones by Hanan Bugshan";
 
 const HERO = j11;
 const REDESIGN_IMG = j19;
-const FOUNDER_IMG = j8;
 const CONS_BG = j14;
 
 const GALLERY = [j1, j3, j4, j6, j7, j9, j10, j12, j13, j15, j16, j18, j20, j21, j24, j25];
@@ -840,29 +839,22 @@ function Eyebrow({ children, light = false }: { children: ReactNode; light?: boo
 function Commission({ onChoose }: { onChoose: (label: string) => void }) {
   const { tr } = useLang();
   const cards: { k: TKey; d: TKey; img: string; n: string; pos: string }[] = [
-    { k: "com_ring", d: "com_ring_d", img: j1, n: "01", pos: "object-[center_42%]" },
+    { k: "com_ring", d: "com_ring_d", img: j15, n: "01", pos: "object-[center_38%]" },
     { k: "com_neck", d: "com_neck_d", img: j11, n: "02", pos: "object-[center_35%]" },
     { k: "com_ear", d: "com_ear_d", img: j7, n: "03", pos: "object-[center_38%]" },
-    { k: "com_brace", d: "com_brace_d", img: j15, n: "04", pos: "object-[center_48%]" },
+    { k: "com_brace", d: "com_brace_d", img: j18, n: "04", pos: "object-[center_48%]" },
     { k: "com_bridal", d: "com_bridal_d", img: j23, n: "05", pos: "object-[center_40%]" },
     { k: "com_redo", d: "com_redo_d", img: j19, n: "06", pos: "object-[center_52%]" },
     { k: "com_unique", d: "com_unique_d", img: j17, n: "07", pos: "object-[center_44%]" },
   ];
-  const cardLayout = [
-    "lg:col-span-6 aspect-[5/4]",
-    "lg:col-span-3 aspect-[4/5]",
-    "lg:col-span-3 aspect-[4/5]",
-    "lg:col-span-4 aspect-[4/5]",
-    "lg:col-span-4 aspect-[4/5]",
-    "lg:col-span-4 aspect-[4/5]",
-    "sm:col-span-2 lg:col-span-12 aspect-[16/9] md:aspect-[21/8]",
-  ];
+  const [active, setActive] = useState(0);
+  const activeCard = cards[active];
 
   return (
-    <section id="commission" className="bg-[color:var(--ivory)] py-28 md:py-44">
-      <div className="mx-auto max-w-[1600px] px-6 md:px-12">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-12 items-end mb-20 md:mb-28">
-          <Reveal className="md:col-span-7">
+    <section id="commission" className="overflow-hidden bg-[color:var(--ivory)] py-28 md:py-44">
+      <div className="mx-auto max-w-[1700px] px-6 md:px-12">
+        <div className="grid grid-cols-1 items-end gap-10 md:grid-cols-12 md:gap-12">
+          <Reveal className="md:col-span-6">
             <Eyebrow>{tr("com_eyebrow")}</Eyebrow>
             <h2 className="mt-8 font-display font-light text-[clamp(2.4rem,5.4vw,4.8rem)] leading-[1.0] text-[color:var(--charcoal)] tracking-[-0.01em]">
               <span className="block">{tr("com_title_a")}</span>{" "}
@@ -876,60 +868,100 @@ function Commission({ onChoose }: { onChoose: (label: string) => void }) {
           </Reveal>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4 md:gap-7">
-          {cards.map((c, i) => (
-            <Reveal key={c.k} delay={(i % 3) * 100} className={cardLayout[i]}>
-              <button
-                onClick={() => onChoose(tr(c.k))}
-                className="group relative block h-full w-full overflow-hidden bg-[color:var(--pearl)] text-left"
-              >
-                <div className="absolute inset-0">
-                  <img
-                    src={u(c.img)}
-                    alt=""
-                    className={`h-full w-full object-cover transition-all duration-[1800ms] ease-[cubic-bezier(.2,.7,.2,1)] scale-105 brightness-95 group-hover:scale-110 group-hover:brightness-100 ${c.pos}`}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent transition-opacity duration-700 group-hover:from-black/85" />
+        <div className="mt-20 grid grid-cols-1 gap-10 md:mt-24 lg:grid-cols-12 lg:gap-10">
+          <Reveal className="lg:col-span-7">
+            <button
+              onClick={() => onChoose(tr(activeCard.k))}
+              className="group relative block h-[72svh] min-h-[520px] w-full overflow-hidden bg-[color:var(--charcoal)] text-left md:h-[76vh]"
+            >
+              {cards.map((c, i) => (
+                <img
+                  key={c.k}
+                  src={u(c.img)}
+                  alt=""
+                  loading={i === 0 ? "eager" : "lazy"}
+                  className={`absolute inset-0 h-full w-full object-cover transition-all duration-[1300ms] ease-[cubic-bezier(.2,.7,.2,1)] ${c.pos} ${
+                    active === i
+                      ? "scale-100 opacity-100 brightness-[0.92]"
+                      : "scale-[1.04] opacity-0 brightness-75"
+                  }`}
+                />
+              ))}
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,.18),rgba(0,0,0,.18)_35%,rgba(0,0,0,.76))]" />
+              <div className="absolute inset-x-0 top-0 flex items-center justify-between p-6 text-[color:var(--ivory)] md:p-9">
+                <span className="font-display text-[4.2rem] font-light italic leading-none text-[color:var(--ivory)]/50 md:text-[6.4rem]">
+                  {activeCard.n}
+                </span>
+                <span className="max-w-[12rem] text-right text-[0.6rem] font-medium uppercase tracking-[0.24em] text-[color:var(--champagne)]/88">
+                  {tr("com_eyebrow")}
+                </span>
+              </div>
+              <div className="absolute bottom-0 left-0 right-0 p-6 text-[color:var(--ivory)] md:p-10 lg:p-12">
+                <h3 className="max-w-xl font-display text-[clamp(2.35rem,4.8vw,5.1rem)] font-light leading-[0.98] [text-wrap:balance]">
+                  {tr(activeCard.k)}
+                </h3>
+                <p className="mt-6 max-w-md text-[0.98rem] font-light leading-[1.9] text-[color:var(--ivory)]/82">
+                  {tr(activeCard.d)}
+                </p>
+                <div className="mt-9 inline-flex items-center gap-5 text-[0.66rem] font-medium uppercase tracking-[0.24em]">
+                  {tr("com_begin")}
+                  <span className="block h-px w-10 bg-[color:var(--gold)] transition-all duration-500 group-hover:w-20" />
                 </div>
+              </div>
+            </button>
+          </Reveal>
 
-                <div className="absolute top-6 left-6 md:top-8 md:left-8 text-[0.6rem] tracking-[0.45em] uppercase text-[color:var(--ivory)]/85 font-display italic">
-                  {c.n}
-                </div>
-
-                <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10 text-[color:var(--ivory)]">
-                  <h3 className="font-display font-light text-[1.85rem] md:text-[2.25rem] leading-tight">
-                    {tr(c.k)}
-                  </h3>
-                  <p className="mt-3 text-[0.92rem] leading-[1.75] text-[color:var(--ivory)]/86 font-light max-w-md">
-                    {tr(c.d)}
-                  </p>
-                  <div className="mt-7 inline-flex items-center gap-4 text-[0.66rem] font-medium tracking-[0.28em] uppercase opacity-90 transition-all duration-500 group-hover:opacity-100">
-                    {tr("com_begin")}
-                    <span className="block h-px w-6 bg-[color:var(--gold)] transition-all duration-500 group-hover:w-14" />
-                  </div>
-                </div>
-              </button>
-            </Reveal>
-          ))}
+          <Reveal className="lg:col-span-5" delay={120}>
+            <div className="flex h-full flex-col justify-between border-y border-[color:var(--border)] py-2">
+              {cards.map((c, i) => (
+                <button
+                  key={c.k}
+                  onMouseEnter={() => setActive(i)}
+                  onFocus={() => setActive(i)}
+                  onClick={() => {
+                    setActive(i);
+                    onChoose(tr(c.k));
+                  }}
+                  className={`group grid grid-cols-[3.2rem_1fr] gap-5 border-b border-[color:var(--border)] py-5 text-left transition-colors last:border-b-0 md:grid-cols-[4.5rem_1fr] md:py-6 ${
+                    active === i
+                      ? "text-[color:var(--charcoal)]"
+                      : "text-[color:var(--charcoal)]/58"
+                  }`}
+                >
+                  <span className="font-display text-[1.9rem] font-light italic leading-none text-[color:var(--gold)]/80 md:text-[2.55rem]">
+                    {c.n}
+                  </span>
+                  <span>
+                    <span className="block font-display text-[1.55rem] font-light leading-tight md:text-[2rem]">
+                      {tr(c.k)}
+                    </span>
+                    <span className="mt-2 block max-w-md text-[0.88rem] font-light leading-[1.72] text-[color:var(--charcoal)]/64 opacity-100 transition-opacity group-hover:opacity-100 md:text-[0.94rem]">
+                      {tr(c.d)}
+                    </span>
+                  </span>
+                </button>
+              ))}
+            </div>
+          </Reveal>
         </div>
 
         <Reveal delay={180}>
-          <div className="mt-20 grid grid-cols-1 items-end gap-10 border-t border-[color:var(--border)] pt-12 md:mt-28 md:grid-cols-12 md:gap-12 md:pt-16">
-            <div className="md:col-span-5">
-              <MotionFrame
-                film={FILMS.portraitRing}
-                label={tr("film_commission_label")}
-                className="aspect-[4/5] md:aspect-[5/6]"
-                mediaClassName="object-[center_42%]"
-              />
-            </div>
-            <div className="md:col-span-5 md:col-start-8">
+          <div className="mt-20 grid grid-cols-1 items-center gap-10 md:mt-28 lg:grid-cols-12 lg:gap-12">
+            <div className="lg:col-span-4 lg:col-start-2">
               <div className="text-[0.68rem] font-medium uppercase tracking-[0.24em] text-[color:var(--gold)]">
                 {tr("film_commission_eyebrow")}
               </div>
-              <p className="mt-7 max-w-xl font-display text-[1.7rem] font-light leading-[1.35] text-[color:var(--charcoal)] md:text-[2.1rem]">
+              <p className="mt-7 max-w-xl font-display text-[1.7rem] font-light leading-[1.35] text-[color:var(--charcoal)] md:text-[2.2rem]">
                 {tr("film_commission_body")}
               </p>
+            </div>
+            <div className="lg:col-span-5 lg:col-start-8">
+              <MotionFrame
+                film={FILMS.portraitRing}
+                label={tr("film_commission_label")}
+                className="aspect-[16/11] md:aspect-[21/10]"
+                mediaClassName="object-[center_42%]"
+              />
             </div>
           </div>
         </Reveal>
@@ -1134,53 +1166,61 @@ function Process() {
   return (
     <section
       id="atelier"
-      className="bg-[color:var(--charcoal)] text-[color:var(--ivory)] py-32 md:py-56"
+      className="relative overflow-hidden bg-[color:var(--charcoal)] py-32 text-[color:var(--ivory)] md:py-56"
     >
-      <div className="mx-auto max-w-[1500px] px-6 md:px-12">
-        <Reveal>
-          <Eyebrow light>{tr("pr_eyebrow")}</Eyebrow>
-        </Reveal>
-        <Reveal delay={120}>
-          <h2 className="mt-10 max-w-4xl font-display font-light text-[clamp(2.5rem,5vw,4.8rem)] leading-[1.08] [text-wrap:balance]">
-            {tr("pr_title")}
-          </h2>
-        </Reveal>
-
-        <div className="mt-20 grid grid-cols-1 gap-10 md:mt-24 lg:grid-cols-12 lg:gap-16">
+      <div className="absolute inset-y-0 right-0 hidden w-[42%] bg-[radial-gradient(circle_at_center,rgba(206,174,109,.13),transparent_58%)] lg:block" />
+      <div className="relative mx-auto max-w-[1600px] px-6 md:px-12">
+        <div className="grid grid-cols-1 items-end gap-10 lg:grid-cols-12 lg:gap-16">
           <Reveal className="lg:col-span-5">
-            <AmbientFilm
-              film={FILMS.atelierHands}
-              className="aspect-[4/5] md:aspect-[16/11] lg:aspect-[4/5]"
-              mediaClassName="object-[center_center]"
-              overlay="bg-[linear-gradient(180deg,rgba(0,0,0,.1),rgba(0,0,0,.46))]"
-            />
+            <Eyebrow light>{tr("pr_eyebrow")}</Eyebrow>
           </Reveal>
-          <Reveal className="lg:col-span-5 lg:col-start-8 lg:self-end" delay={140}>
-            <div className="text-[0.68rem] font-medium uppercase tracking-[0.24em] text-[color:var(--gold)]">
-              {tr("film_process_eyebrow")}
-            </div>
-            <p className="mt-7 max-w-xl font-display text-[1.65rem] font-light leading-[1.38] text-[color:var(--ivory)]/86 md:text-[2.1rem]">
-              {tr("film_process_body")}
-            </p>
+          <Reveal className="lg:col-span-6 lg:col-start-7" delay={120}>
+            <h2 className="max-w-4xl font-display text-[clamp(2.5rem,5vw,4.8rem)] font-light leading-[1.08] [text-wrap:balance]">
+              {tr("pr_title")}
+            </h2>
           </Reveal>
         </div>
 
-        <div className="mt-24 md:mt-36 space-y-14 md:space-y-20">
-          {steps.map((s, i) => (
-            <Reveal key={s.t} delay={i * 80}>
-              <div className="grid grid-cols-12 gap-6 md:gap-10 items-baseline border-t border-[color:var(--ivory)]/14 pt-8 md:pt-10">
-                <div className="col-span-12 md:col-span-2 font-display italic text-[3.2rem] md:text-[5rem] leading-none text-[color:var(--gold)]/78">
-                  0{i + 1}
+        <div className="mt-20 grid grid-cols-1 gap-14 md:mt-28 lg:grid-cols-12 lg:gap-20">
+          <Reveal className="lg:col-span-5">
+            <div className="lg:sticky lg:top-32">
+              <AmbientFilm
+                film={FILMS.atelierHands}
+                className="h-[66svh] min-h-[500px]"
+                mediaClassName="object-[center_center]"
+                overlay="bg-[linear-gradient(180deg,rgba(0,0,0,.04),rgba(0,0,0,.22)_48%,rgba(0,0,0,.62))]"
+              />
+              <div className="mt-8 max-w-md border-t border-[color:var(--ivory)]/16 pt-7">
+                <div className="text-[0.68rem] font-medium uppercase tracking-[0.24em] text-[color:var(--gold)]">
+                  {tr("film_process_eyebrow")}
                 </div>
-                <h3 className="col-span-12 md:col-span-4 font-display font-light text-[1.9rem] md:text-[2.45rem] leading-tight">
-                  {tr(s.t)}
-                </h3>
-                <p className="col-span-12 md:col-span-5 md:col-start-8 text-[1rem] leading-[1.95] text-[color:var(--ivory)]/78 font-light max-w-lg [text-wrap:pretty]">
-                  {tr(s.d)}
+                <p className="mt-5 font-display text-[1.55rem] font-light leading-[1.42] text-[color:var(--ivory)]/84 md:text-[1.95rem]">
+                  {tr("film_process_body")}
                 </p>
               </div>
-            </Reveal>
-          ))}
+            </div>
+          </Reveal>
+
+          <div className="lg:col-span-6 lg:col-start-7">
+            {steps.map((s, i) => (
+              <Reveal key={s.t} delay={i * 80}>
+                <article className="group grid grid-cols-1 gap-6 border-t border-[color:var(--ivory)]/14 py-10 transition-colors md:grid-cols-12 md:gap-8 md:py-14">
+                  <div className="md:col-span-2">
+                    <span className="font-display text-[3.4rem] font-light italic leading-none text-[color:var(--gold)]/70 transition-colors group-hover:text-[color:var(--gold)] md:text-[5.8rem]">
+                      0{i + 1}
+                    </span>
+                  </div>
+                  <h3 className="font-display text-[2rem] font-light leading-tight text-[color:var(--ivory)] md:col-span-4 md:text-[2.8rem]">
+                    {tr(s.t)}
+                  </h3>
+                  <p className="max-w-xl text-[1rem] font-light leading-[1.95] text-[color:var(--ivory)]/72 md:col-span-5 md:col-start-8">
+                    {tr(s.d)}
+                  </p>
+                </article>
+              </Reveal>
+            ))}
+            <div className="h-px bg-[color:var(--ivory)]/14" />
+          </div>
         </div>
       </div>
     </section>
@@ -1204,9 +1244,9 @@ function Signature() {
     "object-[center_46%]",
   ];
   return (
-    <section id="creations" className="bg-[color:var(--ivory)] py-32 md:py-56">
-      <div className="mx-auto max-w-[1600px] px-6 md:px-12">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-end mb-20 md:mb-32">
+    <section id="creations" className="overflow-hidden bg-[color:var(--ivory)] py-32 md:py-56">
+      <div className="mx-auto max-w-[1700px] px-6 md:px-12">
+        <div className="grid grid-cols-1 items-end gap-8 md:grid-cols-12 md:gap-12">
           <Reveal className="md:col-span-6">
             <Eyebrow>{tr("sig_eyebrow")}</Eyebrow>
             <h2 className="mt-8 font-display font-light text-[clamp(2.6rem,5.3vw,5rem)] leading-[1.02] text-[color:var(--charcoal)] [text-wrap:balance]">
@@ -1220,37 +1260,68 @@ function Signature() {
           </Reveal>
         </div>
 
-        <div className="grid grid-cols-12 gap-3 md:gap-7">
-          <Reveal
-            className="col-span-12 aspect-[4/5] md:col-span-4 md:col-start-2 md:mt-24"
-            delay={80}
-          >
+        <div className="mt-20 grid grid-cols-12 gap-3 md:mt-32 md:gap-6">
+          <Reveal className="col-span-12 lg:col-span-7">
             <MotionFrame
               film={FILMS.necklaceArchive}
               label={tr("film_signature_label")}
-              className="h-full w-full"
+              className="h-[72svh] min-h-[540px] w-full md:h-[80vh]"
               mediaClassName="object-[center_34%]"
             />
           </Reveal>
-          {GALLERY.map((img, i) => {
+
+          <Reveal
+            className="col-span-6 aspect-[3/4] lg:col-span-2 lg:col-start-9 lg:mt-28"
+            delay={100}
+          >
+            <div className="h-full overflow-hidden bg-[color:var(--pearl)]">
+              <Parallax amount={30} className="h-full w-full">
+                <img
+                  src={u(j3)}
+                  alt=""
+                  loading="lazy"
+                  className="h-full w-full object-cover object-[center_38%]"
+                />
+              </Parallax>
+            </div>
+          </Reveal>
+          <Reveal className="col-span-6 aspect-[4/5] lg:col-span-3 lg:mt-6" delay={180}>
+            <div className="h-full overflow-hidden bg-[color:var(--pearl)]">
+              <Parallax amount={46} className="h-full w-full">
+                <img
+                  src={u(j21)}
+                  alt=""
+                  loading="lazy"
+                  className="h-full w-full object-cover object-[center_42%]"
+                />
+              </Parallax>
+            </div>
+          </Reveal>
+          <Reveal className="col-span-12 lg:col-span-4 lg:col-start-9" delay={220}>
+            <div className="border-y border-[color:var(--border)] py-8 md:py-10">
+              <p className="font-display text-[1.75rem] font-light italic leading-[1.35] text-[color:var(--taupe)] md:text-[2.25rem]">
+                {tr("sig_sub")}
+              </p>
+            </div>
+          </Reveal>
+
+          {GALLERY.slice(0, 12).map((img, i) => {
             const pattern = [
-              "col-span-12 md:col-span-6 aspect-[5/4]",
-              "col-span-6 md:col-span-3 md:col-start-8 aspect-[3/4] md:mt-20",
-              "col-span-6 md:col-span-3 aspect-[4/5] md:mt-44",
-              "col-span-12 md:col-span-7 md:col-start-3 aspect-[16/10]",
-              "col-span-7 md:col-span-4 aspect-[3/4]",
-              "col-span-5 md:col-span-5 md:col-start-7 aspect-[4/5] md:mt-24",
-              "col-span-12 md:col-span-6 md:col-start-4 aspect-[5/4]",
-              "col-span-6 md:col-span-3 aspect-[3/4]",
+              "col-span-5 md:col-span-2 aspect-[3/4]",
+              "col-span-7 md:col-span-3 aspect-[5/4] md:mt-14",
+              "col-span-6 md:col-span-2 aspect-[4/5]",
+              "col-span-6 md:col-span-3 aspect-[16/11] md:mt-24",
+              "col-span-7 md:col-span-4 aspect-[5/4]",
+              "col-span-5 md:col-span-2 aspect-[3/4] md:mt-10",
             ];
             return (
-              <Reveal key={i} className={pattern[i % pattern.length]} delay={(i % 4) * 80}>
+              <Reveal key={i} className={pattern[i % pattern.length]} delay={(i % 5) * 60}>
                 <div className="group h-full w-full overflow-hidden bg-[color:var(--pearl)]">
                   <img
                     src={u(img)}
                     alt=""
                     loading="lazy"
-                    className={`h-full w-full object-cover transition-transform duration-[1800ms] ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-[1.055] ${galleryPositions[i % galleryPositions.length]}`}
+                    className={`h-full w-full object-cover brightness-[0.96] transition-transform duration-[1800ms] ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-[1.055] group-hover:brightness-100 ${galleryPositions[i % galleryPositions.length]}`}
                   />
                 </div>
               </Reveal>
@@ -1269,46 +1340,85 @@ function Signature() {
 function Redesign({ onBegin }: { onBegin: () => void }) {
   const { tr } = useLang();
   return (
-    <section id="redesign" className="bg-[color:var(--pearl)] py-28 md:py-48 overflow-hidden">
-      <div className="mx-auto max-w-[1600px] px-6 md:px-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-center">
-          <Reveal className="lg:col-span-6 order-2 lg:order-1">
-            <Eyebrow>{tr("rd_eyebrow")}</Eyebrow>
-            <h2 className="mt-8 font-display font-light text-[clamp(2.6rem,5.6vw,5.2rem)] leading-[1.04] text-[color:var(--charcoal)] [text-wrap:balance]">
+    <section
+      id="redesign"
+      className="relative overflow-hidden bg-[color:var(--charcoal)] py-28 text-[color:var(--ivory)] md:py-52"
+    >
+      <div className="absolute inset-0 opacity-[0.22]">
+        <img
+          src={u(REDESIGN_IMG)}
+          alt=""
+          className="h-full w-full object-cover object-[center_46%]"
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,.9),rgba(0,0,0,.62)_42%,rgba(0,0,0,.28))]" />
+      </div>
+
+      <div className="relative mx-auto max-w-[1650px] px-6 md:px-12">
+        <div className="grid grid-cols-1 items-center gap-16 lg:grid-cols-12 lg:gap-20">
+          <Reveal className="lg:col-span-5">
+            <Eyebrow light>{tr("rd_eyebrow")}</Eyebrow>
+            <h2 className="mt-8 font-display text-[clamp(2.7rem,5.8vw,5.5rem)] font-light leading-[1.02] [text-wrap:balance]">
               <span className="block">{tr("rd_t1")}</span>{" "}
-              <span className="block italic text-[color:var(--taupe)]">{tr("rd_t2")}</span>
+              <span className="block italic text-[color:var(--gold)]">{tr("rd_t2")}</span>
             </h2>
-            <p className="mt-10 max-w-xl text-[1.05rem] leading-[2] text-[color:var(--charcoal)]/80 font-light [text-wrap:pretty]">
+            <p className="mt-10 max-w-xl text-[1.05rem] font-light leading-[2] text-[color:var(--ivory)]/78 [text-wrap:pretty]">
               {tr("rd_body")}
             </p>
             <button
               onClick={onBegin}
-              className="group mt-12 inline-flex min-h-[58px] items-center gap-6 border border-[color:var(--charcoal)] px-9 py-5 text-[0.7rem] font-medium tracking-[0.26em] uppercase text-[color:var(--charcoal)] transition-all duration-500 hover:bg-[color:var(--charcoal)] hover:text-[color:var(--ivory)]"
+              className="group mt-12 inline-flex min-h-[58px] items-center gap-6 border border-[color:var(--ivory)]/42 px-9 py-5 text-[0.7rem] font-medium uppercase tracking-[0.26em] text-[color:var(--ivory)] transition-all duration-500 hover:border-[color:var(--gold)] hover:bg-[color:var(--gold)] hover:text-[color:var(--charcoal)]"
             >
               {tr("rd_cta")}
               <span className="block h-px w-8 bg-current transition-all duration-500 group-hover:w-14" />
             </button>
-            <div className="mt-14 max-w-[360px]">
-              <MotionFrame
-                film={FILMS.heirloomPendant}
-                label={tr("film_redesign_label")}
-                className="aspect-[4/5]"
-                mediaClassName="object-[center_42%]"
-              />
-            </div>
           </Reveal>
-          <Reveal className="lg:col-span-6 order-1 lg:order-2" delay={150}>
-            <div className="aspect-[4/5] overflow-hidden md:aspect-[5/6]">
-              <Parallax amount={60} className="h-full w-full">
-                <img
-                  src={u(REDESIGN_IMG)}
-                  alt=""
-                  className="h-full w-full object-cover object-[center_46%]"
+
+          <Reveal className="lg:col-span-6 lg:col-start-7" delay={150}>
+            <div className="grid grid-cols-12 items-end gap-3 md:gap-5">
+              <div className="col-span-8 overflow-hidden md:col-span-7">
+                <div className="aspect-[3/4]">
+                  <Parallax amount={54} className="h-full w-full">
+                    <img
+                      src={u(REDESIGN_IMG)}
+                      alt=""
+                      className="h-full w-full object-cover object-[center_46%]"
+                    />
+                  </Parallax>
+                </div>
+              </div>
+              <div className="col-span-4 border-t border-[color:var(--ivory)]/20 pt-4 font-display text-[3.6rem] font-light italic leading-none text-[color:var(--gold)]/80 md:text-[6.5rem]">
+                01
+              </div>
+              <div className="col-span-12 -mt-8 ml-auto w-[78%] md:-mt-20 md:w-[68%]">
+                <MotionFrame
+                  film={FILMS.heirloomPendant}
+                  label={tr("film_redesign_label")}
+                  className="aspect-[16/10]"
+                  mediaClassName="object-[center_42%]"
                 />
-              </Parallax>
+              </div>
             </div>
           </Reveal>
         </div>
+
+        <Reveal delay={240}>
+          <div className="mt-20 grid grid-cols-1 gap-6 border-y border-[color:var(--ivory)]/14 py-8 md:mt-28 md:grid-cols-3 md:gap-10 md:py-10">
+            {[
+              ["pr_2_t", "pr_2_d"],
+              ["pr_3_t", "pr_3_d"],
+              ["pr_4_t", "pr_4_d"],
+            ].map(([title, body]) => (
+              <div key={title}>
+                <h3 className="font-display text-[1.55rem] font-light text-[color:var(--ivory)]">
+                  {tr(title as TKey)}
+                </h3>
+                <p className="mt-3 max-w-sm text-[0.94rem] font-light leading-[1.85] text-[color:var(--ivory)]/66">
+                  {tr(body as TKey)}
+                </p>
+              </div>
+            ))}
+          </div>
+        </Reveal>
       </div>
     </section>
   );
@@ -1332,64 +1442,76 @@ function Stories() {
     { tag: "story3_tag", q: "story3_q", b: "story3_b" },
     { tag: "story4_tag", q: "story4_q", b: "story4_b" },
   ];
+  const supportingLayout = ["lg:col-span-5", "lg:col-span-4 lg:mt-28", "lg:col-span-3 lg:mt-10"];
 
   return (
-    <section className="bg-[color:var(--ivory)] py-32 md:py-56">
-      <div className="mx-auto max-w-[1600px] px-6 md:px-12">
-        <Reveal>
-          <Eyebrow>{tr("st_eyebrow")}</Eyebrow>
-        </Reveal>
-        <Reveal delay={120}>
-          <h2 className="mt-10 max-w-4xl font-display font-light text-[clamp(2.6rem,5.3vw,5rem)] leading-[1.02] text-[color:var(--charcoal)] [text-wrap:balance]">
-            {tr("st_title")}
-          </h2>
-        </Reveal>
+    <section className="overflow-hidden bg-[color:var(--ivory)] py-32 md:py-56">
+      <div className="mx-auto max-w-[1700px] px-6 md:px-12">
+        <div className="grid grid-cols-1 items-end gap-10 lg:grid-cols-12 lg:gap-14">
+          <Reveal className="lg:col-span-6">
+            <Eyebrow>{tr("st_eyebrow")}</Eyebrow>
+            <h2 className="mt-10 max-w-4xl font-display text-[clamp(2.6rem,5.3vw,5rem)] font-light leading-[1.02] text-[color:var(--charcoal)] [text-wrap:balance]">
+              {tr("st_title")}
+            </h2>
+          </Reveal>
+          <Reveal className="lg:col-span-4 lg:col-start-9" delay={140}>
+            <p className="text-[1rem] font-light leading-[1.95] text-[color:var(--charcoal)]/72">
+              {tr("story1_b")}
+            </p>
+          </Reveal>
+        </div>
 
-        <div className="mt-20 md:mt-32 space-y-28 md:space-y-44">
-          {stories.map((s, i) => {
-            const reverse = i % 2 === 1;
-            return (
-              <div
-                key={s.tag}
-                className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center"
-              >
-                <Reveal className={`lg:col-span-6 ${reverse ? "lg:order-2" : ""}`}>
-                  <div className="aspect-[4/5] overflow-hidden md:aspect-[5/6]">
-                    {i === 1 ? (
-                      <MotionFrame
-                        film={FILMS.clientStory}
-                        label={tr("film_story_label")}
-                        className="h-full w-full"
-                        mediaClassName="object-[center_36%]"
-                      />
-                    ) : (
-                      <Parallax amount={50} className="h-full w-full">
-                        <img
-                          src={u(STORY_IMAGES[i % STORY_IMAGES.length])}
-                          alt=""
-                          className={`h-full w-full object-cover ${storyPositions[i % storyPositions.length]}`}
-                        />
-                      </Parallax>
-                    )}
-                  </div>
-                </Reveal>
-                <Reveal
-                  className={`lg:col-span-5 ${reverse ? "lg:col-start-2 lg:order-1" : "lg:col-start-8"}`}
-                  delay={150}
-                >
-                  <div className="text-[0.72rem] font-medium tracking-[0.24em] uppercase text-[color:var(--gold)]">
+        <div className="mt-20 grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-10">
+          <Reveal className="lg:col-span-7">
+            <MotionFrame
+              film={FILMS.clientStory}
+              label={tr("film_story_label")}
+              className="h-[70svh] min-h-[520px] w-full"
+              mediaClassName="object-[center_36%]"
+            />
+          </Reveal>
+          <Reveal className="lg:col-span-5 lg:self-end" delay={160}>
+            <div className="border-y border-[color:var(--border)] py-10 md:py-12">
+              <div className="text-[0.72rem] font-medium uppercase tracking-[0.24em] text-[color:var(--gold)]">
+                {tr(stories[0].tag)}
+              </div>
+              <h3 className="mt-7 font-display text-[clamp(2rem,4.2vw,4.2rem)] font-light leading-[1.04] text-[color:var(--charcoal)] [text-wrap:balance]">
+                "{tr(stories[0].q)}"
+              </h3>
+              <p className="mt-8 max-w-lg text-[1rem] font-light leading-[2] text-[color:var(--charcoal)]/76">
+                {tr(stories[0].b)}
+              </p>
+            </div>
+          </Reveal>
+        </div>
+
+        <div className="mt-16 grid grid-cols-1 gap-12 md:mt-24 lg:grid-cols-12 lg:gap-8">
+          {stories.slice(1).map((s, i) => (
+            <Reveal key={s.tag} className={supportingLayout[i]} delay={i * 120}>
+              <article>
+                <div className="aspect-[4/5] overflow-hidden bg-[color:var(--pearl)]">
+                  <Parallax amount={34 + i * 8} className="h-full w-full">
+                    <img
+                      src={u(STORY_IMAGES[(i + 1) % STORY_IMAGES.length])}
+                      alt=""
+                      className={`h-full w-full object-cover ${storyPositions[(i + 1) % storyPositions.length]}`}
+                    />
+                  </Parallax>
+                </div>
+                <div className="mt-7 border-t border-[color:var(--border)] pt-7">
+                  <div className="text-[0.66rem] font-medium uppercase tracking-[0.22em] text-[color:var(--gold)]">
                     {tr(s.tag)}
                   </div>
-                  <h3 className="mt-6 font-display font-light text-[1.95rem] md:text-[2.65rem] leading-[1.18] text-[color:var(--charcoal)] [text-wrap:balance]">
+                  <h3 className="mt-4 font-display text-[1.7rem] font-light leading-[1.18] text-[color:var(--charcoal)] md:text-[2.25rem]">
                     "{tr(s.q)}"
                   </h3>
-                  <p className="mt-8 max-w-lg text-[1rem] leading-[2] text-[color:var(--charcoal)]/76 font-light [text-wrap:pretty]">
+                  <p className="mt-5 text-[0.95rem] font-light leading-[1.9] text-[color:var(--charcoal)]/72">
                     {tr(s.b)}
                   </p>
-                </Reveal>
-              </div>
-            );
-          })}
+                </div>
+              </article>
+            </Reveal>
+          ))}
         </div>
       </div>
     </section>
@@ -1403,23 +1525,20 @@ function Stories() {
 function Founder() {
   const { tr } = useLang();
   return (
-    <section className="bg-[color:var(--pearl)] py-28 md:py-48">
-      <div className="mx-auto max-w-[1400px] px-6 md:px-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-center">
-          <Reveal className="lg:col-span-5">
+    <section className="overflow-hidden bg-[color:var(--pearl)] py-28 md:py-52">
+      <div className="mx-auto max-w-[1650px] px-6 md:px-12">
+        <div className="grid grid-cols-1 items-center gap-16 lg:grid-cols-12 lg:gap-20">
+          <Reveal className="lg:col-span-7">
             <div className="relative">
-              <div className="aspect-[3/4] overflow-hidden">
-                <Parallax amount={40} className="h-full w-full">
-                  <img
-                    src={u(FOUNDER_IMG)}
-                    alt=""
-                    className="h-full w-full object-cover object-[center_36%]"
-                  />
-                </Parallax>
-              </div>
+              <MotionFrame
+                film={FILMS.behindScenes}
+                label={tr("film_founder_label")}
+                className="h-[72svh] min-h-[560px] w-full"
+                mediaClassName="object-[center_38%]"
+              />
             </div>
           </Reveal>
-          <Reveal className="lg:col-span-6 lg:col-start-7" delay={150}>
+          <Reveal className="lg:col-span-4 lg:col-start-9" delay={150}>
             <Eyebrow>{tr("fd_eyebrow")}</Eyebrow>
             <h2 className="mt-8 font-display font-light text-[clamp(2.35rem,4.6vw,4.2rem)] leading-[1.12] text-[color:var(--charcoal)] italic [text-wrap:balance]">
               {tr("fd_title")}
@@ -1427,19 +1546,11 @@ function Founder() {
             <p className="mt-10 max-w-xl text-[1.05rem] leading-[2.05] text-[color:var(--charcoal)]/80 font-light [text-wrap:pretty]">
               {tr("fd_body")}
             </p>
-            <div className="mt-12 max-w-xl border-t border-[color:var(--border)] pt-8 font-display italic text-[1.55rem] leading-[1.35] text-[color:var(--taupe)]">
+            <div className="mt-12 max-w-xl border-y border-[color:var(--border)] py-8 font-display italic text-[1.8rem] leading-[1.32] text-[color:var(--taupe)] md:text-[2.35rem]">
               {tr("fd_quote")}
             </div>
             <div className="mt-5 text-[0.7rem] font-medium tracking-[0.24em] uppercase text-[color:var(--taupe)]">
               Hanan Bugshan
-            </div>
-            <div className="mt-12 max-w-[360px]">
-              <MotionFrame
-                film={FILMS.behindScenes}
-                label={tr("film_founder_label")}
-                className="aspect-[4/5]"
-                mediaClassName="object-[center_38%]"
-              />
             </div>
           </Reveal>
         </div>
@@ -1708,7 +1819,7 @@ function Concierge({
             : "pointer-events-none translate-y-4 opacity-0"
         }`}
       >
-        <div className="relative flex h-11 w-11 items-center justify-center rounded-full bg-[color:var(--charcoal)] text-[color:var(--ivory)] shadow-[0_14px_34px_-24px_rgba(0,0,0,0.55)] transition-all duration-500 hover:bg-[color:var(--gold)] sm:h-auto sm:w-auto sm:justify-start sm:gap-3 sm:rounded-none sm:py-3 sm:pl-4 sm:pr-5">
+        <div className="relative flex h-11 w-11 items-center justify-center rounded-full bg-[color:var(--charcoal)] text-[color:var(--ivory)] shadow-[0_14px_34px_-24px_rgba(0,0,0,0.55)] transition-all duration-500 hover:bg-[color:var(--gold)] sm:h-12 sm:w-12">
           <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[color:var(--gold)] transition-colors group-hover:bg-[color:var(--charcoal)] sm:h-8 sm:w-8">
             <svg
               width="13"
@@ -1730,14 +1841,6 @@ function Concierge({
                 strokeLinejoin="round"
               />
             </svg>
-          </div>
-          <div className="hidden text-left leading-tight sm:block">
-            <div className="text-[0.58rem] font-medium tracking-[0.2em] uppercase text-[color:var(--gold)] group-hover:text-[color:var(--ivory)] transition-colors">
-              {tr("cc_title")}
-            </div>
-            <div className="mt-0.5 hidden text-[0.68rem] tracking-[0.01em] text-[color:var(--ivory)]/74 transition-colors group-hover:text-[color:var(--ivory)] sm:block">
-              {tr("cc_sub")}
-            </div>
           </div>
         </div>
       </button>
@@ -1823,19 +1926,25 @@ function Concierge({
 function Footer() {
   const { tr } = useLang();
   return (
-    <footer className="bg-[color:var(--ivory)] border-t border-[color:var(--border)]">
-      <div className="mx-auto max-w-[1600px] px-6 py-20 md:px-12 md:py-28">
-        <div className="grid grid-cols-1 gap-14 md:grid-cols-12 md:items-end">
-          <div className="md:col-span-5">
+    <footer className="relative overflow-hidden bg-[color:var(--charcoal)] text-[color:var(--ivory)]">
+      <div className="absolute inset-0 opacity-[0.16]">
+        <img src={u(CONS_BG)} alt="" className="h-full w-full object-cover object-[center_44%]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,.55),rgba(0,0,0,.94))]" />
+      </div>
+
+      <div className="relative mx-auto max-w-[1650px] px-6 py-20 md:px-12 md:py-32">
+        <div className="grid grid-cols-1 gap-14 lg:grid-cols-12 lg:items-end">
+          <div className="lg:col-span-6">
             <OfficialLogo
               sizes="(max-width: 767px) 160px, 210px"
               className="w-[160px] md:w-[210px]"
             />
-            <p className="mt-8 max-w-md font-display text-[1.08rem] font-light italic leading-[1.75] text-[color:var(--charcoal)]/68 md:text-[1.18rem]">
+            <p className="mt-10 max-w-3xl font-display text-[clamp(2rem,4.5vw,4.8rem)] font-light italic leading-[1.08] text-[color:var(--ivory)]/88 [text-wrap:balance]">
               {tr("foot_tag")}
             </p>
           </div>
-          <div className="flex flex-col gap-3 text-[0.66rem] uppercase tracking-[0.22em] text-[color:var(--charcoal)]/68 md:col-span-3 md:col-start-7">
+
+          <div className="flex flex-col gap-4 text-[0.68rem] uppercase tracking-[0.22em] text-[color:var(--ivory)]/70 lg:col-span-2 lg:col-start-8">
             <a
               href={WHATSAPP}
               target="_blank"
@@ -1856,9 +1965,10 @@ function Footer() {
               {tr("nav_book")}
             </a>
           </div>
-          <div className="text-[0.62rem] uppercase tracking-[0.22em] leading-[2] text-[color:var(--taupe)] md:col-span-3 md:text-right">
+
+          <div className="text-[0.62rem] uppercase tracking-[0.22em] leading-[2] text-[color:var(--ivory)]/58 lg:col-span-3 lg:text-right">
             <div>{tr("foot_place")}</div>
-            <div className="mt-5 h-px w-16 bg-[color:var(--border)] md:ml-auto" />
+            <div className="mt-5 h-px w-16 bg-[color:var(--gold)]/45 lg:ml-auto" />
             <div className="mt-5">
               © {new Date().getFullYear()} Opal Stones
               <br />
@@ -1866,6 +1976,16 @@ function Footer() {
             </div>
           </div>
         </div>
+
+        <a
+          href="#consultation"
+          className="group mt-20 flex min-h-[76px] items-center justify-between border-y border-[color:var(--ivory)]/16 py-7 text-[color:var(--ivory)] transition-colors hover:text-[color:var(--gold)] md:mt-28"
+        >
+          <span className="font-display text-[1.7rem] font-light italic md:text-[2.6rem]">
+            {tr("nav_book")}
+          </span>
+          <span className="h-px w-12 bg-current transition-all duration-500 group-hover:w-28" />
+        </a>
       </div>
     </footer>
   );
