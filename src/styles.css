@@ -290,15 +290,15 @@ body.arabic-mode [class*="tracking-"],
   }
 
   [data-mobile-hero-heading="true"] {
-    font-size: clamp(2.1rem, 9.5vw, 2.95rem) !important;
-    line-height: 1.15 !important;
+    font-size: clamp(3rem, 14.2vw, 4.15rem) !important;
+    line-height: 1.04 !important;
   }
 
   html[lang="ar"] body [data-mobile-hero-heading="true"],
   body.arabic-mode [data-mobile-hero-heading="true"],
   .arabic-mode [data-mobile-hero-heading="true"] {
-    font-size: clamp(2.12rem, 9.2vw, 2.9rem) !important;
-    line-height: 1.28 !important;
+    font-size: clamp(2.75rem, 12vw, 3.75rem) !important;
+    line-height: 1.24 !important;
   }
 }
 

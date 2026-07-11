@@ -507,27 +507,55 @@ function MaisonPrelude() {
   const { tr } = useLang();
   return (
     <section className="relative overflow-hidden bg-[color:var(--charcoal)] text-[color:var(--ivory)]">
-      <AmbientFilm
-        film={FILMS.maisonPendant}
-        className="h-[78svh] min-h-[540px] md:h-[86vh]"
-        mediaClassName="object-[center_38%]"
-        overlay="bg-[linear-gradient(180deg,rgba(0,0,0,.38),rgba(0,0,0,.18)_38%,rgba(0,0,0,.72))]"
-      />
-      <div className="absolute inset-0 flex items-end">
-        <div className="mx-auto grid w-full max-w-[1500px] grid-cols-1 gap-8 px-6 pb-16 md:grid-cols-12 md:px-12 md:pb-24">
-          <Reveal className="md:col-span-7">
-            <div className="text-[0.68rem] font-medium uppercase tracking-[0.24em] text-[color:var(--champagne)]/88">
-              {tr("film_prelude_eyebrow")}
-            </div>
-            <h2 className="mt-5 max-w-3xl font-display text-[clamp(2.25rem,4.8vw,4.8rem)] font-light leading-[1.02] [text-wrap:balance]">
-              {tr("film_prelude_title")}
-            </h2>
-          </Reveal>
-          <Reveal className="md:col-span-4 md:col-start-9 md:self-end" delay={120}>
-            <p className="max-w-md text-[0.98rem] font-light leading-[1.9] text-[color:var(--ivory)]/82 [text-wrap:pretty]">
+      <div className="md:hidden">
+        <div className="relative overflow-hidden">
+          <AmbientFilm
+            film={FILMS.maisonPendant}
+            className="h-[92svh] min-h-[680px]"
+            mediaClassName="object-[center_34%]"
+            overlay="bg-[linear-gradient(180deg,rgba(0,0,0,.18),rgba(0,0,0,.1)_34%,rgba(0,0,0,.76))]"
+          />
+          <div className="absolute inset-x-0 bottom-0 px-6 pb-12">
+            <Reveal>
+              <MobileLabel light>{tr("film_prelude_eyebrow")}</MobileLabel>
+              <h2 className="mt-5 max-w-[10ch] font-display text-[3.35rem] font-light leading-[1.02]">
+                {tr("film_prelude_title")}
+              </h2>
+            </Reveal>
+          </div>
+        </div>
+        <Reveal>
+          <div className="px-6 py-14">
+            <p className="max-w-[31ch] text-[1.12rem] font-light leading-[2.05] text-[color:var(--ivory)]/82">
               {tr("film_prelude_body")}
             </p>
-          </Reveal>
+          </div>
+        </Reveal>
+      </div>
+
+      <div className="hidden md:block">
+        <AmbientFilm
+          film={FILMS.maisonPendant}
+          className="h-[78svh] min-h-[540px] md:h-[86vh]"
+          mediaClassName="object-[center_38%]"
+          overlay="bg-[linear-gradient(180deg,rgba(0,0,0,.38),rgba(0,0,0,.18)_38%,rgba(0,0,0,.72))]"
+        />
+        <div className="absolute inset-0 flex items-end">
+          <div className="mx-auto grid w-full max-w-[1500px] grid-cols-1 gap-8 px-6 pb-16 md:grid-cols-12 md:px-12 md:pb-24">
+            <Reveal className="md:col-span-7">
+              <div className="text-[0.68rem] font-medium uppercase tracking-[0.24em] text-[color:var(--champagne)]/88">
+                {tr("film_prelude_eyebrow")}
+              </div>
+              <h2 className="mt-5 max-w-3xl font-display text-[clamp(2.25rem,4.8vw,4.8rem)] font-light leading-[1.02] [text-wrap:balance]">
+                {tr("film_prelude_title")}
+              </h2>
+            </Reveal>
+            <Reveal className="md:col-span-4 md:col-start-9 md:self-end" delay={120}>
+              <p className="max-w-md text-[0.98rem] font-light leading-[1.9] text-[color:var(--ivory)]/82 [text-wrap:pretty]">
+                {tr("film_prelude_body")}
+              </p>
+            </Reveal>
+          </div>
         </div>
       </div>
     </section>
@@ -652,7 +680,7 @@ function IntroScreen() {
         type="button"
         data-intro-skip="true"
         onClick={finishIntro}
-        className={`absolute bottom-[calc(1rem+env(safe-area-inset-bottom))] end-4 border border-[color:var(--ivory)]/38 bg-black/24 px-3.5 py-2 text-[0.58rem] font-medium text-[color:var(--ivory)] backdrop-blur-sm transition-all duration-500 hover:border-[color:var(--ivory)] hover:bg-[color:var(--ivory)] hover:text-[color:var(--charcoal)] md:bottom-8 md:end-8 md:px-5 md:py-3 md:text-[0.68rem] ${
+        className={`absolute bottom-[calc(1rem+env(safe-area-inset-bottom))] end-4 flex min-h-11 items-center justify-center border border-[color:var(--ivory)]/38 bg-black/24 px-4 py-2 text-[0.58rem] font-medium text-[color:var(--ivory)] backdrop-blur-sm transition-all duration-500 hover:border-[color:var(--ivory)] hover:bg-[color:var(--ivory)] hover:text-[color:var(--charcoal)] md:bottom-8 md:end-8 md:px-5 md:py-3 md:text-[0.68rem] ${
           lang === "ar"
             ? "font-arabic !tracking-[0px]"
             : "uppercase tracking-[0.16em] md:tracking-[0.22em]"
@@ -690,119 +718,216 @@ function Nav({ onConcierge }: { onConcierge: () => void }) {
   const lightNav = scrolled || open;
 
   return (
-    <header
-      className={`fixed inset-x-0 top-0 z-50 transition-all duration-700 ${
-        lightNav
-          ? "bg-[color:var(--ivory)]/94 backdrop-blur-md border-b border-[color:var(--border)]/60 shadow-[0_8px_24px_-24px_rgba(0,0,0,0.28)]"
-          : "border-b border-[color:var(--ivory)]/8 bg-[color:var(--charcoal)]/34 shadow-[0_10px_28px_-26px_rgba(0,0,0,0.72)] backdrop-blur-md xl:border-transparent xl:bg-transparent xl:shadow-none xl:backdrop-blur-none"
-      }`}
-    >
-      <div className="mx-auto flex max-w-[1680px] items-center justify-between px-4 py-3 md:px-10 md:py-4 xl:px-12">
-        <a href="#top" aria-label={OFFICIAL_LOGO_ALT} className="block shrink-0">
-          <OfficialLogo
-            loading="eager"
-            sizes="(max-width: 767px) 132px, (max-width: 1279px) 144px, 158px"
-            className={`w-[130px] sm:w-[138px] md:w-[144px] xl:w-[158px] transition-opacity duration-500 ${
-              lightNav ? "opacity-100" : "opacity-[0.96]"
-            }`}
-          />
-        </a>
-
-        <nav className="hidden xl:flex items-center gap-6 2xl:gap-8">
-          {items.map((i) => (
-            <a
-              key={i.k}
-              href={i.href}
-              className={`group relative py-3 text-[0.64rem] font-medium tracking-[0.2em] uppercase transition-colors ${
-                lightNav
-                  ? "text-[color:var(--charcoal)]/72 hover:text-[color:var(--charcoal)]"
-                  : "text-[color:var(--ivory)]/78 hover:text-[color:var(--ivory)]"
-              }`}
-            >
-              {tr(i.k)}
-              <span className="absolute bottom-1 left-0 h-px w-full origin-left scale-x-0 bg-[color:var(--gold)]/80 transition-transform duration-700 ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-x-100" />
-            </a>
-          ))}
-          <a
-            href="#consultation"
-            className={`text-[0.64rem] font-medium tracking-[0.2em] uppercase border px-5 py-3 transition-all duration-500 ${
-              lightNav
-                ? "border-[color:var(--charcoal)] text-[color:var(--charcoal)] hover:bg-[color:var(--charcoal)] hover:text-[color:var(--ivory)]"
-                : "border-[color:var(--ivory)] text-[color:var(--ivory)] hover:bg-[color:var(--ivory)] hover:text-[color:var(--charcoal)]"
-            }`}
-          >
-            {tr("nav_book")}
-          </a>
-        </nav>
-
-        <div className="flex items-center gap-3 sm:gap-4 md:gap-5">
-          <div
-            className={`flex items-center text-[0.64rem] font-medium !tracking-[0px] [word-spacing:normal] uppercase transition-colors sm:text-[0.68rem] ${lightNav ? "text-[color:var(--charcoal)]" : "text-[color:var(--ivory)]"}`}
-          >
-            <button
-              onClick={() => setLang("en")}
-              className={`px-1.5 tracking-[0.24em] transition-opacity ${lang === "en" ? "opacity-100" : "opacity-45 hover:opacity-80"}`}
-            >
-              EN
-            </button>
-            <span className="opacity-35">/</span>
-            <button
-              lang="ar"
-              dir="rtl"
-              onClick={() => setLang("ar")}
-              className={`px-1.5 font-arabic !tracking-[0px] transition-opacity ${lang === "ar" ? "opacity-100" : "opacity-45 hover:opacity-80"}`}
-            >
-              ع
-            </button>
-          </div>
-          <button
-            onClick={() => setOpen((v) => !v)}
-            aria-label="Menu"
-            className={`xl:hidden flex h-10 w-10 flex-col items-center justify-center gap-[5px] border transition-colors sm:h-11 sm:w-11 ${
-              lightNav ? "border-[color:var(--charcoal)]/20" : "border-[color:var(--ivory)]/30"
-            }`}
-          >
-            <span
-              className={`block h-px w-6 transition-transform ${open ? "translate-y-[6px] rotate-45 bg-[color:var(--charcoal)]" : lightNav ? "bg-[color:var(--charcoal)]" : "bg-[color:var(--ivory)]"}`}
-            />
-            <span
-              className={`block h-px w-6 transition-opacity ${open ? "opacity-0" : lightNav ? "bg-[color:var(--charcoal)]" : "bg-[color:var(--ivory)]"}`}
-            />
-            <span
-              className={`block h-px w-6 transition-transform ${open ? "-translate-y-[6px] -rotate-45 bg-[color:var(--charcoal)]" : lightNav ? "bg-[color:var(--charcoal)]" : "bg-[color:var(--ivory)]"}`}
-            />
-          </button>
-        </div>
-      </div>
-
-      <div
-        className={`xl:hidden overflow-hidden bg-[color:var(--ivory)] transition-[max-height,opacity] duration-700 ${
-          open
-            ? "max-h-[700px] opacity-100 border-b border-[color:var(--border)]/60"
-            : "max-h-0 opacity-0"
+    <>
+      <header
+        className={`fixed inset-x-0 top-0 z-50 md:hidden transition-all duration-500 ${
+          lightNav
+            ? "border-b border-[color:var(--border)]/70 bg-[color:var(--ivory)]/96 text-[color:var(--charcoal)] backdrop-blur-md"
+            : "border-b border-[color:var(--ivory)]/10 bg-[color:var(--charcoal)]/62 text-[color:var(--ivory)] backdrop-blur-md"
         }`}
       >
-        <div className="flex flex-col gap-7 px-6 py-9 md:px-10">
-          {items.map((i) => (
-            <a
-              key={i.k}
-              href={i.href}
-              onClick={() => setOpen(false)}
-              className="font-display text-[1.45rem] leading-none text-[color:var(--charcoal)] transition-colors hover:text-[color:var(--gold)]"
-            >
-              {tr(i.k)}
+        <div className="pt-[env(safe-area-inset-top)]">
+          <div className="flex h-[72px] items-center justify-between px-5">
+            <a href="#top" aria-label={OFFICIAL_LOGO_ALT} className="block shrink-0">
+              <OfficialLogo
+                loading="eager"
+                sizes="128px"
+                className={`w-[128px] transition-opacity duration-500 ${
+                  lightNav ? "opacity-100" : "opacity-[0.97]"
+                }`}
+              />
             </a>
-          ))}
-          <a
-            href="#consultation"
-            onClick={() => setOpen(false)}
-            className="mt-1 border-t border-[color:var(--border)]/70 pt-7 font-display text-[1.45rem] leading-none text-[color:var(--gold)]"
-          >
-            {tr("nav_book")}
-          </a>
+
+            <div className="flex items-center gap-2.5">
+              <div
+                className={`flex h-11 items-center border px-2 text-[0.66rem] font-medium uppercase ${
+                  lightNav ? "border-[color:var(--charcoal)]/16" : "border-[color:var(--ivory)]/20"
+                }`}
+              >
+                <button
+                  type="button"
+                  onClick={() => setLang("en")}
+                  className={`flex h-11 min-w-11 items-center justify-center px-0 tracking-[0.16em] transition-opacity ${lang === "en" ? "opacity-100" : "opacity-42"}`}
+                >
+                  EN
+                </button>
+                <span className="px-0.5 opacity-28">/</span>
+                <button
+                  type="button"
+                  lang="ar"
+                  dir="rtl"
+                  onClick={() => setLang("ar")}
+                  className={`flex h-11 min-w-11 items-center justify-center px-0 font-arabic !tracking-[0px] transition-opacity ${lang === "ar" ? "opacity-100" : "opacity-42"}`}
+                >
+                  ع
+                </button>
+              </div>
+              <button
+                type="button"
+                onClick={() => setOpen((v) => !v)}
+                aria-label="Menu"
+                className={`flex h-11 w-11 flex-col items-center justify-center gap-[5px] border transition-colors ${
+                  lightNav ? "border-[color:var(--charcoal)]/18" : "border-[color:var(--ivory)]/24"
+                }`}
+              >
+                <span
+                  className={`block h-px w-5 transition-transform ${open ? "translate-y-[6px] rotate-45 bg-[color:var(--charcoal)]" : lightNav ? "bg-[color:var(--charcoal)]" : "bg-[color:var(--ivory)]"}`}
+                />
+                <span
+                  className={`block h-px w-5 transition-opacity ${open ? "opacity-0" : lightNav ? "bg-[color:var(--charcoal)]" : "bg-[color:var(--ivory)]"}`}
+                />
+                <span
+                  className={`block h-px w-5 transition-transform ${open ? "-translate-y-[6px] -rotate-45 bg-[color:var(--charcoal)]" : lightNav ? "bg-[color:var(--charcoal)]" : "bg-[color:var(--ivory)]"}`}
+                />
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
-    </header>
+
+        <div
+          className={`overflow-hidden bg-[color:var(--ivory)] text-[color:var(--charcoal)] transition-[max-height,opacity] duration-500 ${
+            open
+              ? "max-h-[calc(100svh-72px)] opacity-100 border-t border-[color:var(--border)]/60"
+              : "max-h-0 opacity-0"
+          }`}
+        >
+          <div className="flex max-h-[calc(100svh-92px)] flex-col gap-6 overflow-y-auto px-6 py-8">
+            {items.map((i) => (
+              <a
+                key={i.k}
+                href={i.href}
+                onClick={() => setOpen(false)}
+                className="border-b border-[color:var(--border)]/65 pb-5 font-display text-[2rem] font-light leading-[1.05] text-[color:var(--charcoal)]"
+              >
+                {tr(i.k)}
+              </a>
+            ))}
+            <a
+              href="#consultation"
+              onClick={() => setOpen(false)}
+              className="mt-2 inline-flex min-h-[58px] items-center justify-between bg-[color:var(--charcoal)] px-6 py-4 text-[0.76rem] font-medium uppercase tracking-[0.14em] text-[color:var(--ivory)]"
+            >
+              {tr("nav_book")}
+              <span className="h-px w-10 bg-current" />
+            </a>
+          </div>
+        </div>
+      </header>
+
+      <header
+        className={`fixed inset-x-0 top-0 z-50 hidden transition-all duration-700 md:block ${
+          lightNav
+            ? "bg-[color:var(--ivory)]/94 backdrop-blur-md border-b border-[color:var(--border)]/60 shadow-[0_8px_24px_-24px_rgba(0,0,0,0.28)]"
+            : "border-b border-[color:var(--ivory)]/8 bg-[color:var(--charcoal)]/34 shadow-[0_10px_28px_-26px_rgba(0,0,0,0.72)] backdrop-blur-md xl:border-transparent xl:bg-transparent xl:shadow-none xl:backdrop-blur-none"
+        }`}
+      >
+        <div className="mx-auto flex max-w-[1680px] items-center justify-between px-4 py-3 md:px-10 md:py-4 xl:px-12">
+          <a href="#top" aria-label={OFFICIAL_LOGO_ALT} className="block shrink-0">
+            <OfficialLogo
+              loading="eager"
+              sizes="(max-width: 767px) 132px, (max-width: 1279px) 144px, 158px"
+              className={`w-[130px] sm:w-[138px] md:w-[144px] xl:w-[158px] transition-opacity duration-500 ${
+                lightNav ? "opacity-100" : "opacity-[0.96]"
+              }`}
+            />
+          </a>
+
+          <nav className="hidden xl:flex items-center gap-6 2xl:gap-8">
+            {items.map((i) => (
+              <a
+                key={i.k}
+                href={i.href}
+                className={`group relative py-3 text-[0.64rem] font-medium tracking-[0.2em] uppercase transition-colors ${
+                  lightNav
+                    ? "text-[color:var(--charcoal)]/72 hover:text-[color:var(--charcoal)]"
+                    : "text-[color:var(--ivory)]/78 hover:text-[color:var(--ivory)]"
+                }`}
+              >
+                {tr(i.k)}
+                <span className="absolute bottom-1 left-0 h-px w-full origin-left scale-x-0 bg-[color:var(--gold)]/80 transition-transform duration-700 ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-x-100" />
+              </a>
+            ))}
+            <a
+              href="#consultation"
+              className={`text-[0.64rem] font-medium tracking-[0.2em] uppercase border px-5 py-3 transition-all duration-500 ${
+                lightNav
+                  ? "border-[color:var(--charcoal)] text-[color:var(--charcoal)] hover:bg-[color:var(--charcoal)] hover:text-[color:var(--ivory)]"
+                  : "border-[color:var(--ivory)] text-[color:var(--ivory)] hover:bg-[color:var(--ivory)] hover:text-[color:var(--charcoal)]"
+              }`}
+            >
+              {tr("nav_book")}
+            </a>
+          </nav>
+
+          <div className="flex items-center gap-3 sm:gap-4 md:gap-5">
+            <div
+              className={`flex items-center text-[0.64rem] font-medium !tracking-[0px] [word-spacing:normal] uppercase transition-colors sm:text-[0.68rem] ${lightNav ? "text-[color:var(--charcoal)]" : "text-[color:var(--ivory)]"}`}
+            >
+              <button
+                onClick={() => setLang("en")}
+                className={`px-1.5 tracking-[0.24em] transition-opacity ${lang === "en" ? "opacity-100" : "opacity-45 hover:opacity-80"}`}
+              >
+                EN
+              </button>
+              <span className="opacity-35">/</span>
+              <button
+                lang="ar"
+                dir="rtl"
+                onClick={() => setLang("ar")}
+                className={`px-1.5 font-arabic !tracking-[0px] transition-opacity ${lang === "ar" ? "opacity-100" : "opacity-45 hover:opacity-80"}`}
+              >
+                ع
+              </button>
+            </div>
+            <button
+              onClick={() => setOpen((v) => !v)}
+              aria-label="Menu"
+              className={`xl:hidden flex h-10 w-10 flex-col items-center justify-center gap-[5px] border transition-colors sm:h-11 sm:w-11 ${
+                lightNav ? "border-[color:var(--charcoal)]/20" : "border-[color:var(--ivory)]/30"
+              }`}
+            >
+              <span
+                className={`block h-px w-6 transition-transform ${open ? "translate-y-[6px] rotate-45 bg-[color:var(--charcoal)]" : lightNav ? "bg-[color:var(--charcoal)]" : "bg-[color:var(--ivory)]"}`}
+              />
+              <span
+                className={`block h-px w-6 transition-opacity ${open ? "opacity-0" : lightNav ? "bg-[color:var(--charcoal)]" : "bg-[color:var(--ivory)]"}`}
+              />
+              <span
+                className={`block h-px w-6 transition-transform ${open ? "-translate-y-[6px] -rotate-45 bg-[color:var(--charcoal)]" : lightNav ? "bg-[color:var(--charcoal)]" : "bg-[color:var(--ivory)]"}`}
+              />
+            </button>
+          </div>
+        </div>
+
+        <div
+          className={`xl:hidden overflow-hidden bg-[color:var(--ivory)] transition-[max-height,opacity] duration-700 ${
+            open
+              ? "max-h-[700px] opacity-100 border-b border-[color:var(--border)]/60"
+              : "max-h-0 opacity-0"
+          }`}
+        >
+          <div className="flex flex-col gap-7 px-6 py-9 md:px-10">
+            {items.map((i) => (
+              <a
+                key={i.k}
+                href={i.href}
+                onClick={() => setOpen(false)}
+                className="font-display text-[1.45rem] leading-none text-[color:var(--charcoal)] transition-colors hover:text-[color:var(--gold)]"
+              >
+                {tr(i.k)}
+              </a>
+            ))}
+            <a
+              href="#consultation"
+              onClick={() => setOpen(false)}
+              className="mt-1 border-t border-[color:var(--border)]/70 pt-7 font-display text-[1.45rem] leading-none text-[color:var(--gold)]"
+            >
+              {tr("nav_book")}
+            </a>
+          </div>
+        </div>
+      </header>
+    </>
   );
 }
 
@@ -831,8 +956,37 @@ function Hero() {
 
       <div
         data-mobile-hero="true"
-        className="relative z-10 flex min-h-[100svh] flex-col justify-center px-6 pb-[calc(env(safe-area-inset-bottom)+44px)] pt-[calc(env(safe-area-inset-top)+104px)] lg:hidden"
+        className="relative z-10 flex min-h-[100svh] flex-col justify-end px-6 pb-[calc(env(safe-area-inset-bottom)+34px)] pt-[calc(env(safe-area-inset-top)+120px)] md:hidden"
       >
+        <div className="max-w-[360px] pb-4 text-[color:var(--ivory)] animate-fade-up">
+          <h1
+            data-mobile-hero-heading="true"
+            className="font-display text-[clamp(3rem,14.2vw,4.15rem)] font-light leading-[1.03] tracking-[-0.01em]"
+          >
+            <span className="block">{tr("hero_l1")}</span>
+            <span className="block italic text-[color:var(--ivory)]/92">{tr("hero_l2")}</span>
+          </h1>
+          <p className="mt-7 max-w-[30ch] text-[1.05rem] font-light leading-[1.85] text-[color:var(--ivory)]/88 [text-wrap:pretty]">
+            {tr("hero_sub")}
+          </p>
+          <div className="mt-10 flex flex-col gap-4">
+            <a
+              href="#consultation"
+              className="inline-flex min-h-[58px] w-full items-center justify-center bg-[color:var(--ivory)] px-6 py-4 text-center text-[0.74rem] font-medium uppercase tracking-[0.13em] text-[color:var(--charcoal)] transition-colors duration-500 active:bg-[color:var(--gold)] active:text-[color:var(--ivory)]"
+            >
+              {tr("hero_cta1")}
+            </a>
+            <a
+              href="#commission"
+              className="inline-flex min-h-[58px] w-full items-center justify-center border border-[color:var(--ivory)]/48 px-6 py-4 text-center text-[0.74rem] font-medium uppercase tracking-[0.13em] text-[color:var(--ivory)] transition-colors duration-500 active:border-[color:var(--gold)] active:text-[color:var(--gold)]"
+            >
+              {tr("hero_cta2")}
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div className="relative z-10 hidden min-h-[100svh] flex-col justify-center px-6 pb-[calc(env(safe-area-inset-bottom)+44px)] pt-[calc(env(safe-area-inset-top)+104px)] md:flex lg:hidden">
         <div className="mt-10 max-w-[342px] text-[color:var(--ivory)] animate-fade-up">
           <h1
             data-mobile-hero-heading="true"
@@ -923,6 +1077,57 @@ function Eyebrow({ children, light = false }: { children: ReactNode; light?: boo
   );
 }
 
+function MobileLabel({ children, light = false }: { children: ReactNode; light?: boolean }) {
+  return (
+    <div
+      className={`text-[0.78rem] font-medium uppercase tracking-[0.16em] ${
+        light ? "text-[color:var(--champagne)]/86" : "text-[color:var(--gold)]"
+      }`}
+    >
+      {children}
+    </div>
+  );
+}
+
+function MobileAction({
+  children,
+  href,
+  onClick,
+  dark = false,
+}: {
+  children: ReactNode;
+  href?: string;
+  onClick?: () => void;
+  dark?: boolean;
+}) {
+  const className = `inline-flex min-h-[58px] w-full items-center justify-between gap-5 px-6 py-4 text-[0.76rem] font-medium uppercase tracking-[0.14em] transition-colors ${
+    dark
+      ? "bg-[color:var(--ivory)] text-[color:var(--charcoal)] active:bg-[color:var(--gold)] active:text-[color:var(--ivory)]"
+      : "bg-[color:var(--charcoal)] text-[color:var(--ivory)] active:bg-[color:var(--gold)]"
+  }`;
+
+  const content = (
+    <>
+      <span>{children}</span>
+      <span className="h-px w-10 bg-current" />
+    </>
+  );
+
+  if (href) {
+    return (
+      <a href={href} className={className}>
+        {content}
+      </a>
+    );
+  }
+
+  return (
+    <button type="button" onClick={onClick} className={className}>
+      {content}
+    </button>
+  );
+}
+
 /* ------------------------------------------------------------------ */
 /* 02 — Commission (interactive cards)                                  */
 /* ------------------------------------------------------------------ */
@@ -942,8 +1147,74 @@ function Commission({ onChoose }: { onChoose: (label: string) => void }) {
   const activeCard = cards[active];
 
   return (
-    <section id="commission" className="overflow-hidden bg-[color:var(--ivory)] py-28 md:py-44">
-      <div className="mx-auto max-w-[1700px] px-6 md:px-12">
+    <section id="commission" className="overflow-hidden bg-[color:var(--ivory)] py-0 md:py-44">
+      <div className="md:hidden">
+        <div className="px-6 py-24">
+          <Reveal>
+            <MobileLabel>{tr("com_eyebrow")}</MobileLabel>
+            <h2 className="mt-7 font-display text-[3.5rem] font-light leading-[0.98] text-[color:var(--charcoal)]">
+              <span className="block">{tr("com_title_a")}</span>
+              <span className="block italic text-[color:var(--taupe)]">{tr("com_title_b")}</span>
+            </h2>
+            <p className="mt-8 max-w-[32ch] text-[1.08rem] font-light leading-[2] text-[color:var(--charcoal)]/74">
+              {tr("com_sub")}
+            </p>
+          </Reveal>
+
+          <Reveal delay={120}>
+            <div className="-mx-6 mt-14">
+              <MotionFrame
+                film={FILMS.portraitRing}
+                label={tr("film_commission_label")}
+                className="h-[76svh] min-h-[560px] w-full"
+                mediaClassName="object-[center_40%]"
+              />
+            </div>
+            <p className="mt-9 font-display text-[2rem] font-light leading-[1.35] text-[color:var(--charcoal)]">
+              {tr("film_commission_body")}
+            </p>
+          </Reveal>
+
+          <div className="mt-18 flex flex-col gap-9">
+            {cards.map((c, i) => (
+              <Reveal key={c.k} delay={(i % 3) * 80}>
+                <button
+                  type="button"
+                  onClick={() => onChoose(tr(c.k))}
+                  className="group block w-full text-left"
+                >
+                  <div className="relative aspect-[4/5] overflow-hidden bg-[color:var(--charcoal)]">
+                    <img
+                      src={u(c.img)}
+                      alt=""
+                      loading={i < 2 ? "eager" : "lazy"}
+                      className={`h-full w-full object-cover brightness-[0.88] transition-transform duration-[1600ms] group-active:scale-[1.025] ${c.pos}`}
+                    />
+                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.2)_46%,rgba(0,0,0,.72))]" />
+                    <div className="absolute inset-x-0 bottom-0 p-6 text-[color:var(--ivory)]">
+                      <div className="font-display text-[4.2rem] font-light italic leading-none text-[color:var(--ivory)]/46">
+                        {c.n}
+                      </div>
+                      <h3 className="mt-5 font-display text-[2.65rem] font-light leading-[1.02]">
+                        {tr(c.k)}
+                      </h3>
+                      <p className="mt-4 max-w-[28ch] text-[1rem] font-light leading-[1.82] text-[color:var(--ivory)]/82">
+                        {tr(c.d)}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-4 flex min-h-[56px] items-center justify-between border-b border-[color:var(--border)] pb-4 text-[0.76rem] font-medium uppercase tracking-[0.14em] text-[color:var(--charcoal)]">
+                    {tr("com_begin")}
+                    <span className="h-px w-12 bg-[color:var(--gold)]" />
+                  </div>
+                </button>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="mx-auto hidden max-w-[1700px] px-6 md:block md:px-12">
         <div className="grid grid-cols-1 items-end gap-10 md:grid-cols-12 md:gap-12">
           <Reveal className="md:col-span-6">
             <Eyebrow>{tr("com_eyebrow")}</Eyebrow>
@@ -1121,8 +1392,110 @@ function DesignYourPiece({ onContinue }: { onContinue: (whisper: string) => void
   const labelFor = (k: TKey) => TDICT[k][lang];
 
   return (
-    <section id="design" className="bg-[color:var(--pearl)] py-28 md:py-44">
-      <div className="mx-auto max-w-[1600px] px-6 md:px-12">
+    <section id="design" className="bg-[color:var(--pearl)] py-0 md:py-44">
+      <div className="md:hidden">
+        <div className="px-6 py-24">
+          <Reveal>
+            <MobileLabel>{tr("dyp_eyebrow")}</MobileLabel>
+            <h2 className="mt-7 font-display text-[3.35rem] font-light leading-[1.02] text-[color:var(--charcoal)]">
+              <span className="block">{tr("dyp_title_a")}</span>
+              <span className="block italic text-[color:var(--taupe)]">{tr("dyp_title_b")}</span>
+            </h2>
+            <p className="mt-8 max-w-[32ch] text-[1.08rem] font-light leading-[2] text-[color:var(--charcoal)]/74">
+              {tr("dyp_sub")}
+            </p>
+          </Reveal>
+
+          <Reveal delay={100}>
+            <div className="-mx-6 mt-12 flex gap-3 overflow-x-auto px-6 pb-3 [scrollbar-width:none]">
+              {tabs.map((t, i) => {
+                const active = tab === t.k;
+                return (
+                  <button
+                    key={t.k}
+                    type="button"
+                    onClick={() => setTab(t.k)}
+                    className={`min-h-[58px] min-w-[148px] border px-5 text-left transition-colors ${
+                      active
+                        ? "border-[color:var(--charcoal)] bg-[color:var(--charcoal)] text-[color:var(--ivory)]"
+                        : "border-[color:var(--border)] bg-[color:var(--ivory)] text-[color:var(--charcoal)]"
+                    }`}
+                  >
+                    <span className="block text-[0.7rem] font-medium uppercase tracking-[0.13em] opacity-62">
+                      0{i + 1}
+                    </span>
+                    <span className="mt-1 block font-display text-[1.45rem] leading-none">
+                      {tr(t.label)}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </Reveal>
+
+          <div key={tab} className="mt-10 flex flex-col gap-5 animate-fade-in">
+            {groups[tab].map((opt, i) => {
+              const label = labelFor(opt.k);
+              const selected = picks[tab] === label;
+              return (
+                <button
+                  key={opt.k}
+                  type="button"
+                  onClick={() => setPicks((p) => ({ ...p, [tab]: label }))}
+                  className={`group relative block overflow-hidden text-left transition-all ${
+                    selected
+                      ? "bg-[color:var(--charcoal)] text-[color:var(--ivory)]"
+                      : "bg-[color:var(--ivory)] text-[color:var(--charcoal)]"
+                  }`}
+                >
+                  <div className="aspect-[16/11] overflow-hidden">
+                    <img
+                      src={u(opt.img)}
+                      alt=""
+                      loading={i < 2 ? "eager" : "lazy"}
+                      className={`h-full w-full object-cover transition-transform duration-[1400ms] group-active:scale-[1.03] ${
+                        selected ? "brightness-[0.86]" : "brightness-[0.94]"
+                      }`}
+                    />
+                  </div>
+                  <div className="flex min-h-[68px] items-center justify-between px-5 py-4">
+                    <span className="font-display text-[1.85rem] font-light leading-tight">
+                      {label}
+                    </span>
+                    <span
+                      className={`flex h-9 w-9 items-center justify-center border text-[0.8rem] ${
+                        selected
+                          ? "border-[color:var(--gold)] text-[color:var(--gold)]"
+                          : "border-[color:var(--border)] text-[color:var(--taupe)]"
+                      }`}
+                    >
+                      {selected ? "✓" : ""}
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          <Reveal delay={140}>
+            <div className="mt-14 border-y border-[color:var(--border)] py-7">
+              <div className="text-[0.74rem] font-medium uppercase tracking-[0.14em] text-[color:var(--taupe)]">
+                {tr("dyp_chosen")}
+              </div>
+              <div className="mt-4 min-h-[4rem] font-display text-[2rem] font-light italic leading-[1.2] text-[color:var(--charcoal)]">
+                {buildWhisper() || tr("dyp_empty")}
+              </div>
+            </div>
+            <div className="mt-8">
+              <MobileAction onClick={() => onContinue(buildWhisper())}>
+                {tr("dyp_cta")}
+              </MobileAction>
+            </div>
+          </Reveal>
+        </div>
+      </div>
+
+      <div className="mx-auto hidden max-w-[1600px] px-6 md:block md:px-12">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-12 items-end mb-18 md:mb-24">
           <Reveal className="md:col-span-7">
             <Eyebrow>{tr("dyp_eyebrow")}</Eyebrow>
@@ -1257,60 +1630,108 @@ function Process() {
   return (
     <section
       id="atelier"
-      className="relative overflow-hidden bg-[color:var(--charcoal)] py-32 text-[color:var(--ivory)] md:py-56"
+      className="relative overflow-hidden bg-[color:var(--charcoal)] py-0 text-[color:var(--ivory)] md:py-56"
     >
-      <div className="absolute inset-y-0 right-0 hidden w-[42%] bg-[radial-gradient(circle_at_center,rgba(206,174,109,.13),transparent_58%)] lg:block" />
-      <div className="relative mx-auto max-w-[1600px] px-6 md:px-12">
-        <div className="grid grid-cols-1 items-end gap-10 lg:grid-cols-12 lg:gap-16">
-          <Reveal className="lg:col-span-5">
-            <Eyebrow light>{tr("pr_eyebrow")}</Eyebrow>
-          </Reveal>
-          <Reveal className="lg:col-span-6 lg:col-start-7" delay={120}>
-            <h2 className="max-w-4xl font-display text-[clamp(2.5rem,5vw,4.8rem)] font-light leading-[1.08] [text-wrap:balance]">
+      <div className="md:hidden">
+        <div className="px-6 py-24">
+          <Reveal>
+            <MobileLabel light>{tr("pr_eyebrow")}</MobileLabel>
+            <h2 className="mt-7 max-w-[11ch] font-display text-[3.35rem] font-light leading-[1.04]">
               {tr("pr_title")}
             </h2>
           </Reveal>
-        </div>
 
-        <div className="mt-20 grid grid-cols-1 gap-14 md:mt-28 lg:grid-cols-12 lg:gap-20">
-          <Reveal className="lg:col-span-5">
-            <div className="lg:sticky lg:top-32">
+          <Reveal delay={100}>
+            <div className="-mx-6 mt-14">
               <AmbientFilm
                 film={FILMS.atelierHands}
-                className="h-[66svh] min-h-[500px]"
+                className="h-[82svh] min-h-[610px]"
                 mediaClassName="object-[center_center]"
-                overlay="bg-[linear-gradient(180deg,rgba(0,0,0,.04),rgba(0,0,0,.22)_48%,rgba(0,0,0,.62))]"
+                overlay="bg-[linear-gradient(180deg,rgba(0,0,0,.02),rgba(0,0,0,.16)_46%,rgba(0,0,0,.7))]"
               />
-              <div className="mt-8 max-w-md border-t border-[color:var(--ivory)]/16 pt-7">
-                <div className="text-[0.68rem] font-medium uppercase tracking-[0.24em] text-[color:var(--gold)]">
-                  {tr("film_process_eyebrow")}
-                </div>
-                <p className="mt-5 font-display text-[1.55rem] font-light leading-[1.42] text-[color:var(--ivory)]/84 md:text-[1.95rem]">
-                  {tr("film_process_body")}
-                </p>
-              </div>
+            </div>
+            <div className="mt-9 border-t border-[color:var(--ivory)]/16 pt-7">
+              <MobileLabel light>{tr("film_process_eyebrow")}</MobileLabel>
+              <p className="mt-5 font-display text-[2rem] font-light leading-[1.38] text-[color:var(--ivory)]/86">
+                {tr("film_process_body")}
+              </p>
             </div>
           </Reveal>
 
-          <div className="lg:col-span-6 lg:col-start-7">
+          <div className="mt-18 flex flex-col gap-9">
             {steps.map((s, i) => (
-              <Reveal key={s.t} delay={i * 80}>
-                <article className="group grid grid-cols-1 gap-6 border-t border-[color:var(--ivory)]/14 py-10 transition-colors md:grid-cols-12 md:gap-8 md:py-14">
-                  <div className="md:col-span-2">
-                    <span className="font-display text-[3.4rem] font-light italic leading-none text-[color:var(--gold)]/70 transition-colors group-hover:text-[color:var(--gold)] md:text-[5.8rem]">
-                      0{i + 1}
-                    </span>
+              <Reveal key={s.t} delay={(i % 3) * 90}>
+                <article className="border-t border-[color:var(--ivory)]/15 pt-8">
+                  <div className="font-display text-[5.4rem] font-light italic leading-none text-[color:var(--gold)]/72">
+                    0{i + 1}
                   </div>
-                  <h3 className="font-display text-[2rem] font-light leading-tight text-[color:var(--ivory)] md:col-span-4 md:text-[2.8rem]">
+                  <h3 className="mt-5 font-display text-[2.55rem] font-light leading-[1.04] text-[color:var(--ivory)]">
                     {tr(s.t)}
                   </h3>
-                  <p className="max-w-xl text-[1rem] font-light leading-[1.95] text-[color:var(--ivory)]/72 md:col-span-5 md:col-start-8">
+                  <p className="mt-5 max-w-[31ch] text-[1.06rem] font-light leading-[2] text-[color:var(--ivory)]/74">
                     {tr(s.d)}
                   </p>
                 </article>
               </Reveal>
             ))}
-            <div className="h-px bg-[color:var(--ivory)]/14" />
+          </div>
+        </div>
+      </div>
+
+      <div className="hidden md:block">
+        <div className="absolute inset-y-0 right-0 hidden w-[42%] bg-[radial-gradient(circle_at_center,rgba(206,174,109,.13),transparent_58%)] lg:block" />
+        <div className="relative mx-auto max-w-[1600px] px-6 md:px-12">
+          <div className="grid grid-cols-1 items-end gap-10 lg:grid-cols-12 lg:gap-16">
+            <Reveal className="lg:col-span-5">
+              <Eyebrow light>{tr("pr_eyebrow")}</Eyebrow>
+            </Reveal>
+            <Reveal className="lg:col-span-6 lg:col-start-7" delay={120}>
+              <h2 className="max-w-4xl font-display text-[clamp(2.5rem,5vw,4.8rem)] font-light leading-[1.08] [text-wrap:balance]">
+                {tr("pr_title")}
+              </h2>
+            </Reveal>
+          </div>
+
+          <div className="mt-20 grid grid-cols-1 gap-14 md:mt-28 lg:grid-cols-12 lg:gap-20">
+            <Reveal className="lg:col-span-5">
+              <div className="lg:sticky lg:top-32">
+                <AmbientFilm
+                  film={FILMS.atelierHands}
+                  className="h-[66svh] min-h-[500px]"
+                  mediaClassName="object-[center_center]"
+                  overlay="bg-[linear-gradient(180deg,rgba(0,0,0,.04),rgba(0,0,0,.22)_48%,rgba(0,0,0,.62))]"
+                />
+                <div className="mt-8 max-w-md border-t border-[color:var(--ivory)]/16 pt-7">
+                  <div className="text-[0.68rem] font-medium uppercase tracking-[0.24em] text-[color:var(--gold)]">
+                    {tr("film_process_eyebrow")}
+                  </div>
+                  <p className="mt-5 font-display text-[1.55rem] font-light leading-[1.42] text-[color:var(--ivory)]/84 md:text-[1.95rem]">
+                    {tr("film_process_body")}
+                  </p>
+                </div>
+              </div>
+            </Reveal>
+
+            <div className="lg:col-span-6 lg:col-start-7">
+              {steps.map((s, i) => (
+                <Reveal key={s.t} delay={i * 80}>
+                  <article className="group grid grid-cols-1 gap-6 border-t border-[color:var(--ivory)]/14 py-10 transition-colors md:grid-cols-12 md:gap-8 md:py-14">
+                    <div className="md:col-span-2">
+                      <span className="font-display text-[3.4rem] font-light italic leading-none text-[color:var(--gold)]/70 transition-colors group-hover:text-[color:var(--gold)] md:text-[5.8rem]">
+                        0{i + 1}
+                      </span>
+                    </div>
+                    <h3 className="font-display text-[2rem] font-light leading-tight text-[color:var(--ivory)] md:col-span-4 md:text-[2.8rem]">
+                      {tr(s.t)}
+                    </h3>
+                    <p className="max-w-xl text-[1rem] font-light leading-[1.95] text-[color:var(--ivory)]/72 md:col-span-5 md:col-start-8">
+                      {tr(s.d)}
+                    </p>
+                  </article>
+                </Reveal>
+              ))}
+              <div className="h-px bg-[color:var(--ivory)]/14" />
+            </div>
           </div>
         </div>
       </div>
@@ -1335,8 +1756,64 @@ function Signature() {
     "object-[center_46%]",
   ];
   return (
-    <section id="creations" className="overflow-hidden bg-[color:var(--ivory)] py-32 md:py-56">
-      <div className="mx-auto max-w-[1700px] px-6 md:px-12">
+    <section id="creations" className="overflow-hidden bg-[color:var(--ivory)] py-0 md:py-56">
+      <div className="md:hidden">
+        <div className="px-6 py-24">
+          <Reveal>
+            <MobileLabel>{tr("sig_eyebrow")}</MobileLabel>
+            <h2 className="mt-7 font-display text-[3.35rem] font-light leading-[1.04] text-[color:var(--charcoal)]">
+              {tr("sig_title")}
+            </h2>
+            <p className="mt-8 max-w-[32ch] text-[1.08rem] font-light leading-[2] text-[color:var(--charcoal)]/74">
+              {tr("sig_sub")}
+            </p>
+          </Reveal>
+
+          <Reveal delay={110}>
+            <div className="-mx-6 mt-14">
+              <MotionFrame
+                film={FILMS.necklaceArchive}
+                label={tr("film_signature_label")}
+                className="h-[84svh] min-h-[620px] w-full"
+                mediaClassName="object-[center_33%]"
+              />
+            </div>
+          </Reveal>
+
+          <Reveal delay={150}>
+            <div className="mt-14 border-y border-[color:var(--border)] py-8">
+              <p className="font-display text-[2.25rem] font-light italic leading-[1.28] text-[color:var(--taupe)]">
+                {tr("sig_sub")}
+              </p>
+            </div>
+          </Reveal>
+
+          <div className="mt-14 flex flex-col gap-9">
+            {GALLERY.slice(0, 10).map((img, i) => {
+              const frame =
+                i % 3 === 0
+                  ? "-mx-6 aspect-[4/5]"
+                  : i % 3 === 1
+                    ? "ms-10 aspect-[3/4]"
+                    : "me-8 aspect-[16/11]";
+              return (
+                <Reveal key={i} delay={(i % 4) * 70}>
+                  <div className={`${frame} overflow-hidden bg-[color:var(--pearl)]`}>
+                    <img
+                      src={u(img)}
+                      alt=""
+                      loading="lazy"
+                      className={`h-full w-full object-cover brightness-[0.96] ${galleryPositions[i % galleryPositions.length]}`}
+                    />
+                  </div>
+                </Reveal>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      <div className="mx-auto hidden max-w-[1700px] px-6 md:block md:px-12">
         <div className="grid grid-cols-1 items-end gap-8 md:grid-cols-12 md:gap-12">
           <Reveal className="md:col-span-6">
             <Eyebrow>{tr("sig_eyebrow")}</Eyebrow>
@@ -1433,7 +1910,7 @@ function Redesign({ onBegin }: { onBegin: () => void }) {
   return (
     <section
       id="redesign"
-      className="relative overflow-hidden bg-[color:var(--charcoal)] py-28 text-[color:var(--ivory)] md:py-52"
+      className="relative overflow-hidden bg-[color:var(--charcoal)] py-0 text-[color:var(--ivory)] md:py-52"
     >
       <div className="absolute inset-0 opacity-[0.22]">
         <img
@@ -1444,7 +1921,67 @@ function Redesign({ onBegin }: { onBegin: () => void }) {
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,.9),rgba(0,0,0,.62)_42%,rgba(0,0,0,.28))]" />
       </div>
 
-      <div className="relative mx-auto max-w-[1650px] px-6 md:px-12">
+      <div className="relative md:hidden">
+        <div className="px-6 py-24">
+          <Reveal>
+            <MobileLabel light>{tr("rd_eyebrow")}</MobileLabel>
+            <h2 className="mt-7 font-display text-[3.45rem] font-light leading-[1.02]">
+              <span className="block">{tr("rd_t1")}</span>
+              <span className="block italic text-[color:var(--gold)]">{tr("rd_t2")}</span>
+            </h2>
+            <p className="mt-8 max-w-[32ch] text-[1.08rem] font-light leading-[2.05] text-[color:var(--ivory)]/78">
+              {tr("rd_body")}
+            </p>
+            <div className="mt-10">
+              <MobileAction onClick={onBegin} dark>
+                {tr("rd_cta")}
+              </MobileAction>
+            </div>
+          </Reveal>
+
+          <Reveal delay={120}>
+            <div className="-mx-6 mt-16 aspect-[4/5] overflow-hidden">
+              <img
+                src={u(REDESIGN_IMG)}
+                alt=""
+                className="h-full w-full object-cover object-[center_46%]"
+              />
+            </div>
+          </Reveal>
+
+          <Reveal delay={180}>
+            <div className="mt-10">
+              <MotionFrame
+                film={FILMS.heirloomPendant}
+                label={tr("film_redesign_label")}
+                className="aspect-[4/5] w-full"
+                mediaClassName="object-[center_42%]"
+              />
+            </div>
+          </Reveal>
+
+          <div className="mt-14 flex flex-col gap-7 border-y border-[color:var(--ivory)]/14 py-8">
+            {[
+              ["pr_2_t", "pr_2_d"],
+              ["pr_3_t", "pr_3_d"],
+              ["pr_4_t", "pr_4_d"],
+            ].map(([title, body], i) => (
+              <Reveal key={title} delay={i * 80}>
+                <div>
+                  <h3 className="font-display text-[2rem] font-light text-[color:var(--ivory)]">
+                    {tr(title as TKey)}
+                  </h3>
+                  <p className="mt-3 max-w-[31ch] text-[1rem] font-light leading-[1.9] text-[color:var(--ivory)]/68">
+                    {tr(body as TKey)}
+                  </p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="relative mx-auto hidden max-w-[1650px] px-6 md:block md:px-12">
         <div className="grid grid-cols-1 items-center gap-16 lg:grid-cols-12 lg:gap-20">
           <Reveal className="lg:col-span-5">
             <Eyebrow light>{tr("rd_eyebrow")}</Eyebrow>
@@ -1536,8 +2073,61 @@ function Stories() {
   const supportingLayout = ["lg:col-span-5", "lg:col-span-4 lg:mt-28", "lg:col-span-3 lg:mt-10"];
 
   return (
-    <section className="overflow-hidden bg-[color:var(--ivory)] py-32 md:py-56">
-      <div className="mx-auto max-w-[1700px] px-6 md:px-12">
+    <section className="overflow-hidden bg-[color:var(--ivory)] py-0 md:py-56">
+      <div className="md:hidden">
+        <div className="px-6 py-24">
+          <Reveal>
+            <MobileLabel>{tr("st_eyebrow")}</MobileLabel>
+            <h2 className="mt-7 font-display text-[3.35rem] font-light leading-[1.04] text-[color:var(--charcoal)]">
+              {tr("st_title")}
+            </h2>
+            <p className="mt-8 max-w-[32ch] text-[1.08rem] font-light leading-[2] text-[color:var(--charcoal)]/72">
+              {tr("story1_b")}
+            </p>
+          </Reveal>
+
+          <Reveal delay={120}>
+            <div className="-mx-6 mt-14">
+              <MotionFrame
+                film={FILMS.clientStory}
+                label={tr("film_story_label")}
+                className="h-[82svh] min-h-[610px] w-full"
+                mediaClassName="object-[center_36%]"
+              />
+            </div>
+          </Reveal>
+
+          <div className="mt-14 flex flex-col gap-12">
+            {stories.map((s, i) => (
+              <Reveal key={s.tag} delay={(i % 3) * 90}>
+                <article>
+                  {i > 0 && (
+                    <div className="aspect-[4/5] overflow-hidden bg-[color:var(--pearl)]">
+                      <img
+                        src={u(STORY_IMAGES[i % STORY_IMAGES.length])}
+                        alt=""
+                        loading="lazy"
+                        className={`h-full w-full object-cover ${storyPositions[i % storyPositions.length]}`}
+                      />
+                    </div>
+                  )}
+                  <div className="border-t border-[color:var(--border)] pt-7">
+                    <MobileLabel>{tr(s.tag)}</MobileLabel>
+                    <h3 className="mt-5 font-display text-[2.55rem] font-light leading-[1.08] text-[color:var(--charcoal)]">
+                      "{tr(s.q)}"
+                    </h3>
+                    <p className="mt-6 max-w-[32ch] text-[1.05rem] font-light leading-[1.95] text-[color:var(--charcoal)]/74">
+                      {tr(s.b)}
+                    </p>
+                  </div>
+                </article>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="mx-auto hidden max-w-[1700px] px-6 md:block md:px-12">
         <div className="grid grid-cols-1 items-end gap-10 lg:grid-cols-12 lg:gap-14">
           <Reveal className="lg:col-span-6">
             <Eyebrow>{tr("st_eyebrow")}</Eyebrow>
@@ -1616,8 +2206,40 @@ function Stories() {
 function Founder() {
   const { tr } = useLang();
   return (
-    <section className="overflow-hidden bg-[color:var(--pearl)] py-28 md:py-52">
-      <div className="mx-auto max-w-[1650px] px-6 md:px-12">
+    <section className="overflow-hidden bg-[color:var(--pearl)] py-0 md:py-52">
+      <div className="md:hidden">
+        <div className="px-6 py-24">
+          <Reveal>
+            <div className="-mx-6">
+              <MotionFrame
+                film={FILMS.behindScenes}
+                label={tr("film_founder_label")}
+                className="h-[82svh] min-h-[610px] w-full"
+                mediaClassName="object-[center_38%]"
+              />
+            </div>
+          </Reveal>
+          <Reveal delay={120}>
+            <div className="mt-14">
+              <MobileLabel>{tr("fd_eyebrow")}</MobileLabel>
+              <h2 className="mt-7 font-display text-[3.25rem] font-light italic leading-[1.08] text-[color:var(--charcoal)]">
+                {tr("fd_title")}
+              </h2>
+              <p className="mt-8 max-w-[32ch] text-[1.08rem] font-light leading-[2.05] text-[color:var(--charcoal)]/78">
+                {tr("fd_body")}
+              </p>
+              <div className="mt-10 border-y border-[color:var(--border)] py-8 font-display text-[2.15rem] font-light italic leading-[1.28] text-[color:var(--taupe)]">
+                {tr("fd_quote")}
+              </div>
+              <div className="mt-6 text-[0.78rem] font-medium uppercase tracking-[0.14em] text-[color:var(--taupe)]">
+                Hanan Bugshan
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </div>
+
+      <div className="mx-auto hidden max-w-[1650px] px-6 md:block md:px-12">
         <div className="grid grid-cols-1 items-center gap-16 lg:grid-cols-12 lg:gap-20">
           <Reveal className="lg:col-span-7">
             <div className="relative">
@@ -1709,7 +2331,145 @@ function Consultation({ prefill }: { prefill: { create?: string; whisper?: strin
         <div className="absolute inset-0 bg-gradient-to-b from-[color:var(--charcoal)]/85 via-[color:var(--charcoal)]/90 to-[color:var(--charcoal)]" />
       </div>
 
-      <div className="relative mx-auto max-w-[1500px] px-6 md:px-12 py-32 md:py-48">
+      <div className="relative md:hidden">
+        <div className="px-6 py-24">
+          <Reveal>
+            <MobileLabel light>{tr("cs_eyebrow")}</MobileLabel>
+            <h2 className="mt-7 font-display text-[3.35rem] font-light leading-[1.02]">
+              <span className="block">{tr("cs_l1")}</span>
+              <span className="block italic text-[color:var(--gold)]">{tr("cs_l2")}</span>
+            </h2>
+            <p className="mt-8 max-w-[32ch] text-[1.08rem] font-light leading-[2.05] text-[color:var(--ivory)]/80">
+              {tr("cs_sub")}
+            </p>
+          </Reveal>
+
+          <Reveal delay={120}>
+            <div className="mt-10 flex flex-col gap-4">
+              <a
+                href={WHATSAPP}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex min-h-[58px] items-center justify-between border border-[color:var(--ivory)]/28 px-6 py-4 text-[0.76rem] font-medium uppercase tracking-[0.14em] text-[color:var(--ivory)]"
+              >
+                {tr("cc_wa")}
+                <span className="font-display text-[1.35rem] italic text-[color:var(--gold)]">
+                  →
+                </span>
+              </a>
+              <a
+                href={INSTAGRAM}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex min-h-[58px] items-center justify-between border border-[color:var(--ivory)]/28 px-6 py-4 text-[0.76rem] font-medium uppercase tracking-[0.14em] text-[color:var(--ivory)]"
+              >
+                {tr("cc_ig")}
+                <span className="font-display text-[1.35rem] italic text-[color:var(--gold)]">
+                  →
+                </span>
+              </a>
+            </div>
+          </Reveal>
+
+          <Reveal delay={180}>
+            <form onSubmit={onSubmit} className="mt-14 flex flex-col gap-8">
+              <label className="block">
+                <div className="text-[0.76rem] font-medium uppercase tracking-[0.14em] text-[color:var(--ivory)]/68">
+                  {tr("f_name")}
+                </div>
+                <input
+                  required
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  className={mobileInputCls}
+                />
+              </label>
+              <label className="block">
+                <div className="text-[0.76rem] font-medium uppercase tracking-[0.14em] text-[color:var(--ivory)]/68">
+                  {tr("f_wa")}
+                </div>
+                <input
+                  required
+                  value={form.wa}
+                  onChange={(e) => setForm({ ...form, wa: e.target.value })}
+                  className={mobileInputCls}
+                />
+              </label>
+
+              <div>
+                <div className="mb-4 text-[0.76rem] font-medium uppercase tracking-[0.14em] text-[color:var(--ivory)]/68">
+                  {tr("f_create")}
+                </div>
+                <div className="flex flex-col gap-3">
+                  {createOptions.map((k) => {
+                    const label = TDICT[k][lang];
+                    const active = form.create === label;
+                    return (
+                      <button
+                        key={k}
+                        type="button"
+                        onClick={() => setForm({ ...form, create: label })}
+                        className={`min-h-[56px] border px-5 py-4 text-left font-display text-[1.55rem] leading-tight transition-colors ${
+                          active
+                            ? "border-[color:var(--gold)] bg-[color:var(--gold)]/10 text-[color:var(--gold)]"
+                            : "border-[color:var(--ivory)]/20 text-[color:var(--ivory)]/82"
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <label className="block">
+                <div className="text-[0.76rem] font-medium uppercase tracking-[0.14em] text-[color:var(--ivory)]/68">
+                  {tr("f_idea")}
+                </div>
+                <textarea
+                  rows={5}
+                  value={form.idea}
+                  onChange={(e) => setForm({ ...form, idea: e.target.value })}
+                  className={`${mobileInputCls} resize-none`}
+                />
+              </label>
+
+              <label className="block">
+                <div className="text-[0.76rem] font-medium uppercase tracking-[0.14em] text-[color:var(--ivory)]/68">
+                  {tr("f_budget")}
+                </div>
+                <input
+                  value={form.budget}
+                  onChange={(e) => setForm({ ...form, budget: e.target.value })}
+                  placeholder={tr("f_budget_ph")}
+                  className={mobileInputCls}
+                />
+              </label>
+              <label className="block">
+                <div className="text-[0.76rem] font-medium uppercase tracking-[0.14em] text-[color:var(--ivory)]/68">
+                  {tr("f_when")}
+                </div>
+                <input
+                  value={form.when}
+                  onChange={(e) => setForm({ ...form, when: e.target.value })}
+                  placeholder={tr("f_when_ph")}
+                  className={mobileInputCls}
+                />
+              </label>
+
+              <button
+                type="submit"
+                className="mt-4 inline-flex min-h-[62px] items-center justify-between bg-[color:var(--ivory)] px-6 py-4 text-[0.76rem] font-medium uppercase tracking-[0.14em] text-[color:var(--charcoal)]"
+              >
+                {sent ? "✓" : tr("f_send")}
+                <span className="h-px w-12 bg-current" />
+              </button>
+            </form>
+          </Reveal>
+        </div>
+      </div>
+
+      <div className="relative mx-auto hidden max-w-[1500px] px-6 py-32 md:block md:px-12 md:py-48">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24">
           <div className="lg:col-span-5">
             <Reveal>
@@ -1855,6 +2615,8 @@ function Consultation({ prefill }: { prefill: { create?: string; whisper?: strin
 
 const inputCls =
   "w-full bg-transparent border-0 border-b border-[color:var(--ivory)]/34 py-4 text-[1rem] leading-relaxed text-[color:var(--ivory)] focus:border-[color:var(--gold)] focus:outline-none transition-colors";
+const mobileInputCls =
+  "w-full bg-transparent border-0 border-b border-[color:var(--ivory)]/34 py-5 text-[1.08rem] leading-relaxed text-[color:var(--ivory)] focus:border-[color:var(--gold)] focus:outline-none transition-colors placeholder:text-[color:var(--ivory)]/46";
 
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
@@ -1886,8 +2648,15 @@ function Concierge({
   useEffect(() => {
     const update = () => {
       const hero = document.getElementById("top");
-      const threshold = (hero?.offsetHeight ?? window.innerHeight) - 80;
-      setShowMobileDesk(window.scrollY > threshold);
+      const consultation = document.getElementById("consultation");
+      const isPhone = window.matchMedia("(max-width: 767px)").matches;
+      const threshold = isPhone
+        ? (hero?.offsetHeight ?? window.innerHeight) + Math.round(window.innerHeight * 0.55)
+        : (hero?.offsetHeight ?? window.innerHeight) - 80;
+      const consultationRect = consultation?.getBoundingClientRect();
+      const insideAppointment =
+        isPhone && !!consultationRect && consultationRect.top < window.innerHeight * 0.82;
+      setShowMobileDesk(window.scrollY > threshold && !insideAppointment);
     };
 
     update();
@@ -1904,14 +2673,17 @@ function Concierge({
       <button
         onClick={() => setOpen(!open)}
         aria-label="Jewellery Concierge"
-        className={`fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-4 z-50 group transition-all duration-500 md:bottom-6 md:right-6 md:pointer-events-auto md:translate-y-0 md:opacity-100 ${
+        className={`fixed bottom-[calc(0.9rem+env(safe-area-inset-bottom))] left-6 right-6 z-50 group transition-all duration-500 md:bottom-6 md:left-auto md:right-6 md:pointer-events-auto md:translate-y-0 md:opacity-100 ${
           showMobileDesk || open
             ? "pointer-events-auto translate-y-0 opacity-100"
             : "pointer-events-none translate-y-4 opacity-0"
         }`}
       >
-        <div className="relative flex h-11 w-11 items-center justify-center rounded-full bg-[color:var(--charcoal)] text-[color:var(--ivory)] shadow-[0_14px_34px_-24px_rgba(0,0,0,0.55)] transition-all duration-500 hover:bg-[color:var(--gold)] sm:h-12 sm:w-12">
-          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[color:var(--gold)] transition-colors group-hover:bg-[color:var(--charcoal)] sm:h-8 sm:w-8">
+        <div className="relative flex h-[52px] w-full items-center justify-between border border-[color:var(--gold)]/36 bg-[color:var(--charcoal)] px-5 text-[color:var(--ivory)] shadow-[0_14px_34px_-24px_rgba(0,0,0,0.55)] transition-all duration-500 hover:bg-[color:var(--gold)] md:h-12 md:w-12 md:justify-center md:rounded-full md:border-0 md:p-0">
+          <span className="text-[0.72rem] font-medium uppercase tracking-[0.14em] md:hidden">
+            {tr("cc_title")}
+          </span>
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[color:var(--gold)] transition-colors group-hover:bg-[color:var(--charcoal)]">
             <svg
               width="13"
               height="13"
@@ -1959,7 +2731,7 @@ function Concierge({
             </div>
             <button
               onClick={() => setOpen(false)}
-              className="text-[color:var(--ivory)]/70 hover:text-[color:var(--ivory)] text-xl"
+              className="flex h-11 w-11 items-center justify-center text-[color:var(--ivory)]/70 hover:text-[color:var(--ivory)] text-xl"
             >
               ×
             </button>
@@ -2023,7 +2795,46 @@ function Footer() {
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,.55),rgba(0,0,0,.94))]" />
       </div>
 
-      <div className="relative mx-auto max-w-[1650px] px-6 py-20 md:px-12 md:py-32">
+      <div className="relative md:hidden">
+        <div className="px-6 py-20 pb-[calc(env(safe-area-inset-bottom)+7rem)]">
+          <OfficialLogo sizes="156px" className="w-[156px]" />
+          <p className="mt-10 font-display text-[2.55rem] font-light italic leading-[1.08] text-[color:var(--ivory)]/88">
+            {tr("foot_tag")}
+          </p>
+          <div className="mt-12 flex flex-col gap-5 border-y border-[color:var(--ivory)]/14 py-8 text-[0.78rem] uppercase tracking-[0.14em] text-[color:var(--ivory)]/76">
+            <a
+              href={WHATSAPP}
+              target="_blank"
+              rel="noreferrer"
+              className="flex min-h-[44px] items-center"
+            >
+              WhatsApp
+            </a>
+            <a
+              href={INSTAGRAM}
+              target="_blank"
+              rel="noreferrer"
+              className="flex min-h-[44px] items-center"
+            >
+              Instagram
+            </a>
+            <a href="#consultation" className="flex min-h-[44px] items-center">
+              {tr("nav_book")}
+            </a>
+          </div>
+          <div className="mt-9 text-[0.72rem] uppercase tracking-[0.13em] leading-[2] text-[color:var(--ivory)]/58">
+            <div>{tr("foot_place")}</div>
+            <div className="mt-5 h-px w-16 bg-[color:var(--gold)]/45" />
+            <div className="mt-5">
+              © {new Date().getFullYear()} Opal Stones
+              <br />
+              {tr("foot_rights")}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="relative mx-auto hidden max-w-[1650px] px-6 py-20 md:block md:px-12 md:py-32">
         <div className="grid grid-cols-1 gap-14 lg:grid-cols-12 lg:items-end">
           <div className="lg:col-span-6">
             <OfficialLogo
