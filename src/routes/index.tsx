@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import { useLang, t as TDICT, type Lang } from "@/lib/i18n";
+import { CatalogueCategoryExplorer } from "@/components/catalogue/CatalogueCategoryExplorer";
 
 import j1 from "@/assets/jewellery/IMG_6823.jpg";
 import j2 from "@/assets/jewellery/IMG_6824.jpg";
@@ -599,6 +600,7 @@ function DesktopMaisonExperience({
     <>
       <Hero />
       <MaisonPrelude />
+      <CatalogueCategoryExplorer />
       <Commission onChoose={onChoose} />
       <DesignYourPiece onContinue={onContinue} />
       <Process />
@@ -741,6 +743,7 @@ function MobileMaisonJourney({
     <main data-mobile-maison="true" className="bg-[color:var(--ivory)]">
       <MobileHero copy={copy} />
       <MobilePrelude copy={copy} />
+      <CatalogueCategoryExplorer />
       <MobileCommission copy={copy} tr={tr} onChoose={onChoose} />
       <MobileDirection
         copy={copy}
@@ -1896,7 +1899,7 @@ function Nav({ onConcierge }: { onConcierge: () => void }) {
     { k: "nav_design", href: "#design" },
     { k: "nav_atelier", href: "#atelier" },
     { k: "nav_creations", href: "#creations" },
-    { k: "nav_collections", href: "/collections" },
+    { k: "nav_collections", href: "#collections" },
     { k: "nav_redesign", href: "#redesign" },
   ];
   const lightNav = scrolled || open;

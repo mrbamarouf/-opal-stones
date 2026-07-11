@@ -1,39 +1,13 @@
-import { createFileRoute } from "@tanstack/react-router";
-
 import { CatalogueFooter, CatalogueHeader } from "@/components/catalogue/CatalogueChrome";
 import {
   createWhatsAppHref,
   getCategoryLabel,
-  getProductById,
+  getCategoryPath,
   type CatalogueProduct,
 } from "@/lib/catalogue";
 import { useLang } from "@/lib/i18n";
 
-export const Route = createFileRoute("/collections_/$productId")({
-  head: () => ({
-    meta: [
-      { title: "Collection Piece Preview | Opal Stones by Hanan Bugshan" },
-      {
-        name: "description",
-        content:
-          "A preview product page for the Opal Stones luxury catalogue, with specifications and private WhatsApp inquiry.",
-      },
-      { property: "og:title", content: "Opal Stones Collection Piece Preview" },
-    ],
-  }),
-  component: ProductRoute,
-});
-
-function ProductRoute() {
-  const { productId } = Route.useParams();
-  const product = getProductById(productId);
-
-  if (!product) return <MissingProduct />;
-
-  return <ProductPage product={product} />;
-}
-
-function MissingProduct() {
+export function MissingCatalogueEntry() {
   const { lang } = useLang();
   return (
     <div
@@ -45,12 +19,12 @@ function MissingProduct() {
       <main className="flex min-h-[100svh] items-center justify-center bg-[color:var(--ivory)] px-6 pt-28 text-[color:var(--charcoal)]">
         <div className="max-w-lg text-center">
           <h1 className="font-display text-[3.5rem] font-light leading-none">
-            {lang === "ar" ? "القطعة غير موجودة" : "Piece not found"}
+            {lang === "ar" ? "الصفحة غير موجودة" : "Page not found"}
           </h1>
           <p className="mt-6 text-[1rem] font-light leading-[1.9] text-[color:var(--charcoal)]/72">
             {lang === "ar"
-              ? "ربما تغير المرجع التجريبي. عودي إلى صفحة المجموعات لاختيار قطعة أخرى."
-              : "The preview reference may have changed. Return to the collections page and choose another piece."}
+              ? "ربما تغير المرجع التجريبي. عودي إلى صفحة المجموعات لاختيار فئة أو قطعة أخرى."
+              : "The preview reference may have changed. Return to the collections page and choose a category or piece."}
           </p>
           <a
             href="/collections"
@@ -66,8 +40,9 @@ function MissingProduct() {
   );
 }
 
-function ProductPage({ product }: { product: CatalogueProduct }) {
+export function CatalogueProductPage({ product }: { product: CatalogueProduct }) {
   const { lang } = useLang();
+
   return (
     <div
       lang={lang}
@@ -79,12 +54,14 @@ function ProductPage({ product }: { product: CatalogueProduct }) {
         <section className="mx-auto grid max-w-[1680px] grid-cols-1 gap-10 px-6 pb-16 pt-[calc(env(safe-area-inset-top)+8.5rem)] md:grid-cols-12 md:px-12 md:pb-28 md:pt-44">
           <div className="md:col-span-7">
             <a
-              href="/collections"
+              href={getCategoryPath(product.category)}
               className={`mb-8 inline-flex items-center text-[0.68rem] font-medium uppercase text-[color:var(--taupe)] transition-colors hover:text-[color:var(--charcoal)] ${
                 lang === "ar" ? "!tracking-[0px]" : "tracking-[0.2em]"
               }`}
             >
-              {lang === "ar" ? "العودة إلى المجموعات" : "Back to Collections"}
+              {lang === "ar"
+                ? `العودة إلى ${getCategoryLabel(product.category, lang)}`
+                : `Back to ${getCategoryLabel(product.category, lang)}`}
             </a>
             <ProductGallery product={product} />
           </div>
