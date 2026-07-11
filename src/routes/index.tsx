@@ -261,8 +261,8 @@ function AmbientFilm({
     const el = wrapRef.current;
     if (!el) return;
     const io = new IntersectionObserver(
-      ([entry]) => setActive(entry.isIntersecting && entry.intersectionRatio > 0.02),
-      { threshold: [0, 0.02], rootMargin: "18% 0px 18% 0px" },
+      ([entry]) => setActive(entry.isIntersecting && entry.intersectionRatio > 0.08),
+      { threshold: [0, 0.08], rootMargin: "0px" },
     );
     io.observe(el);
     return () => io.disconnect();
@@ -387,8 +387,8 @@ function MotionFrame({
     const frame = frameRef.current;
     if (!frame) return;
     const io = new IntersectionObserver(
-      ([entry]) => setActive(entry.isIntersecting && entry.intersectionRatio > 0.02),
-      { threshold: [0, 0.02], rootMargin: "18% 0px 18% 0px" },
+      ([entry]) => setActive(entry.isIntersecting && entry.intersectionRatio > 0.08),
+      { threshold: [0, 0.08], rootMargin: "0px" },
     );
     io.observe(frame);
     return () => io.disconnect();
@@ -487,6 +487,7 @@ function Index() {
   const { lang } = useLang();
   const [concierge, setConcierge] = useState(false);
   const [prefill, setPrefill] = useState<{ create?: string; whisper?: string }>({});
+  const isPhone = useIsPhone();
 
   const openInquiry = (data?: { create?: string; whisper?: string }) => {
     if (data) setPrefill((p) => ({ ...p, ...data }));
@@ -505,17 +506,21 @@ function Index() {
     >
       <IntroScreen />
       <Nav onConcierge={() => setConcierge(true)} />
-      <Hero />
-      <MaisonPrelude />
-      <Commission onChoose={(create) => openInquiry({ create })} />
-      <DesignYourPiece onContinue={(whisper) => openInquiry({ whisper })} />
-      <Process />
-      <Signature />
-      <Redesign onBegin={() => openInquiry({ create: TDICT.com_redo[lang] })} />
-      <Stories />
-      <Founder />
-      <Consultation prefill={prefill} />
-      <Footer />
+      {isPhone ? (
+        <MobileMaisonJourney
+          prefill={prefill}
+          onChoose={(create) => openInquiry({ create })}
+          onContinue={(whisper) => openInquiry({ whisper })}
+          onBegin={() => openInquiry({ create: TDICT.com_redo[lang] })}
+        />
+      ) : (
+        <DesktopMaisonExperience
+          prefill={prefill}
+          onChoose={(create) => openInquiry({ create })}
+          onContinue={(whisper) => openInquiry({ whisper })}
+          onBegin={() => openInquiry({ create: TDICT.com_redo[lang] })}
+        />
+      )}
       <Concierge
         open={concierge}
         setOpen={setConcierge}
@@ -525,6 +530,1022 @@ function Index() {
         }}
       />
     </div>
+  );
+}
+
+function useIsPhone() {
+  const [isPhone, setIsPhone] = useState(false);
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 767px)");
+    const update = () => setIsPhone(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+
+  return isPhone;
+}
+
+function DesktopMaisonExperience({
+  prefill,
+  onChoose,
+  onContinue,
+  onBegin,
+}: {
+  prefill: { create?: string; whisper?: string };
+  onChoose: (create: string) => void;
+  onContinue: (whisper: string) => void;
+  onBegin: () => void;
+}) {
+  return (
+    <>
+      <Hero />
+      <MaisonPrelude />
+      <Commission onChoose={onChoose} />
+      <DesignYourPiece onContinue={onContinue} />
+      <Process />
+      <Signature />
+      <Redesign onBegin={onBegin} />
+      <Stories />
+      <Founder />
+      <Consultation prefill={prefill} />
+      <Footer />
+    </>
+  );
+}
+
+const MOBILE_COPY = {
+  en: {
+    heroTitleA: "Jewellery, held close.",
+    heroTitleB: "Made for one life.",
+    heroBody: "Private pieces shaped around memory, proportion, and the woman who will wear them.",
+    heroPrimary: "Request a Private Appointment",
+    heroSecondary: "Begin with a Piece",
+    preludeKicker: "The first pause",
+    preludeTitle: "Before a sketch, there is a pause.",
+    preludeBody:
+      "We begin with the feeling of the piece: how it should sit, move, and stay in memory.",
+    commissionKicker: "Private commission",
+    commissionTitleA: "Choose the form.",
+    commissionTitleB: "We will refine the language.",
+    commissionBody:
+      "Ring, necklace, suite, or heirloom: each path begins privately and becomes exact through the appointment.",
+    commissionFilmTitle: "Proportion belongs to the hand.",
+    commissionFilmBody:
+      "The first fitting studies scale, gesture, skin, and the private rituals of wearing.",
+    begin: "Begin this piece",
+    directionKicker: "First direction",
+    directionTitle: "Give the piece its atmosphere.",
+    directionBody:
+      "A milestone, a metal, a line, a stone. The choices stay simple; the result becomes personal.",
+    selected: "Your first direction",
+    awaiting: "Waiting for the first feeling",
+    request: "Request the appointment",
+    atelierKicker: "Atelier",
+    atelierTitle: "The hand decides what the drawing cannot.",
+    atelierBody:
+      "Proportion is corrected slowly. A curve is softened. A setting is made quieter. The piece earns its final form at the bench.",
+    archiveKicker: "Private archive",
+    archiveTitle: "A private archive of gestures.",
+    archiveBody:
+      "Some pieces speak through scale. Others through restraint. The archive is read as moments, not products.",
+    archiveQuote: "A jewel should feel discovered, then remembered.",
+    redesignKicker: "Heirloom redesign",
+    redesignTitleA: "Old meaning,",
+    redesignTitleB: "new form.",
+    redesignBody:
+      "An inherited stone or forgotten setting can return with more ease, more relevance, and the same private gravity.",
+    redesignCta: "Begin the redesign",
+    worldKicker: "Private world",
+    worldTitle: "The maison is intimate by design.",
+    worldBody:
+      "Appointments are quiet, decisions are considered, and every detail is edited until it belongs.",
+    founderQuote: "The piece matters when it feels like it has always belonged to her.",
+    consultKicker: "Private appointment",
+    consultTitleA: "Begin",
+    consultTitleB: "privately.",
+    consultBody:
+      "Share the occasion, the piece, or the heirloom. The first reply will shape the appointment.",
+    footerLine: "Opal Stones by Hanan Bugshan. Bespoke jewellery, quietly held.",
+  },
+  ar: {
+    heroTitleA: "مجوهرات تُحمل بالقرب.",
+    heroTitleB: "وتُصاغ لحياة واحدة.",
+    heroBody: "قطع خاصة تُبنى حول الذكرى والنِسبة والمرأة التي سترتديها.",
+    heroPrimary: "اطلبي موعداً خاصاً",
+    heroSecondary: "ابدئي بقطعة",
+    preludeKicker: "الوقفة الأولى",
+    preludeTitle: "قبل الرسم، هناك لحظة صمت.",
+    preludeBody: "نبدأ بإحساس القطعة: كيف تستقر على الجسد، كيف تتحرك، وكيف تبقى في الذاكرة.",
+    commissionKicker: "طلب خاص",
+    commissionTitleA: "اختاري هيئة البداية.",
+    commissionTitleB: "ونحن نُهذّب لغتها.",
+    commissionBody:
+      "خاتم، عقد، طقم، أو إرث عائلي. كل مسار يبدأ بخصوصية ثم يصبح أكثر دقة داخل الموعد.",
+    commissionFilmTitle: "النِسبة تنتمي إلى اليد.",
+    commissionFilmBody: "تدرس التجربة الأولى الحجم، والإيماءة، والبشرة، وطقوس الارتداء الخاصة.",
+    begin: "ابدئي هذه القطعة",
+    directionKicker: "الاتجاه الأول",
+    directionTitle: "امنحي القطعة مزاجها.",
+    directionBody: "المناسبة، المعدن، الخط، والحجر. اختيارات قليلة، لكن النتيجة شخصية تماماً.",
+    selected: "اتجاهكِ الأول",
+    awaiting: "بانتظار الإحساس الأول",
+    request: "اطلبي الموعد",
+    atelierKicker: "الأتيليه",
+    atelierTitle: "اليد تحسم ما لا يقوله الرسم.",
+    atelierBody:
+      "تُصحّح النِسب ببطء، يهدأ المنحنى، ويصبح الترصيع أكثر رهافة حتى تصل القطعة إلى صورتها.",
+    archiveKicker: "أرشيف خاص",
+    archiveTitle: "أرشيف خاص من الإشارات.",
+    archiveBody: "بعض القطع تتحدث بالحجم، وبعضها بالهدوء. نقرأ الإبداعات كلحظات لا كمنتجات.",
+    archiveQuote: "يجب أن تبدو الجوهرة كأنها اكتُشفت، ثم بقيت.",
+    redesignKicker: "إعادة صياغة الإرث",
+    redesignTitleA: "معنى قديم،",
+    redesignTitleB: "بصياغة جديدة.",
+    redesignBody:
+      "حجر موروث أو إعداد منسي يمكن أن يعود بخفة أكبر وحضور أهدأ، من دون أن يفقد ذاكرته.",
+    redesignCta: "ابدئي الصياغة الجديدة",
+    worldKicker: "عالم خاص",
+    worldTitle: "المايسون حميمي بطبيعته.",
+    worldBody: "المواعيد هادئة، والقرارات متأنية، وكل تفصيل يُحرّر حتى يصبح في مكانه.",
+    founderQuote: "تكتمل القطعة حين تبدو كأنها كانت تنتمي إليها دائماً.",
+    consultKicker: "موعد خاص",
+    consultTitleA: "ابدئي",
+    consultTitleB: "بخصوصية.",
+    consultBody: "ارسلي المناسبة، القطعة، أو الإرث. الرد الأول سيحدد شكل الموعد.",
+    footerLine: "أوبال ستونز من حنان بقشان. مجوهرات خاصة تُحمل بهدوء.",
+  },
+} satisfies Record<Lang, Record<string, string>>;
+
+function MobileMaisonJourney({
+  prefill,
+  onChoose,
+  onContinue,
+  onBegin,
+}: {
+  prefill: { create?: string; whisper?: string };
+  onChoose: (create: string) => void;
+  onContinue: (whisper: string) => void;
+  onBegin: () => void;
+}) {
+  const { lang, tr } = useLang();
+  const copy = MOBILE_COPY[lang];
+  const [direction, setDirection] = useState<Record<StepKey, string>>({
+    occasion: "",
+    metal: "",
+    style: "",
+    stones: "",
+  });
+
+  const directionSummary = Object.values(direction).filter(Boolean).join(" · ");
+
+  return (
+    <main data-mobile-maison="true" className="md:hidden bg-[color:var(--ivory)]">
+      <MobileHero copy={copy} />
+      <MobilePrelude copy={copy} />
+      <MobileCommission copy={copy} tr={tr} onChoose={onChoose} />
+      <MobileDirection
+        copy={copy}
+        tr={tr}
+        lang={lang}
+        direction={direction}
+        setDirection={setDirection}
+        onContinue={() => onContinue(directionSummary)}
+      />
+      <MobileAtelier copy={copy} />
+      <MobileArchive copy={copy} />
+      <MobileRedesign copy={copy} onBegin={onBegin} />
+      <MobilePrivateWorld copy={copy} />
+      <MobileConsultation copy={copy} prefill={prefill} />
+      <MobileFooter copy={copy} />
+    </main>
+  );
+}
+
+function MobileHero({ copy }: { copy: Record<string, string> }) {
+  return (
+    <section
+      id="top"
+      className="relative min-h-[100svh] overflow-hidden bg-[color:var(--charcoal)] text-[color:var(--ivory)]"
+    >
+      <div className="absolute inset-0">
+        <img
+          src={u(HERO)}
+          alt=""
+          loading="eager"
+          className="h-full w-full object-cover animate-slow-zoom"
+          style={{ objectPosition: "center 34%" }}
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,.48),rgba(0,0,0,.16)_38%,rgba(0,0,0,.82))]" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,.36),transparent_72%)]" />
+      </div>
+
+      <div className="relative z-10 flex min-h-[100svh] flex-col justify-end px-6 pb-[calc(env(safe-area-inset-bottom)+42px)] pt-[calc(env(safe-area-inset-top)+104px)]">
+        <Reveal>
+          <h1
+            data-mobile-hero-heading="true"
+            className="max-w-[10ch] font-display text-[clamp(3.1rem,14vw,4.35rem)] font-light leading-[1.02] text-[color:var(--ivory)]"
+          >
+            <span className="block">{copy.heroTitleA}</span>
+            <span className="mt-1 block italic text-[color:var(--ivory)]/88">
+              {copy.heroTitleB}
+            </span>
+          </h1>
+          <p className="mt-7 max-w-[29ch] text-[1.08rem] font-light leading-[1.9] text-[color:var(--ivory)]/86">
+            {copy.heroBody}
+          </p>
+          <div className="mt-10 flex flex-col gap-4">
+            <a
+              href="#consultation"
+              className="inline-flex min-h-[60px] w-full items-center justify-between bg-[color:var(--ivory)] px-6 py-4 text-[0.74rem] font-medium uppercase tracking-[0.13em] text-[color:var(--charcoal)]"
+            >
+              {copy.heroPrimary}
+              <span className="h-px w-10 bg-current" />
+            </a>
+            <a
+              href="#commission"
+              className="inline-flex min-h-[60px] w-full items-center justify-between border border-[color:var(--ivory)]/42 px-6 py-4 text-[0.74rem] font-medium uppercase tracking-[0.13em] text-[color:var(--ivory)]"
+            >
+              {copy.heroSecondary}
+              <span className="h-px w-10 bg-current" />
+            </a>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+function MobilePrelude({ copy }: { copy: Record<string, string> }) {
+  return (
+    <section className="overflow-hidden bg-[color:var(--charcoal)] text-[color:var(--ivory)]">
+      <div className="relative">
+        <AmbientFilm
+          film={FILMS.maisonPendant}
+          className="h-[92svh] min-h-[680px]"
+          mediaClassName="object-[center_34%]"
+          overlay="bg-[linear-gradient(180deg,rgba(0,0,0,.12),rgba(0,0,0,.08)_36%,rgba(0,0,0,.76))]"
+        />
+        <div className="absolute inset-x-0 bottom-0 px-6 pb-12">
+          <Reveal>
+            <MobileLabel light>{copy.preludeKicker}</MobileLabel>
+            <h2 className="mt-5 max-w-[11ch] font-display text-[3.35rem] font-light leading-[1.03]">
+              {copy.preludeTitle}
+            </h2>
+          </Reveal>
+        </div>
+      </div>
+      <Reveal>
+        <div className="px-6 py-14">
+          <p className="max-w-[31ch] text-[1.12rem] font-light leading-[2.05] text-[color:var(--ivory)]/82">
+            {copy.preludeBody}
+          </p>
+        </div>
+      </Reveal>
+    </section>
+  );
+}
+
+function MobileCommission({
+  copy,
+  tr,
+  onChoose,
+}: {
+  copy: Record<string, string>;
+  tr: (key: TKey) => string;
+  onChoose: (create: string) => void;
+}) {
+  const cards: { title: TKey; body: TKey; img: string; n: string; pos: string }[] = [
+    { title: "com_ring", body: "com_ring_d", img: j15, n: "01", pos: "object-[center_38%]" },
+    { title: "com_neck", body: "com_neck_d", img: j11, n: "02", pos: "object-[center_34%]" },
+    { title: "com_bridal", body: "com_bridal_d", img: j23, n: "03", pos: "object-[center_40%]" },
+    { title: "com_redo", body: "com_redo_d", img: j19, n: "04", pos: "object-[center_50%]" },
+    { title: "com_ear", body: "com_ear_d", img: j7, n: "05", pos: "object-[center_40%]" },
+    { title: "com_brace", body: "com_brace_d", img: j18, n: "06", pos: "object-[center_48%]" },
+    { title: "com_unique", body: "com_unique_d", img: j17, n: "07", pos: "object-[center_44%]" },
+  ];
+
+  return (
+    <section id="commission" className="overflow-hidden bg-[color:var(--ivory)]">
+      <div className="px-6 py-24">
+        <Reveal>
+          <MobileLabel>{copy.commissionKicker}</MobileLabel>
+          <h2 className="mt-7 font-display text-[3.3rem] font-light leading-[1.03] text-[color:var(--charcoal)]">
+            <span className="block">{copy.commissionTitleA}</span>
+            <span className="block italic text-[color:var(--taupe)]">{copy.commissionTitleB}</span>
+          </h2>
+          <p className="mt-8 max-w-[32ch] text-[1.08rem] font-light leading-[2] text-[color:var(--charcoal)]/74">
+            {copy.commissionBody}
+          </p>
+        </Reveal>
+
+        <Reveal delay={120}>
+          <div className="-mx-6 mt-14">
+            <MotionFrame
+              film={FILMS.portraitRing}
+              label={copy.commissionFilmTitle}
+              className="h-[72svh] min-h-[540px] w-full"
+              mediaClassName="object-[center_40%]"
+            />
+          </div>
+          <div className="mt-8 border-y border-[color:var(--border)] py-8">
+            <h3 className="font-display text-[2.25rem] font-light leading-[1.25] text-[color:var(--charcoal)]">
+              {copy.commissionFilmTitle}
+            </h3>
+            <p className="mt-5 text-[1.02rem] font-light leading-[1.95] text-[color:var(--charcoal)]/72">
+              {copy.commissionFilmBody}
+            </p>
+          </div>
+        </Reveal>
+
+        <div className="mt-16 flex flex-col gap-11">
+          {cards.map((card, index) => {
+            const frame = index % 3 === 0 ? "-mx-6" : index % 3 === 1 ? "ms-8" : "me-8";
+            return (
+              <Reveal key={card.title} delay={(index % 3) * 80}>
+                <button
+                  type="button"
+                  onClick={() => onChoose(tr(card.title))}
+                  className={`group block w-full text-left ${frame}`}
+                >
+                  <div className="relative aspect-[4/5] overflow-hidden bg-[color:var(--charcoal)]">
+                    <img
+                      src={u(card.img)}
+                      alt=""
+                      loading={index < 2 ? "eager" : "lazy"}
+                      className={`h-full w-full object-cover brightness-[0.9] transition-transform duration-[1400ms] group-active:scale-[1.025] ${card.pos}`}
+                    />
+                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.12)_42%,rgba(0,0,0,.76))]" />
+                    <div className="absolute inset-x-0 bottom-0 p-6 text-[color:var(--ivory)]">
+                      <div className="font-display text-[4.4rem] font-light italic leading-none text-[color:var(--ivory)]/42">
+                        {card.n}
+                      </div>
+                      <h3 className="mt-5 font-display text-[2.6rem] font-light leading-[1.03]">
+                        {tr(card.title)}
+                      </h3>
+                      <p className="mt-4 max-w-[27ch] text-[1rem] font-light leading-[1.85] text-[color:var(--ivory)]/82">
+                        {tr(card.body)}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-4 flex min-h-[56px] items-center justify-between border-b border-[color:var(--border)] pb-4 text-[0.76rem] font-medium uppercase tracking-[0.14em] text-[color:var(--charcoal)]">
+                    {copy.begin}
+                    <span className="h-px w-12 bg-[color:var(--gold)]" />
+                  </div>
+                </button>
+              </Reveal>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function MobileDirection({
+  copy,
+  tr,
+  lang,
+  direction,
+  setDirection,
+  onContinue,
+}: {
+  copy: Record<string, string>;
+  tr: (key: TKey) => string;
+  lang: Lang;
+  direction: Record<StepKey, string>;
+  setDirection: (next: Record<StepKey, string>) => void;
+  onContinue: () => void;
+}) {
+  const chapters: {
+    key: StepKey;
+    title: TKey;
+    img: string;
+    options: TKey[];
+    pos: string;
+  }[] = [
+    {
+      key: "occasion",
+      title: "tab_occasion",
+      img: j23,
+      options: ["oc_eng", "oc_wed", "oc_ann", "oc_gift", "oc_mile"],
+      pos: "object-[center_40%]",
+    },
+    {
+      key: "metal",
+      title: "tab_metal",
+      img: j17,
+      options: ["mt_yellow", "mt_white", "mt_rose", "mt_plat"],
+      pos: "object-[center_44%]",
+    },
+    {
+      key: "style",
+      title: "tab_style",
+      img: j12,
+      options: ["st_classic", "st_modern", "st_statement", "st_minimal"],
+      pos: "object-[center_42%]",
+    },
+    {
+      key: "stones",
+      title: "tab_stones",
+      img: j3,
+      options: ["gs_dia", "gs_em", "gs_sap", "gs_ruby", "gs_custom"],
+      pos: "object-[center_38%]",
+    },
+  ];
+  const summary = Object.values(direction).filter(Boolean).join(" · ") || copy.awaiting;
+
+  return (
+    <section id="design" className="overflow-hidden bg-[color:var(--pearl)]">
+      <div className="px-6 py-24">
+        <Reveal>
+          <MobileLabel>{copy.directionKicker}</MobileLabel>
+          <h2 className="mt-7 font-display text-[3.25rem] font-light leading-[1.05] text-[color:var(--charcoal)]">
+            {copy.directionTitle}
+          </h2>
+          <p className="mt-8 max-w-[31ch] text-[1.08rem] font-light leading-[2] text-[color:var(--charcoal)]/74">
+            {copy.directionBody}
+          </p>
+        </Reveal>
+
+        <div className="mt-14 flex flex-col gap-10">
+          {chapters.map((chapter, index) => (
+            <Reveal key={chapter.key} delay={(index % 2) * 90}>
+              <article className="overflow-hidden bg-[color:var(--ivory)] shadow-[0_22px_44px_-34px_rgba(0,0,0,0.24)]">
+                <div className="relative aspect-[4/5] overflow-hidden">
+                  <img
+                    src={u(chapter.img)}
+                    alt=""
+                    loading="lazy"
+                    className={`h-full w-full object-cover brightness-[0.92] ${chapter.pos}`}
+                  />
+                  <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent,rgba(0,0,0,.58))]" />
+                  <div className="absolute bottom-0 left-0 right-0 p-6 text-[color:var(--ivory)]">
+                    <div className="text-[0.72rem] font-medium uppercase tracking-[0.14em] text-[color:var(--champagne)]">
+                      0{index + 1}
+                    </div>
+                    <h3 className="mt-3 font-display text-[2.6rem] font-light leading-[1.04]">
+                      {tr(chapter.title)}
+                    </h3>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-3 p-5">
+                  {chapter.options.map((option) => {
+                    const label = TDICT[option][lang];
+                    const active = direction[chapter.key] === label;
+                    return (
+                      <button
+                        key={option}
+                        type="button"
+                        onClick={() => setDirection({ ...direction, [chapter.key]: label })}
+                        className={`min-h-[46px] border px-4 py-3 text-[0.78rem] font-medium uppercase tracking-[0.1em] transition-colors ${
+                          active
+                            ? "border-[color:var(--charcoal)] bg-[color:var(--charcoal)] text-[color:var(--ivory)]"
+                            : "border-[color:var(--border)] text-[color:var(--charcoal)]/74"
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </article>
+            </Reveal>
+          ))}
+        </div>
+
+        <Reveal>
+          <div className="mt-14 border-y border-[color:var(--border)] py-8">
+            <div className="text-[0.74rem] font-medium uppercase tracking-[0.14em] text-[color:var(--taupe)]">
+              {copy.selected}
+            </div>
+            <div className="mt-4 min-h-[4rem] font-display text-[2rem] font-light italic leading-[1.22] text-[color:var(--charcoal)]">
+              {summary}
+            </div>
+          </div>
+          <div className="mt-8">
+            <MobileAction onClick={onContinue}>{copy.request}</MobileAction>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+function MobileAtelier({ copy }: { copy: Record<string, string> }) {
+  const steps = [
+    {
+      n: "01",
+      title: "Private Appointment",
+      body: "A quiet reading of the woman, the occasion, and the meaning that should remain private.",
+    },
+    {
+      n: "02",
+      title: "Proportion",
+      body: "Stones, references, and scale are reduced until one clear direction is left.",
+    },
+    {
+      n: "03",
+      title: "Making",
+      body: "Gold, setting, and finish are handled by hand, slowly enough for the line to become certain.",
+    },
+    {
+      n: "04",
+      title: "Presentation",
+      body: "The final piece is revealed privately, ready to be worn and carried forward.",
+    },
+  ];
+  const arSteps = [
+    {
+      n: "01",
+      title: "موعد خاص",
+      body: "قراءة هادئة للمرأة، وللمناسبة، وللمعنى الذي يجب أن يبقى خاصاً.",
+    },
+    { n: "02", title: "النِسبة", body: "تُختصر الأحجار والمراجع والحجم حتى يبقى اتجاه واحد واضح." },
+    {
+      n: "03",
+      title: "الصياغة",
+      body: "يُعامل الذهب والترصيع والتشطيب باليد، وببطء يكفي ليصبح الخط مؤكداً.",
+    },
+    {
+      n: "04",
+      title: "التقديم",
+      body: "تُكشف القطعة الأخيرة بخصوصية، جاهزة لأن تُرتدى وتنتقل معكِ.",
+    },
+  ];
+  const { lang } = useLang();
+  const atelierSteps = lang === "ar" ? arSteps : steps;
+
+  return (
+    <section
+      id="atelier"
+      className="overflow-hidden bg-[color:var(--charcoal)] text-[color:var(--ivory)]"
+    >
+      <div className="px-6 py-24">
+        <Reveal>
+          <MobileLabel light>{copy.atelierKicker}</MobileLabel>
+          <h2 className="mt-7 max-w-[11ch] font-display text-[3.3rem] font-light leading-[1.04]">
+            {copy.atelierTitle}
+          </h2>
+          <p className="mt-8 max-w-[31ch] text-[1.08rem] font-light leading-[2.02] text-[color:var(--ivory)]/76">
+            {copy.atelierBody}
+          </p>
+        </Reveal>
+
+        <Reveal delay={120}>
+          <div className="-mx-6 mt-14">
+            <AmbientFilm
+              film={FILMS.atelierHands}
+              className="h-[82svh] min-h-[610px]"
+              mediaClassName="object-[center_center]"
+              overlay="bg-[linear-gradient(180deg,rgba(0,0,0,.02),rgba(0,0,0,.16)_46%,rgba(0,0,0,.72))]"
+            />
+          </div>
+        </Reveal>
+
+        <div className="mt-16 flex flex-col gap-9">
+          {atelierSteps.map((step, index) => (
+            <Reveal key={step.n} delay={(index % 3) * 80}>
+              <article className="border-t border-[color:var(--ivory)]/15 pt-8">
+                <div className="font-display text-[5.2rem] font-light italic leading-none text-[color:var(--gold)]/72">
+                  {step.n}
+                </div>
+                <h3 className="mt-5 font-display text-[2.45rem] font-light leading-[1.05] text-[color:var(--ivory)]">
+                  {step.title}
+                </h3>
+                <p className="mt-5 max-w-[31ch] text-[1.04rem] font-light leading-[1.95] text-[color:var(--ivory)]/72">
+                  {step.body}
+                </p>
+              </article>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function MobileArchive({ copy }: { copy: Record<string, string> }) {
+  const curated = [
+    { img: j3, frame: "-mx-6 aspect-[4/5]", pos: "object-[center_38%]" },
+    { img: j21, frame: "ms-10 aspect-[3/4]", pos: "object-[center_42%]" },
+    { img: j6, frame: "me-8 aspect-[16/11]", pos: "object-[center_44%]" },
+    { img: j12, frame: "-mx-6 aspect-[5/4]", pos: "object-[center_40%]" },
+    { img: j24, frame: "ms-12 aspect-[3/4]", pos: "object-[center_42%]" },
+    { img: j25, frame: "me-8 aspect-[4/5]", pos: "object-[center_45%]" },
+  ];
+
+  return (
+    <section id="creations" className="overflow-hidden bg-[color:var(--ivory)]">
+      <div className="px-6 py-24">
+        <Reveal>
+          <MobileLabel>{copy.archiveKicker}</MobileLabel>
+          <h2 className="mt-7 font-display text-[3.3rem] font-light leading-[1.04] text-[color:var(--charcoal)]">
+            {copy.archiveTitle}
+          </h2>
+          <p className="mt-8 max-w-[31ch] text-[1.08rem] font-light leading-[2] text-[color:var(--charcoal)]/74">
+            {copy.archiveBody}
+          </p>
+        </Reveal>
+
+        <Reveal delay={120}>
+          <div className="-mx-6 mt-14">
+            <MotionFrame
+              film={FILMS.necklaceArchive}
+              label={copy.archiveTitle}
+              className="h-[82svh] min-h-[610px] w-full"
+              mediaClassName="object-[center_33%]"
+            />
+          </div>
+        </Reveal>
+
+        <Reveal delay={160}>
+          <div className="my-16 border-y border-[color:var(--border)] py-9">
+            <p className="font-display text-[2.25rem] font-light italic leading-[1.28] text-[color:var(--taupe)]">
+              {copy.archiveQuote}
+            </p>
+          </div>
+        </Reveal>
+
+        <div className="flex flex-col gap-10">
+          {curated.map((item, index) => (
+            <Reveal key={item.img} delay={(index % 3) * 80}>
+              <div className={`${item.frame} overflow-hidden bg-[color:var(--pearl)]`}>
+                <img
+                  src={u(item.img)}
+                  alt=""
+                  loading="lazy"
+                  className={`h-full w-full object-cover brightness-[0.96] ${item.pos}`}
+                />
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function MobileRedesign({ copy, onBegin }: { copy: Record<string, string>; onBegin: () => void }) {
+  const { lang } = useLang();
+  const steps =
+    lang === "ar"
+      ? ["نقرأ الحجر كما هو.", "نرسم حجمه الجديد حولكِ.", "نحفظ الذاكرة ونغيّر طريقة حضورها."]
+      : [
+          "We read the stone as it is.",
+          "We redraw its scale around you.",
+          "We keep the memory and change how it appears.",
+        ];
+
+  return (
+    <section
+      id="redesign"
+      className="overflow-hidden bg-[color:var(--charcoal)] text-[color:var(--ivory)]"
+    >
+      <div className="px-6 py-24">
+        <Reveal>
+          <MobileLabel light>{copy.redesignKicker}</MobileLabel>
+          <h2 className="mt-7 font-display text-[3.35rem] font-light leading-[1.04]">
+            <span className="block">{copy.redesignTitleA}</span>
+            <span className="block italic text-[color:var(--gold)]">{copy.redesignTitleB}</span>
+          </h2>
+          <p className="mt-8 max-w-[32ch] text-[1.08rem] font-light leading-[2.05] text-[color:var(--ivory)]/78">
+            {copy.redesignBody}
+          </p>
+          <div className="mt-10">
+            <MobileAction onClick={onBegin} dark>
+              {copy.redesignCta}
+            </MobileAction>
+          </div>
+        </Reveal>
+
+        <Reveal delay={120}>
+          <div className="-mx-6 mt-16 aspect-[4/5] overflow-hidden">
+            <img
+              src={u(REDESIGN_IMG)}
+              alt=""
+              loading="lazy"
+              className="h-full w-full object-cover object-[center_46%]"
+            />
+          </div>
+        </Reveal>
+
+        <Reveal delay={180}>
+          <div className="mt-10">
+            <MotionFrame
+              film={FILMS.heirloomPendant}
+              label={copy.redesignKicker}
+              className="aspect-[4/5] w-full"
+              mediaClassName="object-[center_42%]"
+            />
+          </div>
+        </Reveal>
+
+        <div className="mt-14 flex flex-col gap-7 border-y border-[color:var(--ivory)]/14 py-8">
+          {steps.map((step, index) => (
+            <Reveal key={step} delay={index * 80}>
+              <div className="grid grid-cols-[3.4rem_1fr] gap-5">
+                <div className="font-display text-[2.5rem] font-light italic leading-none text-[color:var(--gold)]/78">
+                  0{index + 1}
+                </div>
+                <p className="text-[1.05rem] font-light leading-[1.9] text-[color:var(--ivory)]/74">
+                  {step}
+                </p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function MobilePrivateWorld({ copy }: { copy: Record<string, string> }) {
+  return (
+    <section className="overflow-hidden bg-[color:var(--pearl)]">
+      <div className="px-6 py-24">
+        <Reveal>
+          <MobileLabel>{copy.worldKicker}</MobileLabel>
+          <h2 className="mt-7 font-display text-[3.25rem] font-light leading-[1.06] text-[color:var(--charcoal)]">
+            {copy.worldTitle}
+          </h2>
+          <p className="mt-8 max-w-[32ch] text-[1.08rem] font-light leading-[2.02] text-[color:var(--charcoal)]/76">
+            {copy.worldBody}
+          </p>
+        </Reveal>
+
+        <Reveal delay={120}>
+          <div className="-mx-6 mt-14">
+            <MotionFrame
+              film={FILMS.clientStory}
+              label={copy.worldKicker}
+              className="h-[80svh] min-h-[590px] w-full"
+              mediaClassName="object-[center_36%]"
+            />
+          </div>
+        </Reveal>
+
+        <Reveal delay={160}>
+          <div className="my-16 aspect-[4/5] overflow-hidden bg-[color:var(--ivory)]">
+            <img
+              src={u(j22)}
+              alt=""
+              loading="lazy"
+              className="h-full w-full object-cover object-[center_42%]"
+            />
+          </div>
+        </Reveal>
+
+        <Reveal delay={200}>
+          <MotionFrame
+            film={FILMS.behindScenes}
+            label="Hanan Bugshan"
+            className="aspect-[4/5] w-full"
+            mediaClassName="object-[center_38%]"
+          />
+          <div className="mt-10 border-y border-[color:var(--border)] py-8">
+            <p className="font-display text-[2.15rem] font-light italic leading-[1.3] text-[color:var(--taupe)]">
+              {copy.founderQuote}
+            </p>
+            <div className="mt-6 text-[0.78rem] font-medium uppercase tracking-[0.14em] text-[color:var(--taupe)]">
+              Hanan Bugshan
+            </div>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+function MobileConsultation({
+  copy,
+  prefill,
+}: {
+  copy: Record<string, string>;
+  prefill: { create?: string; whisper?: string };
+}) {
+  const { tr, lang } = useLang();
+  const [form, setForm] = useState({
+    name: "",
+    wa: "",
+    create: "",
+    idea: "",
+    budget: "",
+    when: "",
+  });
+  const [sent, setSent] = useState(false);
+
+  useEffect(() => {
+    if (prefill.create) setForm((f) => ({ ...f, create: prefill.create as string }));
+    if (prefill.whisper)
+      setForm((f) => ({ ...f, idea: f.idea ? f.idea : (prefill.whisper as string) }));
+  }, [prefill]);
+
+  const onSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    const lines = [
+      `${copy.consultTitleA} ${copy.consultTitleB}`,
+      "",
+      `${tr("f_name")}: ${form.name}`,
+      `${tr("f_wa")}: ${form.wa}`,
+      `${tr("f_create")}: ${form.create}`,
+      `${tr("f_idea")}: ${form.idea}`,
+      `${tr("f_budget")}: ${form.budget}`,
+      `${tr("f_when")}: ${form.when}`,
+    ];
+    window.open(`${WHATSAPP}?text=${encodeURIComponent(lines.join("\n"))}`, "_blank");
+    setSent(true);
+  };
+
+  const createOptions: TKey[] = [
+    "com_ring",
+    "com_neck",
+    "com_brace",
+    "com_ear",
+    "com_bridal",
+    "com_redo",
+    "f_other",
+  ];
+
+  return (
+    <section
+      id="consultation"
+      className="relative overflow-hidden bg-[color:var(--charcoal)] text-[color:var(--ivory)]"
+    >
+      <div className="absolute inset-0 opacity-24">
+        <img src={u(CONS_BG)} alt="" className="h-full w-full object-cover object-[center_44%]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[color:var(--charcoal)]/82 via-[color:var(--charcoal)]/92 to-[color:var(--charcoal)]" />
+      </div>
+
+      <div className="relative px-6 py-24">
+        <Reveal>
+          <MobileLabel light>{copy.consultKicker}</MobileLabel>
+          <h2 className="mt-7 font-display text-[3.35rem] font-light leading-[1.04]">
+            <span className="block">{copy.consultTitleA}</span>
+            <span className="block italic text-[color:var(--gold)]">{copy.consultTitleB}</span>
+          </h2>
+          <p className="mt-8 max-w-[31ch] text-[1.08rem] font-light leading-[2.02] text-[color:var(--ivory)]/78">
+            {copy.consultBody}
+          </p>
+        </Reveal>
+
+        <Reveal delay={120}>
+          <div className="mt-10 flex flex-col gap-4">
+            <a
+              href={WHATSAPP}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex min-h-[58px] items-center justify-between border border-[color:var(--ivory)]/28 px-6 py-4 text-[0.76rem] font-medium uppercase tracking-[0.14em] text-[color:var(--ivory)]"
+            >
+              {tr("cc_wa")}
+              <span className="font-display text-[1.35rem] italic text-[color:var(--gold)]">→</span>
+            </a>
+            <a
+              href={INSTAGRAM}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex min-h-[58px] items-center justify-between border border-[color:var(--ivory)]/28 px-6 py-4 text-[0.76rem] font-medium uppercase tracking-[0.14em] text-[color:var(--ivory)]"
+            >
+              {tr("cc_ig")}
+              <span className="font-display text-[1.35rem] italic text-[color:var(--gold)]">→</span>
+            </a>
+          </div>
+        </Reveal>
+
+        <Reveal delay={180}>
+          <form onSubmit={onSubmit} className="mt-14 flex flex-col gap-8">
+            <label className="block">
+              <div className="text-[0.76rem] font-medium uppercase tracking-[0.14em] text-[color:var(--ivory)]/68">
+                {tr("f_name")}
+              </div>
+              <input
+                required
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                className={mobileInputCls}
+              />
+            </label>
+            <label className="block">
+              <div className="text-[0.76rem] font-medium uppercase tracking-[0.14em] text-[color:var(--ivory)]/68">
+                {tr("f_wa")}
+              </div>
+              <input
+                required
+                value={form.wa}
+                onChange={(e) => setForm({ ...form, wa: e.target.value })}
+                className={mobileInputCls}
+              />
+            </label>
+
+            <div>
+              <div className="mb-4 text-[0.76rem] font-medium uppercase tracking-[0.14em] text-[color:var(--ivory)]/68">
+                {tr("f_create")}
+              </div>
+              <div className="flex flex-col gap-3">
+                {createOptions.map((k) => {
+                  const label = TDICT[k][lang];
+                  const active = form.create === label;
+                  return (
+                    <button
+                      key={k}
+                      type="button"
+                      onClick={() => setForm({ ...form, create: label })}
+                      className={`min-h-[56px] border px-5 py-4 text-left font-display text-[1.55rem] leading-tight transition-colors ${
+                        active
+                          ? "border-[color:var(--gold)] bg-[color:var(--gold)]/10 text-[color:var(--gold)]"
+                          : "border-[color:var(--ivory)]/20 text-[color:var(--ivory)]/82"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <label className="block">
+              <div className="text-[0.76rem] font-medium uppercase tracking-[0.14em] text-[color:var(--ivory)]/68">
+                {tr("f_idea")}
+              </div>
+              <textarea
+                rows={5}
+                value={form.idea}
+                onChange={(e) => setForm({ ...form, idea: e.target.value })}
+                className={`${mobileInputCls} resize-none`}
+              />
+            </label>
+
+            <label className="block">
+              <div className="text-[0.76rem] font-medium uppercase tracking-[0.14em] text-[color:var(--ivory)]/68">
+                {tr("f_budget")}
+              </div>
+              <input
+                value={form.budget}
+                onChange={(e) => setForm({ ...form, budget: e.target.value })}
+                placeholder={tr("f_budget_ph")}
+                className={mobileInputCls}
+              />
+            </label>
+            <label className="block">
+              <div className="text-[0.76rem] font-medium uppercase tracking-[0.14em] text-[color:var(--ivory)]/68">
+                {tr("f_when")}
+              </div>
+              <input
+                value={form.when}
+                onChange={(e) => setForm({ ...form, when: e.target.value })}
+                placeholder={tr("f_when_ph")}
+                className={mobileInputCls}
+              />
+            </label>
+
+            <button
+              type="submit"
+              className="mt-4 inline-flex min-h-[62px] items-center justify-between bg-[color:var(--ivory)] px-6 py-4 text-[0.76rem] font-medium uppercase tracking-[0.14em] text-[color:var(--charcoal)]"
+            >
+              {sent ? "✓" : tr("f_send")}
+              <span className="h-px w-12 bg-current" />
+            </button>
+          </form>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+function MobileFooter({ copy }: { copy: Record<string, string> }) {
+  const { lang } = useLang();
+  const links =
+    lang === "ar"
+      ? [
+          ["#commission", "الطلب الخاص"],
+          ["#atelier", "الأتيليه"],
+          ["#creations", "الأرشيف"],
+          ["#consultation", "موعد خاص"],
+        ]
+      : [
+          ["#commission", "Commission"],
+          ["#atelier", "Atelier"],
+          ["#creations", "Archive"],
+          ["#consultation", "Private appointment"],
+        ];
+
+  return (
+    <footer className="bg-[color:var(--ivory)] px-6 pb-[calc(env(safe-area-inset-bottom)+3rem)] pt-16 text-[color:var(--charcoal)]">
+      <Reveal>
+        <OfficialLogo className="w-[152px]" sizes="152px" />
+        <p className="mt-8 max-w-[26ch] text-[1.05rem] font-light leading-[1.9] text-[color:var(--charcoal)]/70">
+          {copy.footerLine}
+        </p>
+        <div className="mt-10 flex flex-col gap-4 border-y border-[color:var(--border)] py-8 text-[0.76rem] font-medium uppercase tracking-[0.14em]">
+          {links.map(([href, label]) => (
+            <a key={href} href={href}>
+              {label}
+            </a>
+          ))}
+        </div>
+      </Reveal>
+    </footer>
   );
 }
 
@@ -665,24 +1686,28 @@ function IntroScreen() {
       }
       setManualEntry(true);
       setCanSkip(true);
+      window.setTimeout(finishIntro, 900);
     });
-  }, []);
+  }, [finishIntro]);
 
   useEffect(() => {
     const firstAttempt = window.setTimeout(requestPlayback, 80);
-    const patienceGuard = window.setTimeout(() => {
+    const playbackGuard = window.setTimeout(() => {
       const video = videoRef.current;
-      if (!video || (video.paused && video.readyState < 2)) {
-        setManualEntry(true);
-        setCanSkip(true);
+      if (!video) {
+        finishIntro();
+        return;
       }
-    }, 6200);
+      if ((video.paused || video.currentTime < 0.15) && video.readyState < 3) {
+        finishIntro();
+      }
+    }, 4200);
 
     return () => {
       window.clearTimeout(firstAttempt);
-      window.clearTimeout(patienceGuard);
+      window.clearTimeout(playbackGuard);
     };
-  }, [requestPlayback]);
+  }, [finishIntro, requestPlayback]);
 
   if (!visible) return null;
 
@@ -717,10 +1742,15 @@ function IntroScreen() {
         aria-label="Opal Stones intro film"
         disablePictureInPicture
         disableRemotePlayback
+        onPlay={() => setManualEntry(false)}
+        onTimeUpdate={(event) => {
+          if (event.currentTarget.currentTime > 0.2) setManualEntry(false);
+        }}
         onEnded={finishIntro}
         onError={() => {
           setManualEntry(true);
           setCanSkip(true);
+          window.setTimeout(finishIntro, 500);
         }}
         onLoadedMetadata={requestPlayback}
         onLoadedData={(event) => {
