@@ -52,7 +52,7 @@ export function CatalogueCategoryExplorer({ surface = "home" }: { surface?: "hom
           </div>
         </div>
 
-        <div className="-mx-6 mt-12 flex snap-x gap-4 overflow-x-auto px-6 pb-3 [scrollbar-width:none] md:mx-0 md:grid md:auto-rows-[300px] md:grid-cols-4 md:gap-5 md:overflow-visible md:px-0 md:pb-0 xl:auto-rows-[340px]">
+        <div className="mt-12 grid grid-cols-1 gap-5 md:auto-rows-[320px] md:grid-cols-2 lg:auto-rows-[300px] lg:grid-cols-4 xl:auto-rows-[340px]">
           {categories.map((category, index) => (
             <CategoryCard
               key={category.slug}
@@ -77,6 +77,14 @@ function CategoryCard({
   count: number;
 }) {
   const { lang } = useLang();
+  const layoutClass =
+    category.slug === "custom"
+      ? "lg:col-span-2"
+      : category.slug === "heirloom"
+        ? "md:col-span-2 lg:col-span-2"
+        : featured
+          ? "lg:col-span-2 lg:row-span-2"
+          : "";
   const countLabel =
     lang === "ar"
       ? `${new Intl.NumberFormat("ar").format(count)} قطع تجريبية`
@@ -85,9 +93,7 @@ function CategoryCard({
   return (
     <a
       href={getCategoryPath(category)}
-      className={`group relative flex min-h-[470px] w-[82vw] shrink-0 snap-center overflow-hidden bg-[color:var(--charcoal)] text-[color:var(--ivory)] md:min-h-0 md:w-auto ${
-        featured ? "md:col-span-2 md:row-span-2" : ""
-      }`}
+      className={`group relative flex min-h-[470px] overflow-hidden bg-[color:var(--charcoal)] text-[color:var(--ivory)] md:min-h-0 ${layoutClass}`}
       aria-label={`${lang === "ar" ? "استكشاف" : "Explore"} ${category.label[lang]}`}
     >
       <img
