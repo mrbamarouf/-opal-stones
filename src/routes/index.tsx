@@ -856,11 +856,11 @@ function MobileCommission({
   const cards: { title: TKey; body: TKey; img: string; n: string; pos: string }[] = [
     { title: "com_ring", body: "com_ring_d", img: j15, n: "01", pos: "object-[center_38%]" },
     { title: "com_neck", body: "com_neck_d", img: j11, n: "02", pos: "object-[center_34%]" },
-    { title: "com_bridal", body: "com_bridal_d", img: j23, n: "03", pos: "object-[center_40%]" },
-    { title: "com_redo", body: "com_redo_d", img: j19, n: "04", pos: "object-[center_50%]" },
-    { title: "com_ear", body: "com_ear_d", img: j7, n: "05", pos: "object-[center_40%]" },
-    { title: "com_brace", body: "com_brace_d", img: j18, n: "06", pos: "object-[center_48%]" },
-    { title: "com_unique", body: "com_unique_d", img: j17, n: "07", pos: "object-[center_44%]" },
+    { title: "com_ear", body: "com_ear_d", img: j13, n: "03", pos: "object-[center_34%]" },
+    { title: "com_brace", body: "com_brace_d", img: j22, n: "04", pos: "object-[center_46%]" },
+    { title: "com_bridal", body: "com_bridal_d", img: j21, n: "05", pos: "object-[center_42%]" },
+    { title: "com_redo", body: "com_redo_d", img: j6, n: "06", pos: "object-[center_48%]" },
+    { title: "com_unique", body: "com_unique_d", img: j19, n: "07", pos: "object-[center_50%]" },
   ];
 
   return (
@@ -896,15 +896,15 @@ function MobileCommission({
           </div>
         </Reveal>
 
-        <div className="mt-16 flex flex-col gap-11">
+        <div className="mt-16 flex flex-col gap-12">
           {cards.map((card, index) => {
-            const frame = index % 3 === 0 ? "-mx-6" : index % 3 === 1 ? "ms-8" : "me-8";
+            const frame = index % 2 === 0 ? "mr-auto" : "ml-auto";
             return (
               <Reveal key={card.title} delay={(index % 3) * 80}>
                 <button
                   type="button"
                   onClick={() => onChoose(tr(card.title))}
-                  className={`group block w-full text-left ${frame}`}
+                  className={`group block w-[calc(100vw-4rem)] max-w-[352px] text-left ${frame}`}
                 >
                   <div className="relative aspect-[4/5] overflow-hidden bg-[color:var(--charcoal)]">
                     <img
@@ -3878,7 +3878,24 @@ function Concierge({
       const consultationRect = consultation?.getBoundingClientRect();
       const insideAppointment =
         isPhone && !!consultationRect && consultationRect.top < window.innerHeight * 0.82;
-      setShowMobileDesk(window.scrollY > threshold && !insideAppointment);
+      const deskButton = document.querySelector('[data-private-desk-button="true"]');
+      const deskCheckPoints = [
+        [window.innerWidth - 30, window.innerHeight - 34],
+        [window.innerWidth - 52, window.innerHeight - 34],
+        [window.innerWidth - 30, window.innerHeight - 58],
+        [window.innerWidth - 52, window.innerHeight - 58],
+      ].map(([x, y]) => [Math.max(0, x), Math.max(0, y)] as const);
+      const blockedByContent =
+        isPhone &&
+        deskCheckPoints.some(([x, y]) =>
+          document.elementsFromPoint(x, y).some((element) => {
+            if (deskButton?.contains(element)) return false;
+            return !!element.closest(
+              'a, button, input, textarea, select, form, [role="img"], video, img',
+            );
+          }),
+        );
+      setShowMobileDesk(window.scrollY > threshold && !insideAppointment && !blockedByContent);
     };
 
     update();
@@ -3888,22 +3905,23 @@ function Concierge({
       window.removeEventListener("scroll", update);
       window.removeEventListener("resize", update);
     };
-  }, []);
+  }, [open]);
 
   return (
     <>
       <button
+        data-private-desk-button="true"
         onClick={() => setOpen(!open)}
         aria-label="Jewellery Concierge"
-        className={`fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-4 z-50 group transition-all duration-500 md:bottom-6 md:right-6 lg:pointer-events-auto lg:translate-y-0 lg:opacity-100 ${
+        className={`fixed bottom-[calc(1.15rem+env(safe-area-inset-bottom))] right-3 z-50 group transition-all duration-500 md:bottom-6 md:right-6 lg:pointer-events-auto lg:translate-y-0 lg:opacity-100 ${
           showMobileDesk || open
             ? "pointer-events-auto translate-y-0 opacity-100"
             : "pointer-events-none translate-y-4 opacity-0"
         }`}
       >
         <div
-          className={`relative flex h-12 items-center justify-center rounded-full border border-[color:var(--gold)]/36 bg-[color:var(--charcoal)] text-[color:var(--ivory)] shadow-[0_14px_34px_-24px_rgba(0,0,0,0.55)] transition-all duration-500 hover:bg-[color:var(--gold)] md:h-12 md:w-12 md:border-0 ${
-            open ? "w-[164px] gap-3 px-4" : "w-12 px-0"
+          className={`relative flex h-10 items-center justify-center rounded-full border border-[color:var(--gold)]/36 bg-[color:var(--charcoal)] text-[color:var(--ivory)] shadow-[0_14px_34px_-24px_rgba(0,0,0,0.55)] transition-all duration-500 hover:bg-[color:var(--gold)] md:h-12 md:w-12 md:border-0 ${
+            open ? "w-[154px] gap-2.5 px-3.5 md:w-[164px] md:gap-3 md:px-4" : "w-10 px-0 md:w-12"
           }`}
         >
           <span
@@ -3913,7 +3931,7 @@ function Concierge({
           >
             {tr("cc_title")}
           </span>
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[color:var(--gold)] transition-colors group-hover:bg-[color:var(--charcoal)]">
+          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[color:var(--gold)] transition-colors group-hover:bg-[color:var(--charcoal)] md:h-8 md:w-8">
             <svg
               width="13"
               height="13"
