@@ -3,9 +3,11 @@ import { useMemo, useState } from "react";
 
 import { CatalogueFooter, CatalogueHeader } from "@/components/catalogue/CatalogueChrome";
 import {
-  catalogueCategories,
-  catalogueProducts,
+  getCatalogueFilters,
+  getCatalogueProducts,
+  getCatalogueStats,
   getCategoryLabel,
+  getProductPath,
   type CatalogueFilterSlug,
   type CatalogueProduct,
 } from "@/lib/catalogue";
@@ -34,13 +36,10 @@ export const Route = createFileRoute("/collections")({
 function CollectionsRoute() {
   const { lang } = useLang();
   const [active, setActive] = useState<CatalogueFilterSlug>("all");
-  const filteredProducts = useMemo(
-    () =>
-      active === "all"
-        ? catalogueProducts
-        : catalogueProducts.filter((product) => product.category === active),
-    [active],
-  );
+  const filters = useMemo(() => getCatalogueFilters(), []);
+  const catalogueStats = useMemo(() => getCatalogueStats(), []);
+  const formatCount = useMemo(() => new Intl.NumberFormat(lang === "ar" ? "ar" : "en"), [lang]);
+  const filteredProducts = useMemo(() => getCatalogueProducts(active), [active]);
 
   return (
     <div
@@ -87,8 +86,14 @@ function CollectionsRoute() {
               </p>
               <div className="mt-10 grid grid-cols-3 border-y border-[color:var(--border)] text-center md:max-w-xl">
                 {[
-                  { en: "7 Categories", ar: "٧ فئات" },
-                  { en: "21 Demo Pieces", ar: "٢١ قطعة تجريبية" },
+                  {
+                    en: `${formatCount.format(catalogueStats.categoryCount)} Categories`,
+                    ar: `${formatCount.format(catalogueStats.categoryCount)} فئات`,
+                  },
+                  {
+                    en: `${formatCount.format(catalogueStats.productCount)} Demo Pieces`,
+                    ar: `${formatCount.format(catalogueStats.productCount)} قطعة تجريبية`,
+                  },
                   { en: "Private Request", ar: "طلب خاص" },
                 ].map((item) => (
                   <div
@@ -112,7 +117,7 @@ function CollectionsRoute() {
         <section className="sticky top-[calc(env(safe-area-inset-top)+76px)] z-30 border-y border-[color:var(--border)] bg-[color:var(--ivory)]/94 backdrop-blur-md md:top-[calc(env(safe-area-inset-top)+84px)]">
           <div className="mx-auto max-w-[1680px] px-0 md:px-12">
             <div className="flex gap-2 overflow-x-auto px-6 py-4 [scrollbar-width:none] md:px-0 md:py-5">
-              {catalogueCategories.map((category) => {
+              {filters.map((category) => {
                 const selected = active === category.slug;
                 return (
                   <button
@@ -178,7 +183,7 @@ function CatalogueCard({ product, featured }: { product: CatalogueProduct; featu
       }`}
     >
       <a
-        href={`/collections/${product.id}`}
+        href={getProductPath(product)}
         className={`relative block overflow-hidden bg-[color:var(--charcoal)] ${
           featured ? "aspect-[4/5] md:aspect-[5/4] xl:aspect-[1.14]" : "aspect-[4/5]"
         }`}
@@ -217,7 +222,7 @@ function CatalogueCard({ product, featured }: { product: CatalogueProduct; featu
           {lang === "ar" ? "متاحة عند الطلب الخاص" : "Available Upon Private Request"}
         </div>
         <a
-          href={`/collections/${product.id}`}
+          href={getProductPath(product)}
           className={`mt-7 flex min-h-[54px] items-center justify-between border-t border-[color:var(--border)] pt-5 text-[0.72rem] font-medium uppercase text-[color:var(--charcoal)] transition-colors hover:text-[color:var(--gold)] ${
             lang === "ar" ? "!tracking-[0px]" : "tracking-[0.18em]"
           }`}

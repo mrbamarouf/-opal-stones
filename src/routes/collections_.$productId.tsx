@@ -68,22 +68,6 @@ function MissingProduct() {
 
 function ProductPage({ product }: { product: CatalogueProduct }) {
   const { lang } = useLang();
-  const specs = [
-    {
-      label: lang === "ar" ? "المادة" : "Material",
-      value: lang === "ar" ? "ذهب عيار 18 (تجريبي)" : "18K Gold (Demo)",
-    },
-    { label: lang === "ar" ? "الحجر" : "Gemstone", value: lang === "ar" ? "تجريبي" : "Demo" },
-    {
-      label: lang === "ar" ? "التوفر" : "Availability",
-      value: lang === "ar" ? "تُصاغ حسب الطلب" : "Made To Order",
-    },
-    {
-      label: lang === "ar" ? "التسعير" : "Pricing",
-      value: lang === "ar" ? "متاحة عند الطلب الخاص" : "Available Upon Private Request",
-    },
-  ];
-
   return (
     <div
       lang={lang}
@@ -127,9 +111,9 @@ function ProductPage({ product }: { product: CatalogueProduct }) {
               </p>
 
               <dl className="mt-10 border-y border-[color:var(--border)]">
-                {specs.map((spec) => (
+                {product.specifications.map((spec) => (
                   <div
-                    key={spec.label}
+                    key={spec.label.en}
                     className="grid grid-cols-[minmax(7rem,0.9fr)_1.2fr] gap-6 border-b border-[color:var(--border)] py-5 last:border-b-0"
                   >
                     <dt
@@ -137,10 +121,10 @@ function ProductPage({ product }: { product: CatalogueProduct }) {
                         lang === "ar" ? "!tracking-[0px]" : "tracking-[0.16em]"
                       }`}
                     >
-                      {spec.label}
+                      {spec.label[lang]}
                     </dt>
                     <dd className="text-[0.95rem] font-light leading-[1.7] text-[color:var(--charcoal)]/78">
-                      {spec.value}
+                      {spec.value[lang]}
                     </dd>
                   </div>
                 ))}

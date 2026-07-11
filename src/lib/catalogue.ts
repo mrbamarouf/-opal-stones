@@ -1,22 +1,16 @@
 import cataloguePlaceholderImage from "@/assets/opal-logo-768.png";
 import type { Lang } from "@/lib/i18n";
 
-export type CatalogueCategorySlug =
-  | "rings"
-  | "necklaces"
-  | "bracelets"
-  | "earrings"
-  | "bridal"
-  | "custom"
-  | "heirloom";
+export type CatalogueCategorySlug = string;
 
 export type CatalogueFilterSlug = "all" | CatalogueCategorySlug;
 
 type Localized = Record<Lang, string>;
 
 export type CatalogueCategory = {
-  slug: CatalogueFilterSlug;
+  slug: CatalogueCategorySlug;
   label: Localized;
+  order: number;
 };
 
 export type CatalogueProduct = {
@@ -28,12 +22,40 @@ export type CatalogueProduct = {
   futureGallery: string[];
   futureVideo: string | null;
   whatsappReference: string;
+  specifications: CatalogueSpecification[];
+};
+
+export type CatalogueSpecification = {
+  label: Localized;
+  value: Localized;
+};
+
+export type CatalogueFilter = {
+  slug: CatalogueFilterSlug;
+  label: Localized;
+  count: number;
 };
 
 const demoGallery = [
   cataloguePlaceholderImage,
   cataloguePlaceholderImage,
   cataloguePlaceholderImage,
+];
+
+const demoSpecifications: CatalogueSpecification[] = [
+  {
+    label: { en: "Material", ar: "المادة" },
+    value: { en: "18K Gold (Demo)", ar: "ذهب عيار 18 (تجريبي)" },
+  },
+  { label: { en: "Gemstone", ar: "الحجر" }, value: { en: "Demo", ar: "تجريبي" } },
+  {
+    label: { en: "Availability", ar: "التوفر" },
+    value: { en: "Made To Order", ar: "تُصاغ حسب الطلب" },
+  },
+  {
+    label: { en: "Pricing", ar: "التسعير" },
+    value: { en: "Available Upon Private Request", ar: "متاحة عند الطلب الخاص" },
+  },
 ];
 
 const product = (
@@ -51,17 +73,17 @@ const product = (
   futureGallery: demoGallery,
   futureVideo: null,
   whatsappReference: reference,
+  specifications: demoSpecifications,
 });
 
-export const catalogueCategories: CatalogueCategory[] = [
-  { slug: "all", label: { en: "All", ar: "الكل" } },
-  { slug: "rings", label: { en: "Rings", ar: "الخواتم" } },
-  { slug: "necklaces", label: { en: "Necklaces", ar: "العقود" } },
-  { slug: "bracelets", label: { en: "Bracelets", ar: "الأساور" } },
-  { slug: "earrings", label: { en: "Earrings", ar: "الأقراط" } },
-  { slug: "bridal", label: { en: "Bridal", ar: "العروس" } },
-  { slug: "custom", label: { en: "Custom Pieces", ar: "قطع خاصة" } },
-  { slug: "heirloom", label: { en: "Heirloom Redesign", ar: "إعادة صياغة الإرث" } },
+export const catalogueCategoryDefinitions: CatalogueCategory[] = [
+  { slug: "rings", label: { en: "Rings", ar: "الخواتم" }, order: 10 },
+  { slug: "necklaces", label: { en: "Necklaces", ar: "العقود" }, order: 20 },
+  { slug: "bracelets", label: { en: "Bracelets", ar: "الأساور" }, order: 30 },
+  { slug: "earrings", label: { en: "Earrings", ar: "الأقراط" }, order: 40 },
+  { slug: "bridal", label: { en: "Bridal", ar: "العروس" }, order: 50 },
+  { slug: "custom", label: { en: "Custom Pieces", ar: "قطع خاصة" }, order: 60 },
+  { slug: "heirloom", label: { en: "Heirloom Redesign", ar: "إعادة صياغة الإرث" }, order: 70 },
 ];
 
 export const catalogueProducts: CatalogueProduct[] = [
@@ -277,10 +299,56 @@ export const catalogueProducts: CatalogueProduct[] = [
   ),
 ];
 
-export const getCategoryLabel = (category: CatalogueFilterSlug, lang: Lang) =>
-  catalogueCategories.find((item) => item.slug === category)?.label[lang] ?? category;
+const ALL_FILTER_LABEL: Localized = { en: "All", ar: "الكل" };
 
-export const getProductById = (id: string) => catalogueProducts.find((item) => item.id === id);
+const categoriesBySlug = new Map(
+  catalogueCategoryDefinitions.map((category) => [category.slug, category]),
+);
+
+export const getCatalogueFilters = (
+  products: CatalogueProduct[] = catalogueProducts,
+): CatalogueFilter[] => {
+  const counts = products.reduce(
+    (map, productItem) => map.set(productItem.category, (map.get(productItem.category) ?? 0) + 1),
+    new Map<CatalogueCategorySlug, number>(),
+  );
+
+  const categoryFilters = [...counts.entries()]
+    .map(([slug, count]) => {
+      const category = categoriesBySlug.get(slug);
+      if (!category) {
+        throw new Error(`Missing catalogue category definition for "${slug}".`);
+      }
+      return { slug, label: category.label, count, order: category.order };
+    })
+    .sort((a, b) => a.order - b.order)
+    .map(({ slug, label, count }) => ({ slug, label, count }));
+
+  return [{ slug: "all", label: ALL_FILTER_LABEL, count: products.length }, ...categoryFilters];
+};
+
+export const getCatalogueProducts = (filter: CatalogueFilterSlug = "all") =>
+  filter === "all"
+    ? catalogueProducts
+    : catalogueProducts.filter((productItem) => productItem.category === filter);
+
+export const getCatalogueStats = (products: CatalogueProduct[] = catalogueProducts) => {
+  const categoryCount = new Set(products.map((productItem) => productItem.category)).size;
+  return {
+    categoryCount,
+    productCount: products.length,
+  };
+};
+
+export const getCategoryLabel = (category: CatalogueFilterSlug, lang: Lang) => {
+  if (category === "all") return ALL_FILTER_LABEL[lang];
+  return categoriesBySlug.get(category)?.label[lang] ?? category;
+};
+
+export const getProductById = (id: string) =>
+  catalogueProducts.find((productItem) => productItem.id === id);
+
+export const getProductPath = (productItem: CatalogueProduct) => `/collections/${productItem.id}`;
 
 export const createWhatsAppHref = (productItem: CatalogueProduct, lang: Lang) => {
   const productTitle = productItem.title[lang];
