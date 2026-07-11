@@ -33,6 +33,20 @@ import introPortraitMp4 from "@/assets/media/opal-intro-portrait.mp4";
 import introPortraitWebm from "@/assets/media/opal-intro-portrait.webm";
 import introPosterLandscape from "@/assets/media/opal-intro-poster-landscape.jpg";
 import introPosterPortrait from "@/assets/media/opal-intro-poster-portrait.jpg";
+import filmAtelierHandsPoster from "@/assets/brand-films/opal-atelier-hands-poster.jpg";
+import filmAtelierHands from "@/assets/brand-films/opal-atelier-hands.mp4";
+import filmBehindScenesPoster from "@/assets/brand-films/opal-behind-scenes-poster.jpg";
+import filmBehindScenes from "@/assets/brand-films/opal-behind-scenes.mp4";
+import filmClientStoryPoster from "@/assets/brand-films/opal-client-story-poster.jpg";
+import filmClientStory from "@/assets/brand-films/opal-client-story.mp4";
+import filmHeirloomPendantPoster from "@/assets/brand-films/opal-heirloom-pendant-poster.jpg";
+import filmHeirloomPendant from "@/assets/brand-films/opal-heirloom-pendant.mp4";
+import filmMaisonPendantPoster from "@/assets/brand-films/opal-maison-pendant-poster.jpg";
+import filmMaisonPendant from "@/assets/brand-films/opal-maison-pendant.mp4";
+import filmNecklaceArchivePoster from "@/assets/brand-films/opal-necklace-archive-poster.jpg";
+import filmNecklaceArchive from "@/assets/brand-films/opal-necklace-archive.mp4";
+import filmPortraitRingPoster from "@/assets/brand-films/opal-portrait-ring-poster.jpg";
+import filmPortraitRing from "@/assets/brand-films/opal-portrait-ring.mp4";
 import opalLogo384 from "@/assets/opal-logo-384.png";
 import opalLogo768 from "@/assets/opal-logo-768.png";
 import opalLogo from "@/assets/opal-logo.png";
@@ -54,6 +68,17 @@ const WHATSAPP = `https://wa.me/${WHATSAPP_NUM}`;
 const INSTAGRAM = "https://www.instagram.com/opal.stones?igsh=MWw0eWFsZG5xZWVybg==";
 
 type TKey = keyof typeof TDICT;
+type BrandFilm = { mp4: string; poster: string };
+
+const FILMS = {
+  portraitRing: { mp4: filmPortraitRing, poster: filmPortraitRingPoster },
+  necklaceArchive: { mp4: filmNecklaceArchive, poster: filmNecklaceArchivePoster },
+  atelierHands: { mp4: filmAtelierHands, poster: filmAtelierHandsPoster },
+  clientStory: { mp4: filmClientStory, poster: filmClientStoryPoster },
+  heirloomPendant: { mp4: filmHeirloomPendant, poster: filmHeirloomPendantPoster },
+  maisonPendant: { mp4: filmMaisonPendant, poster: filmMaisonPendantPoster },
+  behindScenes: { mp4: filmBehindScenes, poster: filmBehindScenesPoster },
+} satisfies Record<string, BrandFilm>;
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -158,6 +183,147 @@ function Parallax({
   );
 }
 
+function AmbientFilm({
+  film,
+  className = "",
+  mediaClassName = "",
+  overlay = "bg-black/18",
+}: {
+  film: BrandFilm;
+  className?: string;
+  mediaClassName?: string;
+  overlay?: string;
+}) {
+  const wrapRef = useRef<HTMLDivElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [active, setActive] = useState(false);
+
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([entry]) => setActive(entry.isIntersecting), {
+      threshold: 0.28,
+      rootMargin: "160px 0px 160px 0px",
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (active && !reduce) {
+      const playAttempt = video.play();
+      if (playAttempt) playAttempt.catch(() => undefined);
+    } else {
+      video.pause();
+    }
+  }, [active]);
+
+  return (
+    <div
+      ref={wrapRef}
+      className={`relative overflow-hidden bg-[color:var(--charcoal)] ${className}`}
+    >
+      <img
+        src={u(film.poster)}
+        alt=""
+        loading="lazy"
+        className={`h-full w-full object-cover ${mediaClassName}`}
+      />
+      <video
+        ref={videoRef}
+        className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${mediaClassName} ${active ? "opacity-100" : "opacity-0"}`}
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        poster={u(film.poster)}
+        aria-hidden="true"
+        disablePictureInPicture
+        disableRemotePlayback
+      >
+        <source src={u(film.mp4)} type="video/mp4" />
+      </video>
+      <div className={`absolute inset-0 ${overlay}`} />
+    </div>
+  );
+}
+
+function MotionFrame({
+  film,
+  label,
+  className = "",
+  mediaClassName = "",
+  captionClassName = "",
+}: {
+  film: BrandFilm;
+  label: string;
+  className?: string;
+  mediaClassName?: string;
+  captionClassName?: string;
+}) {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [playing, setPlaying] = useState(false);
+
+  const start = () => {
+    const video = videoRef.current;
+    setPlaying(true);
+    const playAttempt = video?.play();
+    if (playAttempt) playAttempt.catch(() => setPlaying(false));
+  };
+
+  const stop = () => {
+    const video = videoRef.current;
+    setPlaying(false);
+    if (video) {
+      video.pause();
+      video.currentTime = 0;
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      onMouseEnter={start}
+      onMouseLeave={stop}
+      onFocus={start}
+      onBlur={stop}
+      onClick={start}
+      className={`group relative block overflow-hidden bg-[color:var(--charcoal)] text-left ${className}`}
+      aria-label={label}
+    >
+      <img
+        src={u(film.poster)}
+        alt=""
+        loading="lazy"
+        className={`h-full w-full object-cover transition-all duration-[1400ms] ease-[cubic-bezier(.2,.7,.2,1)] ${mediaClassName} ${playing ? "opacity-0 scale-[1.025]" : "opacity-100 scale-100 group-hover:scale-[1.035]"}`}
+      />
+      <video
+        ref={videoRef}
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        poster={u(film.poster)}
+        className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 ${mediaClassName} ${playing ? "opacity-100" : "opacity-0"}`}
+        aria-hidden="true"
+        disablePictureInPicture
+        disableRemotePlayback
+      >
+        <source src={u(film.mp4)} type="video/mp4" />
+      </video>
+      <div className="absolute inset-0 bg-gradient-to-t from-black/62 via-black/8 to-transparent" />
+      <div
+        className={`absolute bottom-0 left-0 right-0 p-5 text-[0.62rem] font-medium uppercase tracking-[0.24em] text-[color:var(--ivory)]/88 md:p-7 ${captionClassName}`}
+      >
+        {label}
+      </div>
+    </button>
+  );
+}
+
 function OfficialLogo({
   className = "",
   loading = "lazy",
@@ -210,6 +376,7 @@ function Index() {
       <IntroScreen />
       <Nav onConcierge={() => setConcierge(true)} />
       <Hero />
+      <MaisonPrelude />
       <Commission onChoose={(create) => openInquiry({ create })} />
       <DesignYourPiece onContinue={(whisper) => openInquiry({ whisper })} />
       <Process />
@@ -228,6 +395,37 @@ function Index() {
         }}
       />
     </div>
+  );
+}
+
+function MaisonPrelude() {
+  const { tr } = useLang();
+  return (
+    <section className="relative overflow-hidden bg-[color:var(--charcoal)] text-[color:var(--ivory)]">
+      <AmbientFilm
+        film={FILMS.maisonPendant}
+        className="h-[78svh] min-h-[540px] md:h-[86vh]"
+        mediaClassName="object-[center_38%]"
+        overlay="bg-[linear-gradient(180deg,rgba(0,0,0,.38),rgba(0,0,0,.18)_38%,rgba(0,0,0,.72))]"
+      />
+      <div className="absolute inset-0 flex items-end">
+        <div className="mx-auto grid w-full max-w-[1500px] grid-cols-1 gap-8 px-6 pb-16 md:grid-cols-12 md:px-12 md:pb-24">
+          <Reveal className="md:col-span-7">
+            <div className="text-[0.68rem] font-medium uppercase tracking-[0.24em] text-[color:var(--champagne)]/88">
+              {tr("film_prelude_eyebrow")}
+            </div>
+            <h2 className="mt-5 max-w-3xl font-display text-[clamp(2.25rem,4.8vw,4.8rem)] font-light leading-[1.02] [text-wrap:balance]">
+              {tr("film_prelude_title")}
+            </h2>
+          </Reveal>
+          <Reveal className="md:col-span-4 md:col-start-9 md:self-end" delay={120}>
+            <p className="max-w-md text-[0.98rem] font-light leading-[1.9] text-[color:var(--ivory)]/82 [text-wrap:pretty]">
+              {tr("film_prelude_body")}
+            </p>
+          </Reveal>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -434,7 +632,7 @@ function Nav({ onConcierge }: { onConcierge: () => void }) {
 
         <div className="flex items-center gap-3 sm:gap-4 md:gap-5">
           <div
-            className={`flex items-center text-[0.64rem] font-medium tracking-[0px] uppercase transition-colors sm:text-[0.68rem] ${lightNav ? "text-[color:var(--charcoal)]" : "text-[color:var(--ivory)]"}`}
+            className={`flex items-center text-[0.64rem] font-medium !tracking-[0px] [word-spacing:normal] uppercase transition-colors sm:text-[0.68rem] ${lightNav ? "text-[color:var(--charcoal)]" : "text-[color:var(--ivory)]"}`}
           >
             <button
               onClick={() => setLang("en")}
@@ -698,6 +896,27 @@ function Commission({ onChoose }: { onChoose: (label: string) => void }) {
             </Reveal>
           ))}
         </div>
+
+        <Reveal delay={180}>
+          <div className="mt-20 grid grid-cols-1 items-end gap-10 border-t border-[color:var(--border)] pt-12 md:mt-28 md:grid-cols-12 md:gap-12 md:pt-16">
+            <div className="md:col-span-5">
+              <MotionFrame
+                film={FILMS.portraitRing}
+                label={tr("film_commission_label")}
+                className="aspect-[4/5] md:aspect-[5/6]"
+                mediaClassName="object-[center_42%]"
+              />
+            </div>
+            <div className="md:col-span-5 md:col-start-8">
+              <div className="text-[0.68rem] font-medium uppercase tracking-[0.24em] text-[color:var(--gold)]">
+                {tr("film_commission_eyebrow")}
+              </div>
+              <p className="mt-7 max-w-xl font-display text-[1.7rem] font-light leading-[1.35] text-[color:var(--charcoal)] md:text-[2.1rem]">
+                {tr("film_commission_body")}
+              </p>
+            </div>
+          </div>
+        </Reveal>
       </div>
     </section>
   );
@@ -911,6 +1130,25 @@ function Process() {
           </h2>
         </Reveal>
 
+        <div className="mt-20 grid grid-cols-1 gap-10 md:mt-24 lg:grid-cols-12 lg:gap-16">
+          <Reveal className="lg:col-span-5">
+            <AmbientFilm
+              film={FILMS.atelierHands}
+              className="aspect-[4/5] md:aspect-[16/11] lg:aspect-[4/5]"
+              mediaClassName="object-[center_center]"
+              overlay="bg-[linear-gradient(180deg,rgba(0,0,0,.1),rgba(0,0,0,.46))]"
+            />
+          </Reveal>
+          <Reveal className="lg:col-span-5 lg:col-start-8 lg:self-end" delay={140}>
+            <div className="text-[0.68rem] font-medium uppercase tracking-[0.24em] text-[color:var(--gold)]">
+              {tr("film_process_eyebrow")}
+            </div>
+            <p className="mt-7 max-w-xl font-display text-[1.65rem] font-light leading-[1.38] text-[color:var(--ivory)]/86 md:text-[2.1rem]">
+              {tr("film_process_body")}
+            </p>
+          </Reveal>
+        </div>
+
         <div className="mt-24 md:mt-36 space-y-14 md:space-y-20">
           {steps.map((s, i) => (
             <Reveal key={s.t} delay={i * 80}>
@@ -957,6 +1195,17 @@ function Signature() {
         </div>
 
         <div className="grid grid-cols-12 gap-3 md:gap-7">
+          <Reveal
+            className="col-span-12 aspect-[4/5] md:col-span-4 md:col-start-2 md:mt-24"
+            delay={80}
+          >
+            <MotionFrame
+              film={FILMS.necklaceArchive}
+              label={tr("film_signature_label")}
+              className="h-full w-full"
+              mediaClassName="object-[center_34%]"
+            />
+          </Reveal>
           {GALLERY.map((img, i) => {
             const pattern = [
               "col-span-12 md:col-span-6 aspect-[5/4]",
@@ -1013,6 +1262,14 @@ function Redesign({ onBegin }: { onBegin: () => void }) {
               {tr("rd_cta")}
               <span className="block h-px w-8 bg-current transition-all duration-500 group-hover:w-14" />
             </button>
+            <div className="mt-14 max-w-[360px]">
+              <MotionFrame
+                film={FILMS.heirloomPendant}
+                label={tr("film_redesign_label")}
+                className="aspect-[4/5]"
+                mediaClassName="object-[center_42%]"
+              />
+            </div>
           </Reveal>
           <Reveal className="lg:col-span-6 order-1 lg:order-2" delay={150}>
             <div className="aspect-[4/5] overflow-hidden md:aspect-[5/6]">
@@ -1062,13 +1319,22 @@ function Stories() {
               >
                 <Reveal className={`lg:col-span-6 ${reverse ? "lg:order-2" : ""}`}>
                   <div className="aspect-[4/5] overflow-hidden md:aspect-[5/6]">
-                    <Parallax amount={50} className="h-full w-full">
-                      <img
-                        src={u(STORY_IMAGES[i % STORY_IMAGES.length])}
-                        alt=""
-                        className="h-full w-full object-cover"
+                    {i === 1 ? (
+                      <MotionFrame
+                        film={FILMS.clientStory}
+                        label={tr("film_story_label")}
+                        className="h-full w-full"
+                        mediaClassName="object-[center_36%]"
                       />
-                    </Parallax>
+                    ) : (
+                      <Parallax amount={50} className="h-full w-full">
+                        <img
+                          src={u(STORY_IMAGES[i % STORY_IMAGES.length])}
+                          alt=""
+                          className="h-full w-full object-cover"
+                        />
+                      </Parallax>
+                    )}
                   </div>
                 </Reveal>
                 <Reveal
@@ -1126,6 +1392,14 @@ function Founder() {
             </div>
             <div className="mt-5 text-[0.7rem] font-medium tracking-[0.24em] uppercase text-[color:var(--taupe)]">
               Hanan Bugshan
+            </div>
+            <div className="mt-12 max-w-[360px]">
+              <MotionFrame
+                film={FILMS.behindScenes}
+                label={tr("film_founder_label")}
+                className="aspect-[4/5]"
+                mediaClassName="object-[center_38%]"
+              />
             </div>
           </Reveal>
         </div>
