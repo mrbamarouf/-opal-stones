@@ -38,32 +38,23 @@ import j23 from "@/assets/jewellery/IMG_6847.jpg";
 import j24 from "@/assets/jewellery/IMG_6849.jpg";
 import j25 from "@/assets/jewellery/IMG_6850.jpg";
 import introLandscapeMp4 from "@/assets/media/opal-intro-landscape.mp4";
-import introLandscapeWebm from "@/assets/media/opal-intro-landscape.webm";
 import introPortraitMp4 from "@/assets/media/opal-intro-portrait.mp4";
-import introPortraitWebm from "@/assets/media/opal-intro-portrait.webm";
 import introPosterLandscape from "@/assets/media/opal-intro-poster-landscape.jpg";
 import introPosterPortrait from "@/assets/media/opal-intro-poster-portrait.jpg";
 import filmAtelierHandsPoster from "@/assets/brand-films/opal-atelier-hands-poster.jpg";
 import filmAtelierHands from "@/assets/brand-films/opal-atelier-hands.mp4";
-import filmAtelierHandsWebm from "@/assets/brand-films/opal-atelier-hands.webm";
 import filmBehindScenesPoster from "@/assets/brand-films/opal-behind-scenes-poster.jpg";
 import filmBehindScenes from "@/assets/brand-films/opal-behind-scenes.mp4";
-import filmBehindScenesWebm from "@/assets/brand-films/opal-behind-scenes.webm";
 import filmClientStoryPoster from "@/assets/brand-films/opal-client-story-poster.jpg";
 import filmClientStory from "@/assets/brand-films/opal-client-story.mp4";
-import filmClientStoryWebm from "@/assets/brand-films/opal-client-story.webm";
 import filmHeirloomPendantPoster from "@/assets/brand-films/opal-heirloom-pendant-poster.jpg";
 import filmHeirloomPendant from "@/assets/brand-films/opal-heirloom-pendant.mp4";
-import filmHeirloomPendantWebm from "@/assets/brand-films/opal-heirloom-pendant.webm";
 import filmMaisonPendantPoster from "@/assets/brand-films/opal-maison-pendant-poster.jpg";
 import filmMaisonPendant from "@/assets/brand-films/opal-maison-pendant.mp4";
-import filmMaisonPendantWebm from "@/assets/brand-films/opal-maison-pendant.webm";
 import filmNecklaceArchivePoster from "@/assets/brand-films/opal-necklace-archive-poster.jpg";
 import filmNecklaceArchive from "@/assets/brand-films/opal-necklace-archive.mp4";
-import filmNecklaceArchiveWebm from "@/assets/brand-films/opal-necklace-archive.webm";
 import filmPortraitRingPoster from "@/assets/brand-films/opal-portrait-ring-poster.jpg";
 import filmPortraitRing from "@/assets/brand-films/opal-portrait-ring.mp4";
-import filmPortraitRingWebm from "@/assets/brand-films/opal-portrait-ring.webm";
 import opalLogo384 from "@/assets/opal-logo-384.png";
 import opalLogo768 from "@/assets/opal-logo-768.png";
 import opalLogo from "@/assets/opal-logo.png";
@@ -84,7 +75,7 @@ const WHATSAPP = `https://wa.me/${WHATSAPP_NUM}`;
 const INSTAGRAM = "https://www.instagram.com/opal.stones?igsh=MWw0eWFsZG5xZWVybg==";
 
 type TKey = keyof typeof TDICT;
-type BrandFilm = { mp4: string; webm: string; poster: string };
+type BrandFilm = { mp4: string; poster: string };
 type ViewportMode = "phone" | "tablet" | "desktop";
 
 const ViewportContext = createContext<ViewportMode | null>(null);
@@ -93,33 +84,27 @@ const NON_PHONE: ViewportMode[] = ["tablet", "desktop"];
 const FILMS = {
   portraitRing: {
     mp4: filmPortraitRing,
-    webm: filmPortraitRingWebm,
     poster: filmPortraitRingPoster,
   },
   necklaceArchive: {
     mp4: filmNecklaceArchive,
-    webm: filmNecklaceArchiveWebm,
     poster: filmNecklaceArchivePoster,
   },
   atelierHands: {
     mp4: filmAtelierHands,
-    webm: filmAtelierHandsWebm,
     poster: filmAtelierHandsPoster,
   },
-  clientStory: { mp4: filmClientStory, webm: filmClientStoryWebm, poster: filmClientStoryPoster },
+  clientStory: { mp4: filmClientStory, poster: filmClientStoryPoster },
   heirloomPendant: {
     mp4: filmHeirloomPendant,
-    webm: filmHeirloomPendantWebm,
     poster: filmHeirloomPendantPoster,
   },
   maisonPendant: {
     mp4: filmMaisonPendant,
-    webm: filmMaisonPendantWebm,
     poster: filmMaisonPendantPoster,
   },
   behindScenes: {
     mp4: filmBehindScenes,
-    webm: filmBehindScenesWebm,
     poster: filmBehindScenesPoster,
   },
 } satisfies Record<string, BrandFilm>;
@@ -240,16 +225,35 @@ function AmbientFilm({
 }) {
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const retryRef = useRef(false);
   const [active, setActive] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
-  const start = useCallback(() => {
+  useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
     video.muted = true;
+    video.defaultMuted = true;
     video.playsInline = true;
+    video.controls = false;
+  }, []);
+
+  const start = useCallback((allowRetry = true) => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+    video.controls = false;
     const playAttempt = video.play();
-    if (playAttempt) playAttempt.catch(() => undefined);
+    if (playAttempt) {
+      playAttempt.catch(() => {
+        if (allowRetry && !retryRef.current) {
+          retryRef.current = true;
+          window.setTimeout(() => start(false), 280);
+        }
+      });
+    }
   }, []);
 
   useEffect(() => {
@@ -283,7 +287,13 @@ function AmbientFilm({
   }, []);
 
   useEffect(() => {
-    if (loaded) videoRef.current?.load();
+    if (!loaded) return;
+    const video = videoRef.current;
+    if (!video) return;
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+    video.load();
   }, [loaded]);
 
   useEffect(() => {
@@ -293,6 +303,7 @@ function AmbientFilm({
     if (active && loaded && !reduce) {
       start();
     } else {
+      retryRef.current = false;
       video.pause();
     }
   }, [active, loaded, start]);
@@ -313,6 +324,7 @@ function AmbientFilm({
         className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${mediaClassName} ${active ? "opacity-100" : "opacity-0"}`}
         autoPlay
         muted
+        defaultMuted
         loop
         playsInline
         controls={false}
@@ -329,10 +341,7 @@ function AmbientFilm({
         }}
       >
         {loaded && (
-          <>
-            <source src={u(film.mp4)} type="video/mp4" />
-            <source src={u(film.webm)} type="video/webm" />
-          </>
+          <source src={u(film.mp4)} type="video/mp4" />
         )}
       </video>
       <div className={`absolute inset-0 ${overlay}`} />
@@ -355,18 +364,38 @@ function MotionFrame({
 }) {
   const frameRef = useRef<HTMLDivElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const retryRef = useRef(false);
   const [playing, setPlaying] = useState(false);
   const [active, setActive] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
-  const start = useCallback(() => {
+  useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
     video.muted = true;
+    video.defaultMuted = true;
     video.playsInline = true;
+    video.controls = false;
+  }, []);
+
+  const start = useCallback((allowRetry = true) => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+    video.controls = false;
     const playAttempt = video?.play();
     if (playAttempt) {
-      playAttempt.then(() => setPlaying(true)).catch(() => setPlaying(false));
+      playAttempt
+        .then(() => setPlaying(true))
+        .catch(() => {
+          setPlaying(false);
+          if (allowRetry && !retryRef.current) {
+            retryRef.current = true;
+            window.setTimeout(() => start(false), 280);
+          }
+        });
     } else {
       setPlaying(true);
     }
@@ -374,6 +403,7 @@ function MotionFrame({
 
   const stop = useCallback(() => {
     const video = videoRef.current;
+    retryRef.current = false;
     setPlaying(false);
     if (video) video.pause();
   }, []);
@@ -409,7 +439,13 @@ function MotionFrame({
   }, []);
 
   useEffect(() => {
-    if (loaded) videoRef.current?.load();
+    if (!loaded) return;
+    const video = videoRef.current;
+    if (!video) return;
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+    video.load();
   }, [loaded]);
 
   useEffect(() => {
@@ -435,6 +471,7 @@ function MotionFrame({
         ref={videoRef}
         autoPlay
         muted
+        defaultMuted
         loop
         playsInline
         controls={false}
@@ -452,10 +489,7 @@ function MotionFrame({
         }}
       >
         {loaded && (
-          <>
-            <source src={u(film.mp4)} type="video/mp4" />
-            <source src={u(film.webm)} type="video/webm" />
-          </>
+          <source src={u(film.mp4)} type="video/mp4" />
         )}
       </video>
       <div className="absolute inset-0 bg-gradient-to-t from-black/62 via-black/8 to-transparent" />
@@ -1656,14 +1690,14 @@ let introPlayedDuringPageLoad = false;
 
 const shouldShowIntroForPageLoad = () => {
   if (introPlayedDuringPageLoad) return false;
-  if (typeof window === "undefined") return true;
+  if (typeof window === "undefined") return false;
 
   const navEntry = window.performance
     ?.getEntriesByType("navigation")
     .find((entry) => "name" in entry);
   const initialPath = navEntry?.name ? new URL(navEntry.name).pathname : window.location.pathname;
 
-  return initialPath === "/";
+  return initialPath === "/" && window.location.pathname === "/";
 };
 
 function IntroScreen() {
@@ -1671,11 +1705,15 @@ function IntroScreen() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const finishedRef = useRef(false);
   const retryRef = useRef(false);
-  const [visible, setVisible] = useState(shouldShowIntroForPageLoad);
+  const [visible, setVisible] = useState(false);
   const [leaving, setLeaving] = useState(false);
   const [canSkip, setCanSkip] = useState(false);
   const [manualEntry, setManualEntry] = useState(false);
   const [portraitIntro, setPortraitIntro] = useState(false);
+
+  useEffect(() => {
+    if (shouldShowIntroForPageLoad()) setVisible(true);
+  }, []);
 
   const finishIntro = useCallback(() => {
     if (finishedRef.current) return;
@@ -1732,27 +1770,41 @@ function IntroScreen() {
     };
   }, [visible, leaving]);
 
-  const requestPlayback = useCallback(() => {
+  const requestPlayback = useCallback((fromGesture = false) => {
     const video = videoRef.current;
     if (!video || finishedRef.current) return;
     video.muted = true;
+    video.defaultMuted = true;
     video.playsInline = true;
+    video.controls = false;
     const playAttempt = video.play();
     if (!playAttempt) return;
     playAttempt.catch(() => {
       if (!retryRef.current) {
         retryRef.current = true;
-        window.setTimeout(() => requestPlayback(), 350);
+        window.setTimeout(() => requestPlayback(fromGesture), 350);
+        return;
+      }
+      if (fromGesture) {
+        finishIntro();
         return;
       }
       setManualEntry(true);
       setCanSkip(true);
     });
-  }, []);
+  }, [finishIntro]);
 
   useEffect(() => {
     if (!visible) return;
-    const firstAttempt = window.setTimeout(requestPlayback, 80);
+    const video = videoRef.current;
+    if (video) {
+      video.muted = true;
+      video.defaultMuted = true;
+      video.playsInline = true;
+      video.controls = false;
+      video.load();
+    }
+    const firstAttempt = window.setTimeout(() => requestPlayback(), 160);
     const playbackGuard = window.setTimeout(() => {
       const video = videoRef.current;
       if (!video) {
@@ -1770,7 +1822,17 @@ function IntroScreen() {
       window.clearTimeout(firstAttempt);
       window.clearTimeout(playbackGuard);
     };
-  }, [finishIntro, requestPlayback, visible]);
+  }, [requestPlayback, visible]);
+
+  const handleIntroAction = useCallback(() => {
+    if (manualEntry) {
+      setManualEntry(false);
+      retryRef.current = false;
+      requestPlayback(true);
+      return;
+    }
+    finishIntro();
+  }, [finishIntro, manualEntry, requestPlayback]);
 
   if (!visible) return null;
 
@@ -1798,6 +1860,7 @@ function IntroScreen() {
         style={{ objectPosition: "center center" }}
         autoPlay
         muted
+        defaultMuted
         playsInline
         controls={false}
         preload="auto"
@@ -1814,17 +1877,12 @@ function IntroScreen() {
           setManualEntry(true);
           setCanSkip(true);
         }}
-        onLoadedMetadata={requestPlayback}
-        onLoadedData={(event) => {
-          const playAttempt = event.currentTarget.play();
-          if (playAttempt) playAttempt.catch(requestPlayback);
-        }}
-        onCanPlay={requestPlayback}
+        onLoadedMetadata={() => requestPlayback()}
+        onLoadedData={() => requestPlayback()}
+        onCanPlay={() => requestPlayback()}
       >
         <source media="(orientation: portrait)" src={u(introPortraitMp4)} type="video/mp4" />
-        <source media="(orientation: portrait)" src={u(introPortraitWebm)} type="video/webm" />
         <source src={u(introLandscapeMp4)} type="video/mp4" />
-        <source src={u(introLandscapeWebm)} type="video/webm" />
       </video>
       <div className="absolute inset-0 bg-black/10" />
       {manualEntry && (
@@ -1843,7 +1901,7 @@ function IntroScreen() {
       <button
         type="button"
         data-intro-skip="true"
-        onClick={finishIntro}
+        onClick={handleIntroAction}
         className={`absolute bottom-[calc(1rem+env(safe-area-inset-bottom))] end-4 flex min-h-11 items-center justify-center border border-[color:var(--ivory)]/38 bg-black/24 px-4 py-2 text-[0.58rem] font-medium text-[color:var(--ivory)] backdrop-blur-sm transition-all duration-500 hover:border-[color:var(--ivory)] hover:bg-[color:var(--ivory)] hover:text-[color:var(--charcoal)] md:bottom-8 md:end-8 md:px-5 md:py-3 md:text-[0.68rem] ${
           lang === "ar"
             ? "font-arabic !tracking-[0px]"
