@@ -1,6 +1,7 @@
 import { createStart, createMiddleware } from "@tanstack/react-start";
 
 import { renderErrorPage } from "./lib/error-page";
+import { withNoStoreHtmlHeaders } from "./lib/http-cache";
 
 const errorMiddleware = createMiddleware().server(async ({ next }) => {
   try {
@@ -12,7 +13,7 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
     console.error(error);
     return new Response(renderErrorPage(), {
       status: 500,
-      headers: { "content-type": "text/html; charset=utf-8" },
+      headers: withNoStoreHtmlHeaders({ "content-type": "text/html; charset=utf-8" }),
     });
   }
 });

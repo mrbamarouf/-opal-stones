@@ -14,6 +14,8 @@ import opalLogo384 from "../assets/opal-logo-384.png";
 import opalLogo from "../assets/opal-logo.png";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { LangProvider } from "../lib/i18n";
+import { OPAL_DEPLOYMENT_VERSION } from "../lib/deployment-version";
+import { runOpalStartupSafety } from "../lib/cache-safety";
 
 function NotFoundComponent() {
   return (
@@ -87,6 +89,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "A private jewellery maison for bespoke commissions, bridal suites, and heirlooms redrawn by Hanan Bugshan.",
       },
       { name: "author", content: "Opal Stones" },
+      { name: "opal-deployment-version", content: OPAL_DEPLOYMENT_VERSION },
       { property: "og:title", content: "Opal Stones by Hanan Bugshan" },
       {
         property: "og:description",
@@ -122,7 +125,7 @@ function RootShell({ children }: { children: ReactNode }) {
       <head>
         <HeadContent />
       </head>
-      <body>
+      <body data-opal-deployment-version={OPAL_DEPLOYMENT_VERSION}>
         {children}
         <Scripts />
       </body>
@@ -132,6 +135,10 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  useEffect(() => {
+    runOpalStartupSafety();
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

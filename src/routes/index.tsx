@@ -1886,36 +1886,42 @@ function IntroScreen() {
       </video>
       <div className="absolute inset-0 bg-black/10" />
       {manualEntry && (
-        <div className="absolute inset-x-6 bottom-[calc(4.8rem+env(safe-area-inset-bottom))] mx-auto max-w-[25rem] text-center text-[color:var(--ivory)]">
+        <div className="absolute inset-6 flex items-center justify-center text-center text-[color:var(--ivory)]">
           <div
-            className={`text-[0.72rem] font-medium ${
+            className={`max-w-[25rem] transition-opacity duration-500 ${
               lang === "ar"
                 ? "font-arabic !tracking-[0px]"
-                : "uppercase tracking-[0.16em] md:tracking-[0.22em]"
+                : "uppercase tracking-[0.14em] md:tracking-[0.2em]"
             }`}
           >
-            {lang === "ar" ? "الفيلم جاهز للعرض" : "The maison is ready"}
+            <div className="text-[0.72rem] font-medium">
+              {lang === "ar" ? "الفيلم جاهز للعرض" : "The maison is ready"}
+            </div>
+            <button
+              type="button"
+              data-intro-enter="true"
+              onClick={handleIntroAction}
+              className="mt-5 inline-flex min-h-12 min-w-32 items-center justify-center border border-[color:var(--ivory)]/48 bg-black/28 px-7 py-3 text-[0.68rem] font-medium text-[color:var(--ivory)] backdrop-blur-md transition-all duration-500 hover:border-[color:var(--ivory)] hover:bg-[color:var(--ivory)] hover:text-[color:var(--charcoal)]"
+            >
+              {lang === "ar" ? "دخول" : "Enter"}
+            </button>
           </div>
         </div>
       )}
-      <button
-        type="button"
-        data-intro-skip="true"
-        onClick={handleIntroAction}
-        className={`absolute bottom-[calc(1rem+env(safe-area-inset-bottom))] end-4 flex min-h-11 items-center justify-center border border-[color:var(--ivory)]/38 bg-black/24 px-4 py-2 text-[0.58rem] font-medium text-[color:var(--ivory)] backdrop-blur-sm transition-all duration-500 hover:border-[color:var(--ivory)] hover:bg-[color:var(--ivory)] hover:text-[color:var(--charcoal)] md:bottom-8 md:end-8 md:px-5 md:py-3 md:text-[0.68rem] ${
-          lang === "ar"
-            ? "font-arabic !tracking-[0px]"
-            : "uppercase tracking-[0.16em] md:tracking-[0.22em]"
-        } ${canSkip ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"}`}
-      >
-        {manualEntry
-          ? lang === "ar"
-            ? "دخول"
-            : "Enter"
-          : lang === "ar"
-            ? "تخطي المقدمة"
-            : "Skip intro"}
-      </button>
+      {!manualEntry && (
+        <button
+          type="button"
+          data-intro-skip="true"
+          onClick={handleIntroAction}
+          className={`absolute bottom-[calc(1rem+env(safe-area-inset-bottom))] end-4 flex min-h-11 items-center justify-center border border-[color:var(--ivory)]/38 bg-black/24 px-4 py-2 text-[0.58rem] font-medium text-[color:var(--ivory)] backdrop-blur-sm transition-all duration-500 hover:border-[color:var(--ivory)] hover:bg-[color:var(--ivory)] hover:text-[color:var(--charcoal)] md:bottom-8 md:end-8 md:px-5 md:py-3 md:text-[0.68rem] ${
+            lang === "ar"
+              ? "font-arabic !tracking-[0px]"
+              : "uppercase tracking-[0.16em] md:tracking-[0.22em]"
+          } ${canSkip ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"}`}
+        >
+          {lang === "ar" ? "تخطي المقدمة" : "Skip intro"}
+        </button>
+      )}
     </div>
   );
 }
